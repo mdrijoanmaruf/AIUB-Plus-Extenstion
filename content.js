@@ -150,19 +150,12 @@
     return [...new Set(courses.map(c => c.status))].filter(Boolean).sort();
   }
 
-  // ── Time dropdown option generator ────────────────────────────
-  function generateTimeOptions(placeholder) {
-    let opts = '<option value="">' + placeholder + '</option>';
-    for (let h = 7.5; h <= 21.5; h += 0.5) {
-      const totalMins = Math.round(h * 60);
-      const h24 = Math.floor(totalMins / 60);
-      const m = totalMins % 60;
-      const period = h24 < 12 ? 'AM' : 'PM';
-      const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
-      const label = h12 + ':' + (m === 0 ? '00' : '30') + ' ' + period;
-      opts += '<option value="' + h + '">' + label + '</option>';
-    }
-    return opts;
+  // ── Parse HH:MM (24h) time input value to decimal hours ────────
+  function parseTimeInputToHours(val) {
+    if (!val) return NaN;
+    const parts = val.split(':');
+    if (parts.length < 2) return NaN;
+    return parseInt(parts[0], 10) + parseInt(parts[1], 10) / 60;
   }
 
   // ── Show loading indicator while data is being fetched ────────
@@ -254,9 +247,9 @@
           <div class="col-md-4 col-sm-12" style="margin-bottom:12px;">
             <span class="aiub-label">Class Start Time &mdash; From / To</span>
             <div class="aiub-time-range">
-              <select id="aiub-time-from" class="form-control">${generateTimeOptions('From (any)')}</select>
+              <input type="time" id="aiub-time-from" class="form-control" title="From time">
               <span class="aiub-time-sep">&rarr;</span>
-              <select id="aiub-time-to" class="form-control">${generateTimeOptions('To (any)')}</select>
+              <input type="time" id="aiub-time-to" class="form-control" title="To time">
             </div>
           </div>
           <div class="col-md-8 col-sm-12">
@@ -304,7 +297,9 @@
     document.getElementById('aiub-status').addEventListener('change', applyFilters);
     document.getElementById('aiub-seats').addEventListener('change', applyFilters);
     document.getElementById('aiub-time-from').addEventListener('change', applyFilters);
+    document.getElementById('aiub-time-from').addEventListener('input', applyFilters);
     document.getElementById('aiub-time-to').addEventListener('change', applyFilters);
+    document.getElementById('aiub-time-to').addEventListener('input', applyFilters);
 
     document.querySelectorAll('.aiub-day-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -321,8 +316,8 @@
     const searchVal = document.getElementById('aiub-search').value.trim().toLowerCase();
     const statusVal = document.getElementById('aiub-status').value;
     const seatsVal = document.getElementById('aiub-seats').value;
-    const timeFrom = parseFloat(document.getElementById('aiub-time-from').value);
-    const timeTo = parseFloat(document.getElementById('aiub-time-to').value);
+    const timeFrom = parseTimeInputToHours(document.getElementById('aiub-time-from').value);
+    const timeTo = parseTimeInputToHours(document.getElementById('aiub-time-to').value);
 
     const selectedDays = [];
     document.querySelectorAll('.aiub-day-btn.active').forEach(btn => {

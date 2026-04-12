@@ -252,12 +252,12 @@
 
 /* Schedule chips */
 .aiub-slot {
-  display: inline-block;
+  display: block;
   background: #e8f0fe;
   border-left: 3px solid #1565c0;
   border-radius: 0 4px 4px 0;
-  padding: 2px 8px;
-  margin: 2px 3px 2px 0;
+  padding: 3px 8px;
+  margin: 2px 0;
   font-size: 11px;
   white-space: nowrap;
 }
