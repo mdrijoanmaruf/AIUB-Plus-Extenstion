@@ -18,13 +18,18 @@
       "world": "MAIN"
     },
     {
+      "matches": ["https://portal.aiub.edu/Student/Registration?*"],
+      "js": ["Academic/Registration.js"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/ByCurriculum*"],
-      "js": ["carriculum_grade_report.js"],
+      "js": ["Grade/carriculum_grade_report.js"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/BySemester*"],
-      "js": ["carriculum_grade_semester.js"],
+      "js": ["Grade/carriculum_grade_semester.js"],
       "run_at": "document_idle"
     }
   ],
