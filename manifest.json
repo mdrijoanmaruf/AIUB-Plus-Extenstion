@@ -16,6 +16,11 @@
       "css": ["styles.css"],
       "run_at": "document_idle",
       "world": "MAIN"
+    },
+    {
+      "matches": ["https://portal.aiub.edu/Student/GradeReport/ByCurriculum*"],
+      "js": ["carriculum_grade_report.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {
