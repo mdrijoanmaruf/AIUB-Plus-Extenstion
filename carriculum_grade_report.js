@@ -42,11 +42,11 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
         font-size: 13px;
         color: #1e293b;
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 22px 24px;
-        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 16px 4px;
+        box-shadow: none;
       }
 
       /* ── Top bar ── */
@@ -153,7 +153,7 @@
       /* ── Grade pill ── */
       .cgr-gp {
         display: inline-block; padding: 2px 10px; border-radius: 20px;
-        font-size: 11px; font-weight: 700; color: #fff;
+        font-size: 11px; font-weight: 700; color: #059669;
         white-space: nowrap; letter-spacing: .3px;
       }
       .cgr-gp-nd { font-size: 12px; color: #cbd5e1; }
@@ -244,7 +244,7 @@
     const last = grades[grades.length - 1];
     const bg   = GRADE_BG[last.grade] || '#90a4ae';
     const lbl  = last.grade === '-' ? 'Ongoing' : last.grade;
-    return `<span class="cgr-gp" style="background:${bg}">${esc(lbl)}</span>`;
+    return `<span class="cgr-gp" style="color:${bg}">${esc(lbl)}</span>`;
   }
 
   function semLines(grades) {

@@ -21,6 +21,11 @@
       "matches": ["https://portal.aiub.edu/Student/GradeReport/ByCurriculum*"],
       "js": ["carriculum_grade_report.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://portal.aiub.edu/Student/GradeReport/BySemester*"],
+      "js": ["carriculum_grade_semester.js"],
+      "run_at": "document_idle"
     }
   ],
   "action": {
