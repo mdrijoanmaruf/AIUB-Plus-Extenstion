@@ -150,19 +150,34 @@
     return [...new Set(courses.map(c => c.status))].filter(Boolean).sort();
   }
 
+  // ── Time dropdown option generator ────────────────────────────
+  function generateTimeOptions(placeholder) {
+    let opts = '<option value="">' + placeholder + '</option>';
+    for (let h = 7.5; h <= 21.5; h += 0.5) {
+      const totalMins = Math.round(h * 60);
+      const h24 = Math.floor(totalMins / 60);
+      const m = totalMins % 60;
+      const period = h24 < 12 ? 'AM' : 'PM';
+      const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+      const label = h12 + ':' + (m === 0 ? '00' : '30') + ' ' + period;
+      opts += '<option value="' + h + '">' + label + '</option>';
+    }
+    return opts;
+  }
+
   // ── Show loading indicator while data is being fetched ────────
   function injectLoadingPanel() {
     if (document.getElementById('aiub-filter-panel')) return;
     const mainContent = document.getElementById('main-content') || document.body;
     const loader = document.createElement('div');
     loader.id = 'aiub-filter-panel';
-    loader.style.cssText = 'border:2px solid #2c3e50;border-radius:4px;margin-bottom:15px;background:#fff;';
+    loader.style.cssText = 'border:none;border-radius:10px;margin-bottom:18px;background:#fff;overflow:hidden;box-shadow:0 2px 18px rgba(0,0,0,0.14);';
     loader.innerHTML = [
-      '<div style="background:#2c3e50;color:#fff;padding:10px 15px;border-radius:3px 3px 0 0;">',
-      '  <strong>&#9203; AIUB Course Filter &mdash; Loading all course data&hellip;</strong>',
+      '<div style="background:linear-gradient(120deg,#1a2744 0%,#2c3e50 100%);color:#fff;padding:12px 18px;">',
+      '  <strong>&#9203;&nbsp;Loading course data&hellip;</strong>',
       '</div>',
-      '<div style="padding:10px 15px;color:#666;font-size:13px;">',
-      '  Please wait while all courses are being fetched. This may take a few seconds.',
+      '<div style="padding:14px 18px;color:#7f8c8d;font-size:13px;">',
+      '  Fetching all available courses. This may take a few seconds.',
       '</div>'
     ].join('');
     const ref = mainContent.querySelector('.panel') ||
@@ -195,29 +210,32 @@
     filterPanel.innerHTML = `
       <div class="panel-heading">
         <h5 class="panel-title">
-          <i class="glyphicon glyphicon-filter"></i>&nbsp;
-          Advanced Course Filter
-          <span id="aiub-filter-count" class="badge" style="margin-left:10px;"></span>
-          <span id="aiub-total-count" class="badge" style="margin-left:5px;background:#5cb85c;"></span>
+          &#9889;&nbsp;Advanced Course Filter
+          <span id="aiub-total-count" class="aiub-badge-total"></span>
         </h5>
+        <div class="aiub-header-actions">
+          <span id="aiub-filter-count" class="aiub-badge-results" style="display:none;"></span>
+          <button id="aiub-reset-btn" type="button">&#8635; Reset</button>
+        </div>
       </div>
       <div class="panel-body">
-        <!-- Row 1: Search + Status + Seats + Time -->
-        <div class="row" style="margin-bottom:10px;">
-          <div class="col-md-4">
-            <label>Search (Name / Class ID)</label>
-            <input type="text" id="aiub-search" class="form-control"
-                   placeholder="e.g. Data Structure or 00123">
+        <div class="row">
+          <div class="col-md-5 col-sm-12" style="margin-bottom:12px;">
+            <span class="aiub-label">Search Course</span>
+            <div class="aiub-search-wrap">
+              <span class="aiub-search-icon glyphicon glyphicon-search"></span>
+              <input type="text" id="aiub-search" class="form-control" placeholder="Course name or Class ID&hellip;">
+            </div>
           </div>
-          <div class="col-md-3">
-            <label>Status</label>
+          <div class="col-md-3 col-sm-6" style="margin-bottom:12px;">
+            <span class="aiub-label">Status</span>
             <select id="aiub-status" class="form-control">
               <option value="">All Statuses</option>
               ${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}
             </select>
           </div>
-          <div class="col-md-3">
-            <label>Seat Availability</label>
+          <div class="col-md-4 col-sm-6" style="margin-bottom:12px;">
+            <span class="aiub-label">Seat Availability</span>
             <select id="aiub-seats" class="form-control">
               <option value="">All</option>
               <option value="available">Available (any seats)</option>
@@ -231,31 +249,22 @@
               <option value="35">35+ seats</option>
             </select>
           </div>
-          <div class="col-md-2">
-            <label>Time Slot</label>
-            <select id="aiub-timeslot" class="form-control">
-              <option value="">All Times</option>
-              <option value="morning">Morning (8AM\u201312PM)</option>
-              <option value="afternoon">Afternoon (12PM\u20134PM)</option>
-              <option value="evening">Evening (4PM\u20139PM)</option>
-            </select>
-          </div>
         </div>
-        <!-- Row 2: Day checkboxes + Reset -->
+        <hr class="aiub-filter-divider">
         <div class="row">
-          <div class="col-md-10">
-            <label>Days:</label>&nbsp;
-            ${ALL_DAYS.map(d => `
-              <label class="checkbox-inline">
-                <input type="checkbox" class="aiub-day-checkbox" value="${d}"> ${d}
-              </label>
-            `).join('')}
+          <div class="col-md-4 col-sm-12" style="margin-bottom:12px;">
+            <span class="aiub-label">Class Start Time &mdash; From / To</span>
+            <div class="aiub-time-range">
+              <select id="aiub-time-from" class="form-control">${generateTimeOptions('From (any)')}</select>
+              <span class="aiub-time-sep">&rarr;</span>
+              <select id="aiub-time-to" class="form-control">${generateTimeOptions('To (any)')}</select>
+            </div>
           </div>
-          <div class="col-md-2">
-            <button id="aiub-reset-btn" class="btn btn-warning btn-sm btn-block"
-                    style="margin-top:2px;">
-              <i class="glyphicon glyphicon-refresh"></i> Reset All
-            </button>
+          <div class="col-md-8 col-sm-12">
+            <span class="aiub-label">Day of Week</span>
+            <div class="aiub-days-wrap">
+              ${ALL_DAYS.map(d => `<button type="button" class="aiub-day-btn" data-day="${d}">${d}</button>`).join('')}
+            </div>
           </div>
         </div>
       </div>
@@ -295,10 +304,14 @@
 
     document.getElementById('aiub-status').addEventListener('change', applyFilters);
     document.getElementById('aiub-seats').addEventListener('change', applyFilters);
-    document.getElementById('aiub-timeslot').addEventListener('change', applyFilters);
+    document.getElementById('aiub-time-from').addEventListener('change', applyFilters);
+    document.getElementById('aiub-time-to').addEventListener('change', applyFilters);
 
-    document.querySelectorAll('.aiub-day-checkbox').forEach(cb => {
-      cb.addEventListener('change', applyFilters);
+    document.querySelectorAll('.aiub-day-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        applyFilters();
+      });
     });
 
     document.getElementById('aiub-reset-btn').addEventListener('click', resetFilters);
@@ -309,14 +322,16 @@
     const searchVal = document.getElementById('aiub-search').value.trim().toLowerCase();
     const statusVal = document.getElementById('aiub-status').value;
     const seatsVal = document.getElementById('aiub-seats').value;
-    const timeslotVal = document.getElementById('aiub-timeslot').value;
+    const timeFrom = parseFloat(document.getElementById('aiub-time-from').value);
+    const timeTo = parseFloat(document.getElementById('aiub-time-to').value);
 
     const selectedDays = [];
-    document.querySelectorAll('.aiub-day-checkbox:checked').forEach(cb => {
-      selectedDays.push(cb.value);
+    document.querySelectorAll('.aiub-day-btn.active').forEach(btn => {
+      selectedDays.push(btn.dataset.day);
     });
 
-    const hasFilters = searchVal || statusVal || seatsVal || timeslotVal || selectedDays.length > 0;
+    const hasFilters = searchVal || statusVal || seatsVal ||
+      !isNaN(timeFrom) || !isNaN(timeTo) || selectedDays.length > 0;
 
     if (!hasFilters) {
       resetFilters();
@@ -352,17 +367,14 @@
         if (!hasMatchingDay) return false;
       }
 
-      // 5. Time slot filter
-      if (timeslotVal) {
+      // 5. Time range filter (matches course start time)
+      if (!isNaN(timeFrom) || !isNaN(timeTo)) {
         const hasMatchingTime = course.timeSlots.some(ts => {
           const startHour = parseTimeToHours(ts.startTime);
           if (startHour === null) return false;
-          switch (timeslotVal) {
-            case 'morning':   return startHour >= 8 && startHour < 12;
-            case 'afternoon': return startHour >= 12 && startHour < 16;
-            case 'evening':   return startHour >= 16 && startHour < 21;
-            default: return true;
-          }
+          if (!isNaN(timeFrom) && startHour < timeFrom) return false;
+          if (!isNaN(timeTo) && startHour > timeTo) return false;
+          return true;
         });
         if (!hasMatchingTime) return false;
       }
@@ -400,6 +412,7 @@
 
     const badge = document.getElementById('aiub-filter-count');
     badge.textContent = filteredCourses.length + ' results';
+    badge.style.display = '';
 
     const totalPages = Math.ceil(filteredCourses.length / rowsPerPage);
     const start = (currentPage - 1) * rowsPerPage;
@@ -409,25 +422,16 @@
     container.innerHTML = `
       <div class="panel panel-default">
         <div class="panel-heading">
-          <div class="row">
-            <div class="col-md-6">
-              <h5 class="panel-title">
-                Filtered Results \u2014 ${filteredCourses.length} course(s) found
-              </h5>
-            </div>
-            <div class="col-md-6 text-right">
-              <label style="font-weight:normal;margin-bottom:0;">
-                Show
-                <select id="aiub-rows-per-page" class="form-control input-sm"
-                        style="display:inline-block;width:auto;margin:0 5px;">
-                  <option value="10" ${rowsPerPage===10?'selected':''}>10</option>
-                  <option value="25" ${rowsPerPage===25?'selected':''}>25</option>
-                  <option value="50" ${rowsPerPage===50?'selected':''}>50</option>
-                  <option value="100" ${rowsPerPage===100?'selected':''}>100</option>
-                </select>
-                per page
-              </label>
-            </div>
+          <h5 class="panel-title">${filteredCourses.length} course(s) found</h5>
+          <div class="aiub-rpp-wrap">
+            Show
+            <select id="aiub-rows-per-page">
+              <option value="10" ${rowsPerPage===10?'selected':''}>10</option>
+              <option value="25" ${rowsPerPage===25?'selected':''}>25</option>
+              <option value="50" ${rowsPerPage===50?'selected':''}>50</option>
+              <option value="100" ${rowsPerPage===100?'selected':''}>100</option>
+            </select>
+            per page
           </div>
         </div>
         <div class="panel-body" style="padding:0;">
@@ -462,23 +466,33 @@
   function renderCourseRow(course) {
     const available = course.capacity - course.count;
     const isFull = available <= 0;
-    const availableClass = isFull ? 'text-danger' : 'text-success';
-    const availableText = isFull ? 'FULL' : available + ' seats';
+    const seatsHtml = isFull
+      ? '<span class="aiub-seats-full">FULL</span>'
+      : '<span class="aiub-seats-ok">' + available + ' seats</span>';
+
+    const s = (course.status || '').toLowerCase();
+    const statusClass = s.includes('freshman')  ? 'aiub-status aiub-status-freshman'
+      : s.includes('sophomore') ? 'aiub-status aiub-status-sophomore'
+      : s.includes('junior')    ? 'aiub-status aiub-status-junior'
+      : s.includes('senior')    ? 'aiub-status aiub-status-senior'
+      : 'aiub-status aiub-status-default';
 
     const scheduleHtml = course.timeSlots.map(ts =>
-      '<div><small><strong>' + ts.classType + '</strong> ' +
-      ts.day + ' ' + ts.startTime + '\u2013' + ts.endTime +
-      ' (' + ts.room + ')</small></div>'
+      '<span class="aiub-slot">' +
+      '<span class="aiub-slot-day">' + ts.day + '</span> ' +
+      ts.startTime + '&ndash;' + ts.endTime +
+      ' <span class="aiub-slot-room">' + ts.room + '</span>' +
+      '</span>'
     ).join('');
 
     return `
       <tr>
-        <td>${course.classId}</td>
+        <td style="font-weight:600;color:#2c3e50;">${course.classId}</td>
         <td>${course.fullTitle}</td>
-        <td><span class="label label-info">${course.status}</span></td>
+        <td><span class="${statusClass}">${course.status}</span></td>
         <td class="text-center">${course.capacity}</td>
         <td class="text-center">${course.count}</td>
-        <td class="text-center ${availableClass}"><strong>${availableText}</strong></td>
+        <td class="text-center">${seatsHtml}</td>
         <td>${scheduleHtml}</td>
       </tr>
     `;
@@ -510,9 +524,9 @@
       '<a href="#" data-page="' + totalPages + '">\u00BB</a></li>';
 
     return `
-      <div class="panel-footer text-center">
-        <ul class="pagination" style="margin:5px 0;">${pages}</ul>
-        <span class="label label-default">${currentPage} of ${totalPages}</span>
+      <div class="panel-footer">
+        <ul class="pagination">${pages}</ul>
+        <span class="aiub-page-label">Page ${currentPage} of ${totalPages}</span>
       </div>
     `;
   }
@@ -545,8 +559,9 @@
     document.getElementById('aiub-search').value = '';
     document.getElementById('aiub-status').value = '';
     document.getElementById('aiub-seats').value = '';
-    document.getElementById('aiub-timeslot').value = '';
-    document.querySelectorAll('.aiub-day-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('aiub-time-from').value = '';
+    document.getElementById('aiub-time-to').value = '';
+    document.querySelectorAll('.aiub-day-btn.active').forEach(btn => btn.classList.remove('active'));
 
     const container = document.getElementById('aiub-results-container');
     const originalPanel = originalTablePanel;
@@ -555,6 +570,7 @@
 
     const badge = document.getElementById('aiub-filter-count');
     badge.textContent = '';
+    badge.style.display = 'none';
 
     filteredCourses = [];
     currentPage = 1;
