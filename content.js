@@ -696,9 +696,12 @@
     } else if (sameCoursePicked) {
       actionHtml = '<button class="aiub-select-btn aiub-sel-added" disabled>Course Added</button>';
     } else {
-      actionHtml = '<button class="aiub-select-btn aiub-sel-pick" data-classid="'
+      var selClass = course.count >= 35 ? 'aiub-sel-high' : 'aiub-sel-pick';
+      actionHtml = '<button class="aiub-select-btn ' + selClass + '" data-classid="'
                  + course.classId + '">&#43; Select</button>';
     }
+
+    const countClass = course.count >= 35 ? ' aiub-count-high' : '';
 
     return `
       <tr>
@@ -706,7 +709,7 @@
         <td>${course.fullTitle}</td>
         <td><span class="${statusClass}">${course.status}</span></td>
         <td class="text-center">${course.capacity}</td>
-        <td class="text-center">${course.count}</td>
+        <td class="text-center${countClass}">${course.count}</td>
         <td class="text-center">${seatsHtml}</td>
         <td>${scheduleHtml}</td>
         <td class="text-center">${actionHtml}</td>
@@ -770,7 +773,7 @@
     }
 
     // ── Select button listeners ──
-    document.querySelectorAll('.aiub-sel-pick').forEach(function (btn) {
+    document.querySelectorAll('.aiub-sel-pick, .aiub-sel-high').forEach(function (btn) {
       btn.addEventListener('click', function () {
         handleSelectSection(btn.dataset.classid);
       });
@@ -783,8 +786,8 @@
 
     if (selectedSections.length === 0) {
       if (panel) panel.remove();
-      const routineContainer = document.getElementById('aiub-routine-container');
-      if (routineContainer) routineContainer.style.display = 'none';
+      const routineOverlay = document.getElementById('aiub-routine-overlay');
+      if (routineOverlay) routineOverlay.remove();
       return;
     }
 
@@ -792,9 +795,9 @@
       panel = document.createElement('div');
       panel.id = 'aiub-selected-panel';
       panel.className = 'panel panel-primary';
-      const resultsContainer = document.getElementById('aiub-results-container');
-      if (resultsContainer) {
-        resultsContainer.insertAdjacentElement('afterend', panel);
+      const filterPanel = document.getElementById('aiub-filter-panel');
+      if (filterPanel) {
+        filterPanel.insertAdjacentElement('afterend', panel);
       } else {
         const mainContent = document.getElementById('main-content') || document.body;
         mainContent.appendChild(panel);
@@ -912,12 +915,12 @@
         var topPx = ((st - startHour * 60) / 60) * HOUR_PX;
         var heightPx = ((en - st) / 60) * HOUR_PX;
 
-        var sectionLabel = 'Sec: ' + sec.section;
+        var sectionLabel = 'Sec: ' + sec.section + ' (' + (sec.capacity - sec.count) + ' seats)';
         if (sec._linkedSections && sec._linkedSections.length > 0) {
           var linked = sec._linkedSections.map(function (ls) {
-            return ls.section + ' (' + (ls.capacity - ls.count) + ')';
+            return ls.section + ' (' + (ls.capacity - ls.count) + ' seats)';
           }).join(', ');
-          sectionLabel += ' (' + (sec.capacity - sec.count) + '), ' + linked;
+          sectionLabel += ' | Also: ' + linked;
         }
 
         events.push({
@@ -981,42 +984,52 @@
   }
 
   function renderRoutineContainer() {
-    var container = document.getElementById('aiub-routine-container');
+    // Remove any existing overlay
+    var existing = document.getElementById('aiub-routine-overlay');
+    if (existing) existing.remove();
 
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'aiub-routine-container';
-      var selectedPanel = document.getElementById('aiub-selected-panel');
-      if (selectedPanel) {
-        selectedPanel.insertAdjacentElement('afterend', container);
-      }
-    }
+    var overlay = document.createElement('div');
+    overlay.id = 'aiub-routine-overlay';
+    overlay.className = 'aiub-modal-overlay';
 
-    container.style.display = 'block';
     var routineHtml = renderRoutineView();
 
-    container.innerHTML = '<div class="panel panel-primary aiub-routine-panel">'
-      + '<div class="panel-heading">'
+    overlay.innerHTML = '<div class="aiub-modal-content">'
+      + '<div class="aiub-modal-header">'
       + '<h5 class="panel-title">&#128197;&nbsp;My Routine</h5>'
       + '<div class="aiub-header-actions">'
       + '<button id="aiub-routine-download-btn" type="button">&#11015; Download as Image</button>'
       + '<button id="aiub-routine-close-btn" type="button">&#10005; Close</button>'
       + '</div>'
       + '</div>'
-      + '<div class="panel-body" style="padding:16px;overflow-x:auto;">'
+      + '<div class="aiub-modal-body">'
       + routineHtml
       + '</div>'
       + '</div>';
+
+    document.body.appendChild(overlay);
 
     var dlBtn = document.getElementById('aiub-routine-download-btn');
     if (dlBtn) dlBtn.addEventListener('click', downloadRoutine);
 
     var closeBtn = document.getElementById('aiub-routine-close-btn');
     if (closeBtn) closeBtn.addEventListener('click', function () {
-      container.style.display = 'none';
+      overlay.remove();
     });
 
-    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Close on overlay background click
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    // Close on Escape key
+    function onEsc(e) {
+      if (e.key === 'Escape') {
+        overlay.remove();
+        document.removeEventListener('keydown', onEsc);
+      }
+    }
+    document.addEventListener('keydown', onEsc);
   }
 
   // ── Download Routine as Image ────────────────────────────────
@@ -1042,21 +1055,30 @@
     try {
       await loadHtml2Canvas();
 
-      var clone = grid.cloneNode(true);
-      clone.style.width = '1200px';
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      clone.style.top = '0';
-      document.body.appendChild(clone);
+      // Build a wrapper matching the routine design (header + grid)
+      var wrapper = document.createElement('div');
+      wrapper.style.cssText = 'width:1200px;position:absolute;left:-9999px;top:0;font-family:inherit;';
 
-      var canvas = await html2canvas(clone, {
+      var header = document.createElement('div');
+      header.style.cssText = 'background:linear-gradient(135deg,#0d47a1 0%,#1976d2 100%);color:#fff;padding:16px 24px;border-radius:12px 12px 0 0;font-size:17px;font-weight:700;';
+      header.textContent = '\u{1F4C5} My Routine - AIUB';
+      wrapper.appendChild(header);
+
+      var clone = grid.cloneNode(true);
+      clone.style.width = '100%';
+      clone.style.borderRadius = '0 0 12px 12px';
+      wrapper.appendChild(clone);
+
+      document.body.appendChild(wrapper);
+
+      var canvas = await html2canvas(wrapper, {
         backgroundColor: '#ffffff',
         scale: 2,
         useCORS: true,
         logging: false
       });
 
-      document.body.removeChild(clone);
+      document.body.removeChild(wrapper);
 
       var link = document.createElement('a');
       link.download = 'My_Routine_AIUB.png';

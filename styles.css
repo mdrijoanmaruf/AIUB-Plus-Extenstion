@@ -668,6 +668,72 @@
 }
 .aiub-routine-empty p { margin: 4px 0; }
 
+/* ── High Count Indicators (35+) ────────────────────────────── */
+.aiub-count-high {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  font-weight: 700;
+}
+.aiub-sel-high {
+  background: linear-gradient(135deg, #c62828 0%, #e53935 100%) !important;
+  color: #fff !important;
+  border: none;
+  cursor: pointer;
+}
+.aiub-sel-high:hover {
+  background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%) !important;
+}
+
+/* ── Modal Overlay (Routine Popup) ──────────────────────────── */
+.aiub-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.aiub-modal-content {
+  background: #fff;
+  border-radius: 14px;
+  width: 95%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+.aiub-modal-header {
+  background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+  color: #fff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.aiub-modal-header .panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.aiub-modal-body {
+  padding: 16px;
+  overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   #aiub-filter-panel .panel-heading,
