@@ -3,19 +3,15 @@
   if (window.__aiubFinanceEnhanced) return;
   window.__aiubFinanceEnhanced = true;
 
-  /* ── CSS ──────────────────────────────────────────────────────── */
   const CSS = `<style id="fin-style">
-/* Root panel */
 .fin-root-panel { border: none !important; box-shadow: none !important; }
 .fin-root-panel > .panel-heading { display: none !important; }
 .fin-root-panel > .panel-body { background: transparent !important; border: none !important; box-shadow: none !important; padding: 16px 4px !important; }
 
-/* Page header */
 .fin-page-header { margin-bottom: 14px; }
 .fin-page-title { font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 3px; }
 .fin-page-sub { font-size: 13px; color: #6b7280; }
 
-/* Summary cards */
 .fin-summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .fin-card {
   flex: 1; min-width: 150px;
@@ -29,10 +25,8 @@
 .fin-card.fin-card-balance .fin-card-value { color: #d97706; }
 .fin-card.fin-card-balance.fin-paid .fin-card-value { color: #059669; }
 
-/* Table wrapper */
 .fin-table-wrap { overflow-x: auto; border-radius: 12px; border: 1.5px solid #e5e7eb; box-shadow: 0 1px 6px rgba(0,0,0,.04); }
 
-/* Table */
 .fin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .fin-table thead tr { background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%); }
 .fin-table thead th {
@@ -46,14 +40,12 @@
 .fin-table tbody tr:hover { background: #f9fafb !important; }
 .fin-table tbody td { padding: 11px 14px; vertical-align: middle; border: none !important; }
 
-/* Row types */
 .fin-assessment-row { background: #eff6ff; }
 .fin-payment-row { background: #f0fdf4; }
 .fin-misc-row { background: #fffbeb; }
 .fin-total-row { background: #f1f5f9 !important; border-top: 2px solid #e2e8f0 !important; }
 .fin-total-row td { padding: 13px 14px !important; font-weight: 700; }
 
-/* Badges */
 .fin-badge {
   display: inline-block; font-size: 10px; font-weight: 700;
   padding: 2px 8px; border-radius: 999px; margin-right: 7px;
@@ -63,12 +55,10 @@
 .fin-badge-payment { background: #d1fae5; color: #059669; }
 .fin-badge-misc { background: #fef3c7; color: #b45309; }
 
-/* Particulars cell */
 .fin-cell-particulars { max-width: 280px; }
 .fin-assessment-row .fin-cell-particulars a { color: #1d4ed8 !important; font-weight: 600; text-decoration: none; }
 .fin-assessment-row .fin-cell-particulars a:hover { text-decoration: underline; }
 
-/* Cell types */
 .fin-cell-date { color: #6b7280; white-space: nowrap; font-size: 12px; }
 .fin-cell-debit { text-align: right; white-space: nowrap; font-weight: 600; color: #dc2626; }
 .fin-cell-debit.fin-zero { color: #9ca3af; font-weight: 400; }
@@ -81,7 +71,6 @@
 .fin-total-row .fin-cell-debit { color: #dc2626; }
 .fin-total-row .fin-cell-credit { color: #059669; }
 
-/* Modal */
 .fin-modal .modal-dialog {
   max-width: 620px; margin: 40px auto;
   border-radius: 14px; overflow: hidden;
@@ -108,7 +97,6 @@
 .fin-modal .modal-body h5 { color: #1d4ed8; font-weight: 700; margin: 0 0 12px; font-size: 15px; }
 </style>`;
 
-  /* ── Helpers ──────────────────────────────────────────────────── */
   function parseAmount(text) {
     const n = parseFloat((text || '').replace(/,/g, '').trim());
     return isNaN(n) ? 0 : n;
@@ -118,7 +106,6 @@
     return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  /* ── Main enhance ─────────────────────────────────────────────── */
   function enhance() {
     const panelBody = document.querySelector('#main-content .panel-body');
     if (!panelBody) return;
@@ -126,28 +113,23 @@
     const table = panelBody.querySelector('table.table-details');
     if (!table) return;
 
-    /* Inject CSS */
     document.head.insertAdjacentHTML('beforeend', CSS);
 
-    /* Root panel fix */
     const panel = panelBody.closest('.panel');
     if (panel) panel.classList.add('fin-root-panel');
 
-    /* Wrap table */
     const wrap = document.createElement('div');
     wrap.className = 'fin-table-wrap';
     table.parentNode.insertBefore(wrap, table);
     wrap.appendChild(table);
     table.classList.add('fin-table');
 
-    /* Process tbody rows */
     let totalDebit = 0, totalCredit = 0, finalBalance = 0;
 
     table.querySelectorAll('tbody tr').forEach(row => {
       const cells = Array.from(row.querySelectorAll('td'));
       if (!cells.length) return;
 
-      /* Total row has colspan on first cell */
       if (cells[0].hasAttribute('colspan')) {
         row.classList.add('fin-total-row');
         if (cells.length >= 5) {
@@ -180,7 +162,6 @@
       const balAmt = parseAmount(balanceCell.textContent);
       balanceCell.classList.add(balAmt === 0 ? 'fin-zero' : 'fin-positive');
 
-      /* Row type + badge */
       const modalLink = particularsCell.querySelector('a[data-toggle="modal"]');
       if (modalLink) {
         row.classList.add('fin-assessment-row');
@@ -197,7 +178,6 @@
       }
     });
 
-    /* Summary cards + page header (inserted before table wrap) */
     const summaryHTML = `
 <div class="fin-page-header">
   <div class="fin-page-title">Financial Details</div>
@@ -219,7 +199,6 @@
 </div>`;
     wrap.insertAdjacentHTML('beforebegin', summaryHTML);
 
-    /* Style modal */
     const modal = document.getElementById('assesmentModal');
     if (modal) {
       modal.classList.add('fin-modal');
@@ -234,7 +213,6 @@
     }
   }
 
-  /* ── Boot ─────────────────────────────────────────────────────── */
   function tryEnhance() {
     if (document.querySelector('#main-content .panel-body table.table-details')) {
       enhance();

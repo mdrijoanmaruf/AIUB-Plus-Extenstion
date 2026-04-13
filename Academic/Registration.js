@@ -5,7 +5,6 @@
   if (window.__aiubRegEnhanced) return;
   window.__aiubRegEnhanced = true;
 
-  /* ── XSS escape ──────────────────────────────────────────────── */
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -14,25 +13,21 @@
       .replace(/"/g, '&quot;');
   }
 
-  /* ── Inject CSS ──────────────────────────────────────────────── */
   function injectCSS() {
     if (document.getElementById('aiub-reg-css')) return;
     const s = document.createElement('style');
     s.id = 'aiub-reg-css';
     s.textContent = `
-      /* Scoped panel reset — preserves sidebar */
       .reg-root-panel > .panel-heading { display: none !important; }
       .reg-root-panel { box-shadow: none !important; border: none !important;
         background: transparent !important; margin-bottom: 0 !important; }
       .reg-root-panel > .panel-body { padding: 8px 0 0 !important; background: transparent !important; }
 
-      /* ── Root ── */
       .reg-wrap {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
         font-size: 13px; color: #1e293b;
       }
 
-      /* ── Top bar ── */
       .reg-top {
         display: flex; align-items: center; justify-content: space-between;
         flex-wrap: wrap; gap: 10px;
@@ -55,7 +50,6 @@
       }
       .reg-print-btn:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; text-decoration: none; }
 
-      /* ── Credit chips ── */
       .reg-credits { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
       .reg-credit-chip {
         display: inline-flex; align-items: center; gap: 5px;
@@ -65,10 +59,8 @@
       .reg-credit-chip.active { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
       .reg-credit-num { font-weight: 800; font-size: 13px; margin-right: 1px; }
 
-      /* ── Two-column layout ── */
       .reg-body { display: grid; grid-template-columns: 1fr 270px; gap: 16px; align-items: start; }
 
-      /* ── Course cards ── */
       .reg-course-list { display: flex; flex-direction: column; gap: 10px; }
       .reg-course-card {
         border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
@@ -96,7 +88,6 @@
       }
       .reg-course-card.dropped .reg-section-badge { background: #f3f4f6; border-color: #e5e7eb; color: #9ca3af; }
 
-      /* ── Schedule ── */
       .reg-schedule { padding: 0 14px 8px; display: flex; flex-direction: column; gap: 4px; }
       .reg-schedule-row { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #64748b; flex-wrap: wrap; }
       .reg-sched-type {
@@ -112,7 +103,6 @@
         color: #94a3b8; white-space: nowrap; font-family: 'Consolas', monospace;
       }
 
-      /* ── Card footer ── */
       .reg-course-footer {
         display: flex; align-items: center; justify-content: space-between;
         padding: 5px 14px 9px; gap: 8px;
@@ -126,7 +116,6 @@
         padding: 2px 8px; font-size: 10px; font-weight: 700;
       }
 
-      /* ── Fee panel ── */
       .reg-fee-panel {
         border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
         background: #fff; position: sticky; top: 16px;
@@ -174,7 +163,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── Parse credit summary ────────────────────────────────────── */
   function parseCreditSummary(tbl) {
     const items = [];
     tbl.querySelectorAll('div[class*="col-"]').forEach(col => {
@@ -188,7 +176,6 @@
     return items;
   }
 
-  /* ── Parse schedule line ─────────────────────────────────────── */
   function parseScheduleLine(text) {
     const typeMatch  = text.match(/^\(([^)]+)\)/);
     const type       = typeMatch ? typeMatch[1] : '';
@@ -199,7 +186,6 @@
     return { type, time: timePart, room };
   }
 
-  /* ── Parse courses ───────────────────────────────────────────── */
   function parseCourses(table) {
     const courses = [];
     table.querySelectorAll('tbody tr').forEach(tr => {
@@ -235,7 +221,6 @@
     return courses;
   }
 
-  /* ── Parse fees ──────────────────────────────────────────────── */
   function parseFees(div) {
     const items = [];
     div.querySelectorAll('li').forEach(li => {
@@ -267,7 +252,6 @@
     return items;
   }
 
-  /* ── Schedule type class ─────────────────────────────────────── */
   function schedClass(type) {
     const t = type.toLowerCase();
     if (t === 'theory') return 'reg-sched-th';
@@ -275,7 +259,6 @@
     return 'reg-sched-oth';
   }
 
-  /* ── Render course card ──────────────────────────────────────── */
   function courseCardHTML(c) {
     const isDropped  = !!c.droppedText;
     const dropMatch  = c.droppedText.match(/\(([^)]+)\)/);
@@ -310,7 +293,6 @@
       </div>`;
   }
 
-  /* ── Render fee panel ────────────────────────────────────────── */
   function feePanelHTML(items) {
     if (!items.length) return '';
     const rowsHTML = items.map(item => {
@@ -334,16 +316,13 @@
       </div>`;
   }
 
-  /* ── Enhance ─────────────────────────────────────────────────── */
   function enhance() {
     const panel = document.querySelector('#main-content .margin5 .panel.panel-default') ||
                   document.querySelector('#main-content .panel.panel-default');
     if (!panel) return;
 
-    /* Scope panel reset */
     panel.classList.add('reg-root-panel');
 
-    /* Gather semester dropdown options */
     const origSelect = panel.querySelector('#SemesterDropDown');
     const semOptions = origSelect
       ? [...origSelect.querySelectorAll('option')].map(o => ({
@@ -351,24 +330,19 @@
         }))
       : [];
 
-    /* Print button */
     const printBtn  = panel.querySelector('a.btn-danger');
     const printHref = printBtn ? printBtn.getAttribute('href') : null;
     const safeHref  = printHref && /^[/?#]/.test(printHref) ? printHref : null;
 
-    /* Credit summary */
     const creditTbl   = panel.querySelector('.panel-body table');
     const creditItems = creditTbl ? parseCreditSummary(creditTbl) : [];
 
-    /* Courses */
     const courseTbl = panel.querySelector('.table-details');
     const courses   = courseTbl ? parseCourses(courseTbl) : [];
 
-    /* Fees */
     const divAssesment = panel.querySelector('#divAssesment');
     const fees         = divAssesment ? parseFees(divAssesment) : [];
 
-    /* Build HTML */
     const semOptsHTML = semOptions.map(o =>
       `<option value="${esc(o.val)}"${o.selected ? ' selected' : ''}>${esc(o.text)}</option>`
     ).join('');
@@ -401,7 +375,6 @@
     const panelBody = panel.querySelector('.panel-body');
     if (panelBody) panelBody.innerHTML = html;
 
-    /* Re-wire semester dropdown */
     const newSelect = panel.querySelector('#reg-sem-select');
     if (newSelect) {
       newSelect.addEventListener('change', function () {
@@ -410,7 +383,6 @@
     }
   }
 
-  /* ── Init ────────────────────────────────────────────────────── */
   function init() {
     const hasCourses = document.querySelector('.table-details');
     const hasFees    = document.querySelector('#divAssesment');

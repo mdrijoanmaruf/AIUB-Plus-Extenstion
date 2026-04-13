@@ -1,0 +1,161 @@
+#navigation-bar {
+  padding-right: 12px !important;
+  padding-left: 0 !important;
+  padding-top: 4px !important;
+}
+
+#navigation-bar .panel-group {
+  margin-bottom: 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04) !important;
+  background: #fff !important;
+}
+#navigation-bar .panel-group .panel {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+  background: transparent !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+#navigation-bar .panel-group .panel:last-child {
+  border-bottom: none !important;
+}
+
+#navigation-bar .panel-heading {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+#navigation-bar .panel-heading .panel-title {
+  font-size: 13px !important;
+}
+#navigation-bar .panel-heading a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 11px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: #374151 !important;
+  text-decoration: none !important;
+  border-radius: 0 !important;
+  transition: background 0.15s, color 0.15s !important;
+  background: transparent !important;
+}
+#navigation-bar .panel-heading a:hover,
+#navigation-bar .panel-heading a[aria-expanded="true"] {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+#navigation-bar .panel-heading a .fa,
+#navigation-bar .panel-heading a .glyphicon {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  width: 16px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+}
+#navigation-bar .panel-heading a:hover .fa,
+#navigation-bar .panel-heading a:hover .glyphicon,
+#navigation-bar .panel-heading a[aria-expanded="true"] .fa,
+#navigation-bar .panel-heading a[aria-expanded="true"] .glyphicon {
+  color: #2563eb !important;
+}
+#navigation-bar .panel-heading a .fa-caret-down {
+  margin-left: auto !important;
+  font-size: 11px !important;
+  color: #cbd5e1 !important;
+  transition: transform 0.2s !important;
+  width: auto !important;
+  flex-shrink: 0 !important;
+}
+#navigation-bar .panel-heading a[aria-expanded="true"] .fa-caret-down {
+  transform: rotate(180deg) !important;
+  color: #2563eb !important;
+}
+
+#navigation-bar .panel-collapse {
+  border: none !important;
+  background: #f8fafc !important;
+}
+#navigation-bar .panel-collapse > div {
+  padding: 4px 8px 8px 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1px !important;
+}
+
+#navigation-bar .list-group-item {
+  border: none !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background 0.12s, color 0.12s !important;
+  text-decoration: none !important;
+  line-height: 1.3 !important;
+}
+#navigation-bar .list-group-item:hover {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+#navigation-bar .list-group-item.active,
+#navigation-bar .list-group-item:focus {
+  background: #2563eb !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  outline: none !important;
+}
+#navigation-bar .list-group-item.active .glyphicon {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+#navigation-bar .list-group-item .glyphicon {
+  font-size: 11px !important;
+  color: #cbd5e1 !important;
+  flex-shrink: 0 !important;
+  width: 14px !important;
+  text-align: center !important;
+}
+#navigation-bar .list-group-item:hover .glyphicon {
+  color: #2563eb !important;
+}
+
+.nav-profile-block {
+  background: linear-gradient(120deg, #1d4ed8 0%, #2563eb 100%);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+.nav-profile-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.nav-profile-id {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.nav-section-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 8px 0;
+}
+

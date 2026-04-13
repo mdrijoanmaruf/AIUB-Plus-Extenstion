@@ -5,28 +5,23 @@
   if (window.__aiubDropEnhanced) return;
   window.__aiubDropEnhanced = true;
 
-  /* ── XSS escape ── */
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ── Inject CSS ── */
   function injectCSS() {
     if (document.getElementById('aiub-drop-css')) return;
     const s = document.createElement('style');
     s.id = 'aiub-drop-css';
     s.textContent = `
-      /* ── Base font ── */
       .portal-body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
       }
 
-      /* ── Hide original alert ── */
       .alert.alert-warning { display: none !important; }
 
-      /* ── Drop page header ── */
       .drop-header {
         display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
         margin-bottom: 18px; padding-bottom: 14px; border-bottom: 2px solid #f1f5f9;
@@ -41,7 +36,6 @@
       .drop-refund-pct { font-size: 20px; font-weight: 800; color: #dc2626; line-height: 1; }
       .drop-refund-pct.good { color: #059669; }
 
-      /* ── Rules toggle ── */
       [data-target="#Rules"] .label.label-info {
         font-size: 12px !important; padding: 5px 16px !important; border-radius: 6px !important;
         background: #eff6ff !important; color: #1d4ed8 !important;
@@ -49,7 +43,6 @@
         cursor: pointer; letter-spacing: 0 !important;
       }
 
-      /* ── Rules table ── */
       #Rules { margin-top: 10px; }
       #Rules .table { border-collapse: collapse !important; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0 !important; }
       #Rules .table th {
@@ -60,7 +53,6 @@
       #Rules .table td { font-size: 12px !important; padding: 7px 14px !important; color: #475569 !important; border-color: #f1f5f9 !important; }
       #Rules .table tr:last-child td { color: #94a3b8 !important; font-style: italic; }
 
-      /* ── Student info table ── */
       [ng-controller="DropApplicationController2"] div[ng-show="ViewID==1"] > .table-bordered {
         border: none !important; background: transparent;
       }
@@ -73,7 +65,6 @@
         padding: 5px 10px !important; background: #f8fafc !important; height: auto !important;
       }
 
-      /* ── View History Button ── */
       [ng-controller="DropApplicationController2"] .btn.btn-info {
         font-size: 12px !important; font-weight: 600 !important;
         background: #eff6ff !important; color: #1d4ed8 !important;
@@ -81,7 +72,6 @@
         padding: 6px 16px !important; box-shadow: none !important;
       }
 
-      /* ── Course cards ── */
       [ng-controller="DropApplicationController2"] [ng-repeat].ng-scope {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -101,13 +91,11 @@
         align-items: center;
       }
 
-      /* Dropped card */
       [ng-controller="DropApplicationController2"] [ng-repeat].ng-scope:has(.col-md-2 span.ng-binding:not(.ng-hide)) {
         border-color: #fca5a5 !important;
         background: #fff5f5 !important;
       }
 
-      /* ── Course code ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-1 > span[style*="steelblue"] {
         color: #1e3a8a !important;
         font-family: 'Consolas', 'Cascadia Code', monospace !important;
@@ -119,7 +107,6 @@
         background: #fee2e2 !important; color: #9ca3af !important;
       }
 
-      /* ── Course name ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-6 > span[style*="slateblue"] {
         color: #0f172a !important;
         font-size: 13px !important; font-weight: 600 !important;
@@ -129,14 +116,12 @@
         color: #9ca3af !important; text-decoration: line-through;
       }
 
-      /* ── Schedule smalls ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-6 small.ng-binding {
         display: inline-block; margin: 3px 5px 0 0;
         font-size: 11px !important; color: #475569 !important;
         background: #f1f5f9; padding: 1px 7px; border-radius: 4px;
       }
 
-      /* ── Supervisor text ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-6 small:not(.ng-binding) {
         font-size: 11px !important; color: #94a3b8 !important;
       }
@@ -144,7 +129,6 @@
         color: #64748b;
       }
 
-      /* ── Dropped badge ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-2 span.ng-binding:not(.ng-hide) {
         display: inline-flex !important; align-items: center !important;
         background: #fee2e2 !important; color: #dc2626 !important;
@@ -152,13 +136,11 @@
         padding: 2px 8px !important; border-radius: 5px !important;
       }
 
-      /* ── Credits / enrollment cols ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-1.ng-binding {
         font-size: 11px !important; color: #64748b !important;
         font-family: 'Consolas', 'Cascadia Code', monospace !important;
       }
 
-      /* ── Drop button ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] a.btn.btn-danger {
         font-size: 11px !important; font-weight: 600 !important;
         background: #fee2e2 !important; color: #dc2626 !important;
@@ -170,13 +152,11 @@
         background: #fecaca !important; border-color: #f87171 !important;
       }
 
-      /* ── Not Allowed badge ── */
       [ng-controller="DropApplicationController2"] [ng-repeat] .label.label-warning {
         background: #fef9c3 !important; color: #854d0e !important;
         border-radius: 5px !important; font-size: 10px !important; padding: 3px 8px !important;
       }
 
-      /* ── Credits summary table ── */
       [ng-controller="DropApplicationController2"] table[ng-show="ViewID==1"] {
         border: none !important; margin-top: 6px !important;
       }
@@ -188,7 +168,6 @@
         font-weight: 600 !important; color: #334155 !important;
       }
 
-      /* ── Drop History ── */
       [ng-controller="DropApplicationController2"] h5.text-center {
         font-size: 13px !important; font-weight: 700 !important; color: #0f172a !important;
       }
@@ -205,7 +184,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── Insert page header ── */
   function insertHeader() {
     if (document.querySelector('.drop-header')) return;
 
@@ -238,7 +216,6 @@
     insertBefore.parentNode.insertBefore(header, insertBefore);
   }
 
-  /* ── Init (wait for Angular to render courses) ── */
   function init() {
     const courses = document.querySelectorAll(
       '[ng-controller="DropApplicationController2"] [ng-repeat].ng-scope'

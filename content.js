@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  // Prevent double-injection if the script runs twice
   if (window.__aiubFilterInjected) return;
   window.__aiubFilterInjected = true;
 
@@ -13,7 +12,6 @@
   let searchTimeout = null;
   let originalTablePanel = null;
 
-  // ── Routine Generator State ──────────────────────────────────
   let selectedSections = [];
   let clashMap = {};
 
@@ -30,10 +28,8 @@
   const courseColorCache = {};
   let courseColorIndex = 0;
 
-  // Static day list — always show these regardless of data
   const ALL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 
-  // ── Wait for FooTable to render ──────────────────────────────
   function waitForTable() {
     return new Promise((resolve, reject) => {
       let attempts = 0;
@@ -54,7 +50,6 @@
     });
   }
 
-  // ── Parse row elements into course objects ───────────────────
   function parseRowElements(rows) {
     const courses = [];
     rows.forEach(row => {
@@ -106,7 +101,6 @@
     return courses;
   }
 
-  // ── Resolve FooTable draw() which may return jQuery or native Promise ──
   function whenDrawDone(result) {
     return new Promise(function (resolve) {
       if (!result) { setTimeout(resolve, 600); return; }
@@ -116,18 +110,15 @@
     });
   }
 
-  // ── Extract all courses using FooTable API (world:MAIN gives direct access) ──
   async function getAllCourses() {
     const table = document.querySelector('table.footable');
     let courses = [];
 
     if (typeof FooTable !== 'undefined' && FooTable.get) {
-      // ── Method 1: ft.rows.all holds every row in memory regardless of page ──
       try {
         const ft = FooTable.get(table);
         if (ft && ft.rows && ft.rows.all && ft.rows.all.length > 0) {
           const hidden = [];
-          // Temporarily make hidden rows accessible for DOM parsing
           ft.rows.all.forEach(function (row) {
             const el = row.$el && row.$el[0];
             if (el && el.style.display === 'none') {
@@ -144,7 +135,6 @@
         console.warn('[AIUB Filter] rows.all failed:', e);
       }
 
-      // ── Method 2: expand FooTable pagination to render all rows in DOM ──
       try {
         const ft = FooTable.get(table);
         const paging = ft && ft.use && ft.use(FooTable.Paging);
@@ -155,7 +145,6 @@
           await whenDrawDone(ft.draw());
           courses = parseRowElements(table.querySelectorAll('tbody > tr'));
           console.log('[AIUB Filter] After expand: ' + courses.length + ' courses');
-          // Restore original pagination
           paging.size = origSize;
           paging.current = origCurrent;
           ft.draw();
@@ -166,18 +155,15 @@
       }
     }
 
-    // ── Fallback: parse whatever rows are currently in the DOM ──
     courses = parseRowElements(table.querySelectorAll('tbody > tr'));
     console.log('[AIUB Filter] DOM fallback: ' + courses.length + ' courses');
     return courses;
   }
 
-  // ── Get unique statuses from data ────────────────────────────
   function getUniqueStatuses(courses) {
     return [...new Set(courses.map(c => c.status))].filter(Boolean).sort();
   }
 
-  // ── Time select option builders (8 AM – 6 PM, :00/:10/…/:50) ──
   function buildHourOptions(placeholder) {
     let s = '<option value="">' + placeholder + '</option>';
     for (let h = 8; h <= 18; h++) {
@@ -194,7 +180,6 @@
     return s;
   }
 
-  // ── Show loading indicator while data is being fetched ────────
   function injectLoadingPanel() {
     if (document.getElementById('aiub-filter-panel')) return;
     const mainContent = document.getElementById('main-content') || document.body;
@@ -216,15 +201,12 @@
     else mainContent.appendChild(loader);
   }
 
-  // ── Build & inject the filter panel HTML ─────────────────────
   function injectFilterPanel(statuses) {
     const mainContent = document.getElementById('main-content') || document.body;
 
-    // Remove loading indicator if present
     const loader = document.getElementById('aiub-filter-panel');
     if (loader) loader.remove();
 
-    // Portal may use panel-primary or panel-default — try all
     originalTablePanel =
       mainContent.querySelector('.panel.panel-default') ||
       mainContent.querySelector('.panel.panel-primary') ||
@@ -307,14 +289,12 @@
       </div>
     `;
 
-    // Insert before the original course panel (or prepend to mainContent)
     if (originalPanel && originalPanel.parentNode === mainContent) {
       mainContent.insertBefore(filterPanel, originalPanel);
     } else {
       mainContent.insertBefore(filterPanel, mainContent.firstChild);
     }
 
-    // Create results container (hidden initially)
     const resultsContainer = document.createElement('div');
     resultsContainer.id = 'aiub-results-container';
     resultsContainer.style.display = 'none';
@@ -324,15 +304,12 @@
       filterPanel.insertAdjacentElement('afterend', resultsContainer);
     }
 
-    // Show total course count
     const totalBadge = document.getElementById('aiub-total-count');
     totalBadge.textContent = allCourses.length + ' total courses loaded';
 
-    // Attach event listeners
     attachFilterListeners();
   }
 
-  // ── Event listeners ──────────────────────────────────────────
   function attachFilterListeners() {
     document.getElementById('aiub-search').addEventListener('input', () => {
       clearTimeout(searchTimeout);
@@ -359,7 +336,6 @@
     document.getElementById('aiub-reset-btn').addEventListener('click', resetFilters);
   }
 
-  // ── Core filter logic ────────────────────────────────────────
   function applyFilters() {
     const searchVal = document.getElementById('aiub-search').value.trim().toLowerCase();
     const selectedStatuses = [...document.querySelectorAll('.aiub-status-btn.active')].map(b => b.dataset.status);
@@ -384,7 +360,6 @@
     }
 
     filteredCourses = allCourses.filter(course => {
-      // 1. Search filter (title or classId)
       if (searchVal) {
         const matchesTitle = course.title.toLowerCase().includes(searchVal);
         const matchesFullTitle = course.fullTitle.toLowerCase().includes(searchVal);
@@ -392,17 +367,14 @@
         if (!matchesTitle && !matchesFullTitle && !matchesId) return false;
       }
 
-      // 2. Status filter
       if (selectedStatuses.length > 0 && !selectedStatuses.includes(course.status)) return false;
 
-      // 3. Day filter (skip if course has no schedule data)
       if (selectedDays.length > 0 && course.timeSlots.length > 0) {
         const courseDays = course.timeSlots.map(ts => ts.day);
         const hasMatchingDay = selectedDays.some(d => courseDays.includes(d));
         if (!hasMatchingDay) return false;
       }
 
-      // 4. Time range filter (skip if course has no schedule data)
       if ((!isNaN(timeFrom) || !isNaN(timeTo)) && course.timeSlots.length > 0) {
         const hasMatchingTime = course.timeSlots.some(ts => {
           const startHour = parseTimeToHours(ts.startTime);
@@ -421,7 +393,6 @@
     renderFilteredResults();
   }
 
-  // ── Time parsing helper ──────────────────────────────────────
   function parseTimeToHours(timeStr) {
     if (!timeStr) return null;
     const match = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -437,7 +408,6 @@
     return hours + minutes / 60;
   }
 
-  // ── Time conversion: "08:30 AM" → minutes since midnight (510) ──
   function timeToMinutes(timeStr) {
     if (!timeStr) return null;
     const match = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -450,7 +420,6 @@
     return hours * 60 + minutes;
   }
 
-  // ── Check if two time slots overlap (strict < so back-to-back is OK) ──
   function timeSlotsOverlap(slot1, slot2) {
     if (slot1.day !== slot2.day) return false;
     const start1 = timeToMinutes(slot1.startTime);
@@ -461,7 +430,6 @@
     return (start1 < end2 && start2 < end1);
   }
 
-  // ── Check a course against all selected sections for clashes ──
   function checkTimeClash(newCourse) {
     for (const selected of selectedSections) {
       for (const newSlot of newCourse.timeSlots) {
@@ -481,7 +449,6 @@
     return { hasClash: false };
   }
 
-  // ── Recompute clash map for all courses ──
   function recomputeClashMap() {
     clashMap = {};
     allCourses.forEach(function (course) {
@@ -493,7 +460,6 @@
     });
   }
 
-  // ── Build a time signature for grouping equivalent sections ──
   function getTimeSignature(course) {
     if (!course.timeSlots || course.timeSlots.length === 0) return '';
     return course.timeSlots
@@ -502,7 +468,6 @@
       .join(';;');
   }
 
-  // ── Find and store linked sections (same course, same schedule) ──
   function autoSelectLinkedSections(course) {
     const timeSignature = getTimeSignature(course);
     const linkedSections = allCourses.filter(function (c) {
@@ -515,7 +480,6 @@
     });
   }
 
-  // ── Get color for a course title ──
   function getCourseColor(courseTitle) {
     if (!courseColorCache[courseTitle]) {
       courseColorCache[courseTitle] = ROUTINE_COLORS[courseColorIndex % ROUTINE_COLORS.length];
@@ -524,7 +488,6 @@
     return courseColorCache[courseTitle];
   }
 
-  // ── Handle selecting a section ──
   function handleSelectSection(classId) {
     const course = allCourses.find(function (c) { return c.classId === classId; });
     if (!course) return;
@@ -541,7 +504,6 @@
     renderSelectedCoursesPanel();
   }
 
-  // ── Handle removing a section ──
   function handleRemoveSection(classId) {
     const course = selectedSections.find(function (s) { return s.classId === classId; });
     if (!course) return;
@@ -553,7 +515,6 @@
     renderSelectedCoursesPanel();
   }
 
-  // ── Clear all selections ──
   function clearAllSelections() {
     selectedSections = [];
     clashMap = {};
@@ -564,7 +525,6 @@
     renderSelectedCoursesPanel();
   }
 
-  // ── Save to localStorage ──
   function saveSelectedSections() {
     try {
       localStorage.setItem('aiub_selectedSections', JSON.stringify(selectedSections));
@@ -574,7 +534,6 @@
     }
   }
 
-  // ── Load from localStorage ──
   function loadSelectedSections() {
     try {
       const saved = localStorage.getItem('aiub_selectedSections');
@@ -596,7 +555,6 @@
     }
   }
 
-  // ── Render filtered results table ────────────────────────────
   function renderFilteredResults() {
     const container = document.getElementById('aiub-results-container');
     const originalPanel = originalTablePanel;
@@ -657,7 +615,6 @@
     attachResultListeners(totalPages);
   }
 
-  // ── Render a single course row ───────────────────────────────
   function renderCourseRow(course) {
     const available = course.capacity - course.count;
     const isFull = available <= 0;
@@ -680,7 +637,6 @@
       '</span>'
     ).join('');
 
-    // ── Select button state ──
     let actionHtml = '';
     const isSelected = selectedSections.some(function (sel) { return sel.classId === course.classId; });
     const sameCoursePicked = selectedSections.some(function (sel) {
@@ -718,7 +674,6 @@
     `;
   }
 
-  // ── Pagination component ─────────────────────────────────────
   function renderPagination(totalPages) {
     let pages = '';
     const maxVisible = 5;
@@ -751,7 +706,6 @@
     `;
   }
 
-  // ── Result listeners (pagination + rows per page) ────────────
   function attachResultListeners(totalPages) {
     document.querySelectorAll('#aiub-results-container .pagination a').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -773,7 +727,6 @@
       });
     }
 
-    // ── Select button listeners ──
     document.querySelectorAll('.aiub-sel-pick, .aiub-sel-high').forEach(function (btn) {
       btn.addEventListener('click', function () {
         handleSelectSection(btn.dataset.classid);
@@ -781,7 +734,6 @@
     });
   }
 
-  // ── Selected Courses Panel ────────────────────────────────────
   function renderSelectedCoursesPanel() {
     let panel = document.getElementById('aiub-selected-panel');
 
@@ -858,7 +810,6 @@
     if (clearBtn) clearBtn.addEventListener('click', clearAllSelections);
   }
 
-  // ── Reset filters ────────────────────────────────────────────
   function resetFilters() {
     document.getElementById('aiub-search').value = '';
     document.querySelectorAll('.aiub-status-btn').forEach(btn => btn.classList.remove('active'));
@@ -873,7 +824,6 @@
     document.getElementById('aiub-to-m').value = '0';
     document.querySelectorAll('.aiub-day-btn.active').forEach(btn => btn.classList.remove('active'));
 
-    // Hide filtered results and show original portal table
     const container = document.getElementById('aiub-results-container');
     container.style.display = 'none';
     container.innerHTML = '';
@@ -887,7 +837,6 @@
     currentPage = 1;
   }
 
-  // ── Main initialization ──────────────────────────────────────
   async function init() {
     try {
       await waitForTable();
@@ -903,7 +852,6 @@
       const statuses = getUniqueStatuses(allCourses);
       injectFilterPanel(statuses);
 
-      // Restore saved selections from localStorage
       loadSelectedSections();
 
       console.log('[AIUB Filter] Filter panel injected');

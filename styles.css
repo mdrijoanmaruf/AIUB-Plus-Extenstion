@@ -2,7 +2,6 @@
    AIUB Course Filter — Extension Styles
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Filter Panel ───────────────────────────────────────────── */
 #aiub-filter-panel {
   margin-bottom: 22px;
   border: none !important;
@@ -218,7 +217,6 @@
 .aiub-status-btn.aiub-sb-purple.active { background: linear-gradient(135deg,#6a1b9a,#8e24aa); border-color:#6a1b9a; color:#fff; box-shadow:0 2px 7px rgba(106,27,154,0.30); }
 .aiub-status-btn.aiub-sb-grey.active   { background: linear-gradient(135deg,#546e7a,#607d8b); border-color:#546e7a; color:#fff; box-shadow:0 2px 7px rgba(84,110,122,0.30); }
 
-/* ── Results Panel ──────────────────────────────────────────── */
 #aiub-results-container { margin-bottom: 22px; }
 #aiub-results-container .panel {
   border: none !important;
@@ -396,7 +394,6 @@
   color: #9aabb8;
 }
 
-/* ── Select Buttons ──────────────────────────────────────────── */
 .aiub-select-btn {
   border: none;
   border-radius: 6px;
@@ -435,7 +432,6 @@
   cursor: default;
 }
 
-/* ── Selected Courses Panel ─────────────────────────────────── */
 #aiub-selected-panel {
   margin-bottom: 22px;
   border: none !important;
@@ -549,7 +545,6 @@
   background: rgba(255,255,255,0.26) !important;
 }
 
-/* ── Routine Panel ──────────────────────────────────────────── */
 #aiub-routine-container { margin-bottom: 22px; }
 .aiub-routine-panel {
   border: none !important;
@@ -575,7 +570,6 @@
   margin: 0;
 }
 
-/* ── Routine Grid ───────────────────────────────────────────── */
 .aiub-routine-grid {
   border: 1.5px solid #d4e3f5;
   border-radius: 12px;
@@ -668,7 +662,6 @@
 }
 .aiub-routine-empty p { margin: 4px 0; }
 
-/* ── High Count Indicators (35+) ────────────────────────────── */
 .aiub-count-high {
   background: #ffebee !important;
   color: #c62828 !important;
@@ -684,7 +677,6 @@
   background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%) !important;
 }
 
-/* ── Modal Overlay (Routine Popup) ──────────────────────────── */
 .aiub-modal-overlay {
   position: fixed;
   top: 0;

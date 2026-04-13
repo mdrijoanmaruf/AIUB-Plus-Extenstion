@@ -3,7 +3,6 @@
   if (window.__aiubCourseEnhanced) return;
   window.__aiubCourseEnhanced = true;
 
-  /* ── Grade colour map ─────────────────────────────────────────── */
   const GRADE_COLORS = {
     'A+': '#059669', 'A': '#10b981', 'B+': '#2563eb', 'B': '#3b82f6',
     'C+': '#d97706', 'C': '#f59e0b', 'D+': '#dc2626', 'D': '#ef4444',
@@ -11,7 +10,6 @@
   };
   function gradeColor(g) { return GRADE_COLORS[(g || '-').trim()] || '#6b7280'; }
 
-  /* ── Parse helpers ────────────────────────────────────────────── */
   function parseGradeScore(text) {
     const m = (text || '').trim().match(/^(\S+)\s*\(([^)]*)\)/);
     return m ? { grade: m[1], score: m[2] } : { grade: (text || '-').trim(), score: '' };
@@ -38,7 +36,6 @@
     }));
   }
 
-  /* ── Parse a .row with h4 or h6 ──────────────────────────────── */
   function parseRow(row) {
     const hEl = row.querySelector('h4, h6');
     if (!hEl) return null;
@@ -51,7 +48,6 @@
     return { name, meta: parseMeta(metaTxt), score, isH4: hEl.tagName === 'H4' };
   }
 
-  /* ── Parse one term (.margin-l5.list-group-item) ─────────────── */
   function parseTerm(termEl) {
     const bgRow = termEl.querySelector('.row.bg-info');
     if (!bgRow) return null;
@@ -90,13 +86,11 @@
     return { termName, termMeta, grade: gs.grade, score: gs.score, sections };
   }
 
-  /* ── CSS ──────────────────────────────────────────────────────── */
   const CSS = `<style id="car-style">
 .car-root-panel { border: none !important; box-shadow: none !important; }
 .car-root-panel > .panel-heading { display: none !important; }
 .car-root-panel > .panel-body { background: transparent !important; border: none !important; box-shadow: none !important; padding: 16px 4px !important; }
 
-/* Filter bar */
 .car-filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end; }
 .car-filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; }
 .car-filter-group.wide { flex: 2.5; }
@@ -111,7 +105,6 @@
 .car-select:focus { outline: none; border-color: #3b82f6; }
 .car-select:hover { border-color: #9ca3af; }
 
-/* Course card */
 .car-course-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%);
   border: 1.5px solid #bfdbfe; border-radius: 14px;
@@ -126,67 +119,125 @@
 .car-final-score { font-size: 12px; color: #9ca3af; margin-top: 2px; }
 .car-final-lbl { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Term cards - Midterm */
-.car-term-card { background: transparent; border: none; border-radius: 0; margin-bottom: 14px; overflow: visible; }
-.car-term-card.car-midterm { border: none; background: transparent; }
-.car-term-card.car-finalterm { border: none; background: transparent; }
+.car-term-card {
+  border-radius: 12px; margin-bottom: 18px; overflow: hidden;
+  border-left: 5px solid #94a3af; transition: all 0.15s;
+}
+.car-term-card.car-midterm {
+  background: linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%);
+  border: 1.5px solid #bfdbfe; border-left: 5px solid #2563eb;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+.car-term-card.car-midterm:hover {
+  border-color: #93c5fd; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+.car-term-card.car-finalterm {
+  background: linear-gradient(135deg, #fff7ed 0%, #fdf2f8 100%);
+  border: 1.5px solid #fbcfe8; border-left: 5px solid #ec4899;
+  box-shadow: 0 1px 3px rgba(236, 72, 153, 0.1);
+}
+.car-term-card.car-finalterm:hover {
+  border-color: #f472b6; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
+}
 
 .car-term-head {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 0;
-  cursor: pointer; user-select: none; background: transparent;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer; user-select: none; background: transparent; border-bottom: 1px solid transparent;
+  transition: background 0.12s;
 }
-.car-term-card.car-midterm .car-term-head { background: transparent; }
-.car-term-card.car-finalterm .car-term-head { background: transparent; }
-.car-term-head:hover { filter: brightness(0.98); }
-.car-term-name { font-size: 14px; font-weight: 600; color: #111827; }
-.car-term-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
-.car-term-right { display: flex; align-items: center; gap: 12px; }
+.car-term-card.car-midterm .car-term-head {
+  border-bottom: 1px solid #dbeafe;
+}
+.car-term-card.car-finalterm .car-term-head {
+  border-bottom: 1px solid #fbcfe8;
+}
+.car-term-head:hover { opacity: 0.85; }
+.car-term-label {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; padding: 3px 10px; border-radius: 5px; white-space: nowrap;
+  margin-right: 6px;
+}
+.car-term-card.car-midterm .car-term-label {
+  background: #dbeafe; color: #1d4ed8;
+}
+.car-term-card.car-finalterm .car-term-label {
+  background: #fbcfe8; color: #be185d;
+}
+.car-term-name { font-size: 15px; font-weight: 700; color: #0f172a; }
+.car-term-meta { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.car-term-right { display: flex; align-items: center; gap: 14px; }
 .car-term-score { font-size: 13px; color: #6b7280; }
-.car-term-grade { font-size: 20px; font-weight: 700; }
+.car-term-grade { font-size: 24px; font-weight: 800; line-height: 1; }
 .car-term-card.car-midterm .car-term-grade { color: #1d4ed8; }
 .car-term-card.car-finalterm .car-term-grade { color: #be185d; }
-.car-term-chevron { font-size: 10px; color: #9ca3af; transition: transform 0.2s; }
+.car-term-chevron {
+  font-size: 11px; transition: transform 0.2s;
+  padding: 6px 8px; border-radius: 5px;
+}
+.car-term-card.car-midterm .car-term-chevron { color: #3b82f6; }
+.car-term-card.car-finalterm .car-term-chevron { color: #ec4899; }
 .car-term-card.car-open .car-term-chevron { transform: rotate(180deg); }
-.car-term-body { display: none; padding: 0; }
+.car-term-body { display: none; padding: 0 18px 16px 18px; }
 .car-term-card.car-open .car-term-body { display: block; }
 
-/* Section (Theory/Lab) cards - flat */
-.car-section-card { margin: 0; padding: 0; border: none; border-radius: 0; overflow: visible; }
+.car-section-card {
+  margin: 0; padding: 0; border: none; border-radius: 6px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.12s;
+}
+.car-section-card:not(:last-child) { margin-bottom: 10px; }
 .car-section-head {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 0; background: transparent; cursor: pointer; user-select: none;
-  border: none;
+  padding: 10px 14px; background: transparent; cursor: pointer; user-select: none;
+  border: none; transition: background 0.12s;
 }
-.car-term-card.car-midterm .car-section-head { border: none; background: transparent; }
-.car-term-card.car-finalterm .car-section-head { border: none; background: transparent; }
-.car-section-head:hover { opacity: 0.8; }
-.car-section-name { font-size: 13px; font-weight: 600; color: #374151; }
+.car-section-card:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+.car-term-card.car-midterm .car-section-card:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+.car-term-card.car-finalterm .car-section-card:hover {
+  background: rgba(236, 72, 153, 0.08);
+}
+.car-section-name { font-size: 13px; font-weight: 600; color: #0f172a; }
 .car-section-meta { font-size: 11px; color: #9ca3af; margin-top: 2px; }
-.car-section-right { display: flex; align-items: center; gap: 8px; }
-.car-section-score { font-size: 15px; font-weight: 700; }
-.car-term-card.car-midterm .car-section-score { color: #1d4ed8; }
-.car-term-card.car-finalterm .car-section-score { color: #be185d; }
-.car-section-chevron { font-size: 10px; color: #9ca3af; transition: transform 0.2s; }
+.car-section-right { display: flex; align-items: center; gap: 10px; }
+.car-section-score { font-size: 16px; font-weight: 700; }
+.car-term-card.car-midterm .car-section-score { color: #2563eb; }
+.car-term-card.car-finalterm .car-section-score { color: #db2777; }
+.car-section-chevron {
+  font-size: 11px; transition: transform 0.2s;
+  padding: 4px 6px; border-radius: 4px;
+}
+.car-term-card.car-midterm .car-section-chevron { color: #60a5fa; }
+.car-term-card.car-finalterm .car-section-chevron { color: #f472b6; }
 .car-section-card.car-open .car-section-chevron { transform: rotate(180deg); }
-.car-section-body { display: none; }
-.car-section-card.car-open .car-section-body { display: block; }
+.car-section-body { display: none; padding: 0; }
+.car-section-card.car-open .car-section-body {
+  display: block; padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.3);
+}
 
-/* Sub-item rows */
-.car-sub-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border: none; }
+.car-sub-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 10px; border: none; border-radius: 4px; background: rgba(255, 255, 255, 0.2);
+  transition: background 0.1s;
+}
+.car-sub-row:not(:last-child) { margin-bottom: 3px; }
 .car-sub-row:first-child { border-top: none; }
-.car-sub-row:hover { opacity: 0.85; }
-.car-term-card.car-midterm .car-sub-row:hover { opacity: 0.9; }
-.car-term-card.car-finalterm .car-sub-row:hover { opacity: 0.9; }
-.car-sub-name { font-size: 12px; font-weight: 500; color: #374151; }
-.car-sub-meta { font-size: 11px; color: #9ca3af; margin-top: 1px; }
-.car-sub-score { font-size: 13px; font-weight: 600; white-space: nowrap; padding-left: 8px; }
+.car-sub-row:hover { background: rgba(255, 255, 255, 0.5); }
+.car-term-card.car-midterm .car-sub-row:hover { background: rgba(59, 130, 246, 0.12); }
+.car-term-card.car-finalterm .car-sub-row:hover { background: rgba(236, 72, 153, 0.12); }
+.car-sub-name { font-size: 12px; font-weight: 500; color: #1f2937; }
+.car-sub-meta { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.car-sub-score { font-size: 13px; font-weight: 700; white-space: nowrap; padding-left: 8px; }
 .car-term-card.car-midterm .car-sub-score { color: #2563eb; }
 .car-term-card.car-finalterm .car-sub-score { color: #db2777; }
-.car-empty { color: #9ca3af; font-style: italic; font-size: 12px; padding: 12px 14px; }
+.car-empty { color: #9ca3af; font-style: italic; font-size: 12px; padding: 14px 12px; text-align: center; }
 </style>`;
 
-  /* ── Build HTML ───────────────────────────────────────────────── */
   function buildSelectOpts(opts) {
     return opts.map(o =>
       `<option value="${o.value}"${o.selected ? ' selected' : ''}>${escHtml(o.text)}</option>`
@@ -234,12 +285,16 @@
     const gs = term;
     const isMidterm = term.termName.toLowerCase().includes('midterm');
     const termClass = isMidterm ? 'car-midterm' : 'car-finalterm';
+    const termLabel = isMidterm ? 'Midterm' : 'Final';
     return `
 <div class="car-term-card ${termClass} car-open" id="car-term-${idx}">
   <div class="car-term-head">
-    <div>
-      <div class="car-term-name">${escHtml(term.termName)}</div>
-      ${term.termMeta.total ? `<div class="car-term-meta">${metaLine(term.termMeta)}</div>` : ''}
+    <div style="display: flex; align-items: center;">
+      <span class="car-term-label">${termLabel}</span>
+      <div>
+        <div class="car-term-name">${escHtml(term.termName)}</div>
+        ${term.termMeta.total ? `<div class="car-term-meta">${metaLine(term.termMeta)}</div>` : ''}
+      </div>
     </div>
     <div class="car-term-right">
       ${gs.score && gs.score !== '-' ? `<span class="car-term-score">${escHtml(gs.score)}</span>` : ''}
@@ -251,7 +306,6 @@
 </div>`;
   }
 
-  /* ── Main enhance ─────────────────────────────────────────────── */
   function enhance() {
     const panelBody = document.querySelector('#main-content .panel-body');
     if (!panelBody) return;
@@ -266,7 +320,6 @@
     const activeItem = listGroup.querySelector('.list-group-item.active');
     if (!activeItem) return;
 
-    /* Course header */
     const courseName     = activeItem.querySelector('label')?.textContent?.trim() || '';
     const courseMetaTxt  = activeItem.querySelector('em')?.textContent?.trim() || '';
     const courseMeta     = parseMeta(courseMetaTxt);
@@ -279,15 +332,12 @@
     const finalGradeRaw = activeItem.querySelector('.col-md-4 h4, .col-sm-4 h4')?.textContent?.trim() || '-';
     const finalGs = parseGradeScore(finalGradeRaw);
 
-    /* Term sections */
     const termEls = listGroup.querySelectorAll('.list-group-item:not(.active) .margin-l5.list-group-item');
     const terms   = Array.from(termEls).map(parseTerm).filter(Boolean);
 
-    /* Dropdown data */
     const sectionOpts  = selectOptions(sectionDdEl);
     const semesterOpts = selectOptions(semesterDdEl);
 
-    /* Build */
     const filterBar = `
 <div class="car-filter-bar">
   <div class="car-filter-group wide">
@@ -318,11 +368,9 @@
 
     panelBody.innerHTML = CSS + filterBar + courseCard + termsHTML;
 
-    /* Sidebar fix */
     const panel = panelBody.closest('.panel');
     if (panel) panel.classList.add('car-root-panel');
 
-    /* Re-wire dropdowns */
     document.getElementById('car-section-dd').addEventListener('change', function () {
       window.location.href = this.value;
     });
@@ -330,7 +378,6 @@
       window.location.href = this.value;
     });
 
-    /* Collapsibles via event delegation */
     panelBody.addEventListener('click', e => {
       const termHead = e.target.closest('.car-term-head');
       if (termHead) {
@@ -344,7 +391,6 @@
     });
   }
 
-  /* ── Boot ─────────────────────────────────────────────────────── */
   function tryEnhance() {
     const listGroup = document.querySelector('#main-content .panel-body .list-group');
     if (listGroup && listGroup.querySelector('.list-group-item.active')) {

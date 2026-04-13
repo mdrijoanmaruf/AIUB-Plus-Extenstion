@@ -5,7 +5,6 @@
   if (window.__aiubSemGradeEnhanced) return;
   window.__aiubSemGradeEnhanced = true;
 
-  /* ── Grade colour map ────────────────────────────────────────── */
   const GRADE_BG = {
     'A+': '#059669', 'A':  '#10b981',
     'B+': '#2563eb', 'B':  '#3b82f6',
@@ -15,7 +14,6 @@
     '-':  '#7c3aed',
   };
 
-  /* ── XSS escape ──────────────────────────────────────────────── */
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -24,7 +22,6 @@
       .replace(/"/g, '&quot;');
   }
 
-  /* ── GPA colour ──────────────────────────────────────────────── */
   function gpaColor(v) {
     const n = parseFloat(v);
     if (isNaN(n) || n === 0) return '#64748b';
@@ -34,19 +31,16 @@
     return '#dc2626';
   }
 
-  /* ── Inject CSS ──────────────────────────────────────────────── */
   function injectCSS() {
     if (document.getElementById('aiub-sgr-css')) return;
     const s = document.createElement('style');
     s.id = 'aiub-sgr-css';
     s.textContent = `
-      /* Scoped panel reset — preserves sidebar */
       .sgr-root-panel > .panel-heading { display: none !important; }
       .sgr-root-panel { box-shadow: none !important; border: none !important;
         background: transparent !important; margin-bottom: 0 !important; }
       .sgr-root-panel > .panel-body { padding: 0 !important; background: transparent !important; }
 
-      /* ── Root card ── */
       .grade-report {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
         font-size: 13px; color: #1e293b;
@@ -55,14 +49,12 @@
         box-shadow: none;
       }
 
-      /* ── Top bar ── */
       .sgr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:14px; border-bottom:2px solid #f1f5f9; }
       .sgr-title { font-size:16px; font-weight:700; color:#0f172a; letter-spacing:-.3px; margin:0; padding:0; }
       .sgr-title span { color:#2563eb; }
       .sgr-print { font-size:11px; font-weight:600; color:#475569; text-decoration:none; border:1px solid #cbd5e1; border-radius:6px; padding:5px 13px; background:#f8fafc; transition:background .15s,color .15s,border-color .15s; }
       .sgr-print:hover { background:#e0e7ff; color:#1d4ed8; border-color:#a5b4fc; text-decoration:none; }
 
-      /* ── Info grid ── */
       .sgr-info { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px; }
       .sgr-info-cell { padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; cursor:default; transition:box-shadow .15s,border-color .15s; }
       .sgr-info-cell:hover { box-shadow:0 2px 8px rgba(37,99,235,.08); border-color:#bfdbfe; }
@@ -70,7 +62,6 @@
       .sgr-info-val { font-size:13px; color:#0f172a; font-weight:500; }
       .sgr-info-val.cgpa { font-size:26px; font-weight:800; color:#059669; line-height:1.1; }
 
-      /* ── Semester card ── */
       .sgr-sem-card { border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; margin-bottom:12px; }
       .sgr-sem-card--active { border-color:#6ee7b7; }
 
@@ -95,11 +86,9 @@
       .sgr-sem-toggle { font-size:11px; color:#94a3b8; display:inline-block; transition:transform .2s; width:14px; text-align:center; flex-shrink:0; }
       .sgr-sem-card.collapsed .sgr-sem-toggle { transform:rotate(-90deg); }
 
-      /* ── Collapsible body ── */
       .sgr-sem-body { display:block; }
       .sgr-sem-card.collapsed .sgr-sem-body { display:none; }
 
-      /* ── Table ── */
       .sgr-tbl-wrap { overflow-x:auto; }
       .sgr-tbl { width:100%; border-collapse:collapse; font-size:13px; min-width:540px; }
       .sgr-tbl th {
@@ -114,12 +103,10 @@
       .sgr-tbl tbody tr:nth-child(even) td { background:#fafbfd; }
       .sgr-tbl tbody tr:hover td { background:#eff6ff !important; }
 
-      /* ── Row states ── */
       tr.sgr-row-ong  > td { background:#f5f3ff !important; }
       tr.sgr-row-wdn  > td { background:#fff5f5 !important; }
       tr.sgr-row-fail > td { background:#fff7ed !important; }
 
-      /* ── Code + name ── */
       .sgr-code { font-family:'Consolas','Cascadia Code','Courier New',monospace; font-size:12px; font-weight:600; color:#1e3a8a; white-space:nowrap; }
       tr.sgr-row-ong  .sgr-code { color:#6d28d9; }
       tr.sgr-row-wdn  .sgr-code { color:#6b7280; }
@@ -127,28 +114,23 @@
       tr.sgr-row-wdn  .sgr-name { color:#94a3b8; text-decoration:line-through; }
       .sgr-num { font-family:'Consolas','Cascadia Code',monospace; font-size:12px; color:#475569; }
 
-      /* ── Grade pills ── */
       .sgr-gp { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; color:#059669; white-space:nowrap; letter-spacing:.3px; }
       .sgr-gp-nd { font-size:12px; color:#cbd5e1; }
 
-      /* ── Mini grade pills (Mid / Final columns) ── */
       .sgr-mini { display:inline-block; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:700; color:#059669; white-space:nowrap; }
       .sgr-mini-nd { color:#cbd5e1; font-size:11px; }
 
-      /* ── Status badges ── */
       .sgr-sts { display:inline-block; padding:2px 8px; border-radius:5px; font-size:10px; font-weight:700; white-space:nowrap; }
       .sgr-sts-ok   { background:#dcfce7; color:#166534; }
       .sgr-sts-ong  { background:#ede9fe; color:#5b21b6; }
       .sgr-sts-wdn  { background:#fee2e2; color:#991b1b; }
       .sgr-sts-fail { background:#ffedd5; color:#9a3412; }
 
-      /* ── Summary bar ── */
       .sgr-sum-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#e2e8f0; border-top:1px solid #e2e8f0; }
       .sgr-sum-item { background:#f8fafc; padding:9px 12px; text-align:center; }
       .sgr-sum-lbl { font-size:9px; text-transform:uppercase; letter-spacing:.7px; color:#94a3b8; font-weight:600; margin-bottom:4px; }
       .sgr-sum-val { font-size:16px; font-weight:800; color:#1e293b; display:block; line-height:1.2; }
 
-      /* ── Legend ── */
       .sgr-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:18px; padding-top:12px; border-top:1px solid #f1f5f9; font-size:11px; color:#64748b; }
       .sgr-legend span { display:flex; align-items:center; gap:6px; }
       .sgr-legend-dot { display:inline-block; width:9px; height:9px; border-radius:50%; flex-shrink:0; }
@@ -163,7 +145,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── Parse student info table ────────────────────────────────── */
   function parseInfo(tbl) {
     const items = [];
     tbl.querySelectorAll('tr').forEach(tr => {
@@ -174,7 +155,6 @@
     return items;
   }
 
-  /* ── Parse semesters from grade table ───────────────────────── */
   function parseSemesters(tbl) {
     const sems = [];
     let cur = null;
@@ -183,10 +163,8 @@
       const tds = [...tr.querySelectorAll('td')];
       if (!tds.length) return;
 
-      /* Header row */
       if (tds[0].textContent.trim() === 'Class ID') return;
 
-      /* Semester label row: single <td colspan="12"> */
       if (tds.length === 1 && tds[0].getAttribute('colspan') === '12') {
         if (cur) sems.push(cur);
         const raw = (tds[0].querySelector('label') || tds[0]).textContent.trim();
@@ -194,7 +172,6 @@
         return;
       }
 
-      /* Summary row: first td has colspan="6" */
       if (tds[0].getAttribute('colspan') === '6' && cur) {
         cur.summary = {
           tgp:  tds[1]?.textContent.trim() || '',
@@ -205,7 +182,6 @@
         return;
       }
 
-      /* Course row: 12 individual tds */
       if (cur && tds.length >= 11) {
         const fg  = tds[5].textContent.trim();
         const sts = tds[10].textContent.trim();
@@ -240,7 +216,6 @@
     return sems;
   }
 
-  /* ── Helpers ─────────────────────────────────────────────────── */
   function gradePill(fg) {
     if (!fg || fg === '') return '<span class="sgr-gp-nd">—</span>';
     if (fg === '-') return '<span class="sgr-gp" style="color:#7c3aed">Ongoing</span>';
@@ -264,7 +239,6 @@
     return map[state] || map.done;
   }
 
-  /* ── Info block ──────────────────────────────────────────────── */
   function infoHTML(items, printHref) {
     const cells = items.map(({ k, v }) =>
       `<div class="sgr-info-cell">
@@ -281,7 +255,6 @@
       <div class="sgr-info">${cells}</div>`;
   }
 
-  /* ── Semester card ───────────────────────────────────────────── */
   function semesterHTML(sem) {
     const isActive = sem.courses.some(c => c.state === 'ong');
 
@@ -353,12 +326,10 @@
       </div>`;
   }
 
-  /* ── Enhance ─────────────────────────────────────────────────── */
   function enhance() {
     const gr = document.querySelector('.grade-report');
     if (!gr) return;
 
-    /* Scope panel reset to only this panel — sidebar is safe */
     const rootPanel = gr.closest('.panel');
     if (rootPanel) rootPanel.classList.add('sgr-root-panel');
 
@@ -383,14 +354,12 @@
 
     gr.innerHTML = html;
 
-    /* Collapse toggle via event delegation — no inline handlers */
     gr.addEventListener('click', e => {
       const head = e.target.closest('.sgr-sem-head');
       if (head) head.closest('.sgr-sem-card').classList.toggle('collapsed');
     });
   }
 
-  /* ── Init ────────────────────────────────────────────────────── */
   function init() {
     if (!document.querySelector('.grade-report')) {
       setTimeout(init, 400);

@@ -3,7 +3,6 @@
   if (window.__aiubScheduleEnhanced) return;
   window.__aiubScheduleEnhanced = true;
 
-  /* -- Helpers -------------------------------------------------- */
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
@@ -58,9 +57,19 @@
     return s + 's';
   }
 
-  /* -- Timer update --------------------------------------------- */
+  function getGreeting() {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
   function updateTimers() {
     const now = Date.now();
+    const clockEl = document.getElementById('sched-live-clock');
+    if (clockEl) {
+      clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
     document.querySelectorAll('.sched-timer[data-start]').forEach(el => {
       const start = parseInt(el.dataset.start);
       const end   = parseInt(el.dataset.end);
@@ -84,7 +93,6 @@
     });
   }
 
-  /* -- Main enhance --------------------------------------------- */
   function enhance() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
@@ -97,13 +105,24 @@
     });
   }
 
-  /* -- Schedule enhancement ------------------------------------- */
   function enhanceSchedule(panel) {
     const table = panel.querySelector('.scheduleTable');
     if (!table) return;
 
-    /* Section heading above */
+    const now     = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     table.insertAdjacentHTML('beforebegin',
+      '<div class="intro-banner">' +
+        '<div class="intro-banner-left">' +
+          '<p class="intro-greeting">' + escHtml(getGreeting()) + '</p>' +
+          '<span class="intro-date">' + escHtml(dateStr) + '</span>' +
+        '</div>' +
+        '<div class="intro-banner-badge">' +
+          '<span class="intro-banner-badge-label">Current Time</span>' +
+          '<span class="intro-banner-badge-value" id="sched-live-clock">' + escHtml(timeStr) + '</span>' +
+        '</div>' +
+      '</div>' +
       '<div class="sched-section-head">Class <span>Schedule</span></div>'
     );
 
@@ -114,7 +133,6 @@
       const isTomorrow = /^tomorrow$/i.test(dayText);
       const date       = getDateForLabel(dayText);
 
-      /* Collect portal entry data before touching the DOM */
       const entries = [];
       row.querySelectorAll('.col-md-10 > .col-md-6').forEach(entry => {
         const link = entry.querySelector('a');
@@ -129,7 +147,6 @@
         });
       });
 
-      /* Build day group card */
       const groupClass = 'sched-day-group' +
         (isToday    ? ' sched-day-today'    : '') +
         (isTomorrow ? ' sched-day-tomorrow' : '');
@@ -144,7 +161,6 @@
       const group = document.createElement('div');
       group.className = groupClass;
 
-      /* Day header */
       group.innerHTML =
         '<div class="sched-day-header">' +
           '<span class="sched-day-badge">' +
@@ -155,7 +171,6 @@
           '<span class="sched-day-count">' + escHtml(countText) + '</span>' +
         '</div>';
 
-      /* Body — cards or no-class message */
       if (entries.length === 0) {
         const noDiv = document.createElement('div');
         noDiv.className = 'sched-no-class';
@@ -206,7 +221,6 @@
         group.appendChild(wrap);
       }
 
-      /* Replace original Bootstrap row */
       row.parentNode.insertBefore(group, row);
       row.classList.add('sched-original-row');
     });
@@ -215,7 +229,6 @@
     setInterval(updateTimers, 1000);
   }
 
-  /* -- Boot ----------------------------------------------------- */
   function tryEnhance() {
     if (document.getElementById('main-content')) {
       enhance();

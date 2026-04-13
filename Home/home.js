@@ -1,9 +1,8 @@
-﻿(function () {
+(function () {
   'use strict';
   if (window.__aiubHomeEnhanced) return;
   window.__aiubHomeEnhanced = true;
 
-  /* -- Helpers -------------------------------------------------- */
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
@@ -26,7 +25,6 @@
     return 'Good Evening';
   }
 
-  /* -- Time / Date helpers -------------------------------------- */
   function getDateForLabel(text) {
     text = text.trim();
     const now = new Date();
@@ -72,7 +70,6 @@
     return s + 's';
   }
 
-  /* -- Timer update --------------------------------------------- */
   function updateTimers() {
     const now = Date.now();
     document.querySelectorAll('.hom-timer[data-start]').forEach(el => {
@@ -94,21 +91,17 @@
     });
   }
 
-  /* -- CSS ------------------------------------------------------ */
   const CSS = `<style id="hom-style">
 
-/* ── Root panel reset ─────────────────────────────────────────── */
 .hom-root-panel { border: none !important; box-shadow: none !important; }
 .hom-root-panel > .panel-heading { display: none !important; }
 .hom-root-panel > .panel-body { background: transparent !important; border: none !important; padding: 16px 4px !important; }
 
-/* ── Page header ──────────────────────────────────────────────── */
 .hom-page-header { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 2px solid #f1f5f9; }
 .hom-page-title { font-size: 22px; font-weight: 700; color: #111827; margin: 0 0 3px; }
 .hom-page-title span { color: #2563eb; }
 .hom-page-sub { font-size: 13px; color: #6b7280; margin: 0; }
 
-/* ── Alerts ───────────────────────────────────────────────────── */
 #main-content .alert { border: none !important; border-radius: 10px !important; font-size: 13px !important; padding: 12px 16px !important; box-shadow: 0 1px 4px rgba(0,0,0,.05) !important; margin-bottom: 14px !important; }
 #main-content .alert-success { background: #f0fdf4 !important; color: #166534 !important; border-left: 4px solid #22c55e !important; }
 #main-content .alert-success a { color: #166534 !important; }
@@ -117,7 +110,6 @@
 #main-content .alert-success .btn-primary { background: linear-gradient(135deg,#1d4ed8,#3b82f6) !important; border: none !important; border-radius: 8px !important; font-weight: 600 !important; }
 #main-content .alert-warning { background: #fffbeb !important; color: #92400e !important; border-left: 4px solid #f59e0b !important; }
 
-/* ── Action buttons panel ─────────────────────────────────────── */
 .hom-actions { border: none !important; box-shadow: none !important; background: transparent !important; margin-bottom: 14px !important; }
 .hom-actions > .panel-body { padding: 0 !important; }
 .hom-actions .text-center { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -126,28 +118,23 @@
 .hom-actions .btn-danger { background: linear-gradient(135deg,#dc2626,#ef4444) !important; color: #fff !important; }
 .hom-actions .btn-info   { background: linear-gradient(135deg,#0284c7,#38bdf8) !important; color: #fff !important; }
 
-/* ── Section heading shared ───────────────────────────────────── */
 .hom-section-head { font-size: 16px; font-weight: 700; color: #0f172a; letter-spacing: -.3px; margin: 0 0 12px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 .hom-section-head span { color: #2563eb; }
 
-/* ── Schedule panel ───────────────────────────────────────────── */
 .hom-schedule-panel { border: none !important; box-shadow: none !important; margin-bottom: 20px !important; }
 .hom-schedule-panel > .panel-heading { display: none !important; }
 .hom-schedule-panel > .panel-body { padding: 0 !important; border: none !important; background: transparent !important; }
 
-/* Day rows */
 .hom-schedule-panel .scheduleTable > .row { border: none !important; margin-bottom: 16px; }
 .hom-day-label-col { margin-bottom: 8px; }
 .hom-day-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 999px; background: #f1f5f9; color: #475569; text-transform: uppercase; letter-spacing: 0.4px; }
 .hom-day-today   .hom-day-badge { background: #1d4ed8; color: #fff; }
 .hom-day-tomorrow .hom-day-badge { background: #7c3aed; color: #fff; }
 
-/* Override Bootstrap column widths inside schedule */
 .hom-schedule-panel .scheduleTable .col-md-2 { width: auto !important; float: none !important; padding: 0 0 6px !important; }
 .hom-schedule-panel .scheduleTable .col-md-10 { width: 100% !important; float: none !important; display: flex !important; flex-wrap: wrap !important; gap: 10px !important; padding: 0 !important; }
 .hom-schedule-panel .scheduleTable .col-md-6 { width: auto !important; float: none !important; }
 
-/* Class entry card */
 .hom-class-entry {
   flex: 1; min-width: 230px; max-width: 380px;
   background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;
@@ -165,17 +152,14 @@
 .hom-class-entry > .hom-time-row label { font-size: 12px; font-weight: 500; color: #4b5563; margin: 0; }
 .hom-class-entry > .hom-room-row { font-size: 11px; color: #9ca3af; margin-bottom: 0; }
 
-/* Hide original portal info div (we rebuild it) */
 .hom-class-entry > .hom-original-info { display: none !important; }
 
-/* No-class entry */
 .hom-schedule-panel .scheduleTable .col-md-10 > .col-md-6:not(.hom-class-entry) {
   min-width: auto !important; flex: 0 0 auto !important;
   font-size: 13px !important; color: #9ca3af !important; font-style: italic !important;
   padding: 8px 14px !important; background: none !important; border: none !important;
 }
 
-/* ── Timer badge ──────────────────────────────────────────────── */
 .hom-timer { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; margin-top: 7px; }
 .hom-timer-upcoming { background: #dbeafe; color: #1d4ed8; }
 .hom-timer-active   { background: #dcfce7; color: #166534; animation: hom-pulse 2s infinite; }
@@ -186,7 +170,6 @@
 .hom-timer-ended    .hom-timer-dot { background: #9ca3af; }
 @keyframes hom-pulse { 0%,100%{opacity:1} 50%{opacity:.8} }
 
-/* ── Registration panel ───────────────────────────────────────── */
 .hom-reg-panel { border: none !important; box-shadow: none !important; }
 .hom-reg-panel > .panel-heading { background: transparent !important; border: none !important; padding: 0 !important; margin-bottom: 12px !important; }
 .hom-reg-panel > .panel-heading .row { display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 8px !important; margin: 0 !important; }
@@ -201,7 +184,6 @@
 }
 .hom-reg-panel #SemesterDropDown:focus { border-color: #93c5fd !important; box-shadow: 0 0 0 3px rgba(59,130,246,.1) !important; }
 
-/* Course cards */
 .StudentCourseList .panel.panel-primary { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; overflow: hidden !important; box-shadow: 0 1px 4px rgba(0,0,0,.04) !important; transition: border-color .15s, box-shadow .15s !important; }
 .StudentCourseList .panel.panel-primary:hover { border-color: #bfdbfe !important; box-shadow: 0 2px 8px rgba(37,99,235,.08) !important; }
 .StudentCourseList .panel-primary > .panel-heading { display: none !important; }
@@ -214,7 +196,6 @@
 .StudentCourseList .panel-footer a { color: #4b5563 !important; font-size: 12px !important; font-weight: 500 !important; text-decoration: none !important; margin-right: 12px; }
 .StudentCourseList .panel-footer a:hover { color: #2563eb !important; }
 
-/* ── Mobile ───────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .hom-schedule-panel .scheduleTable .col-md-10 { flex-direction: column !important; }
   .hom-class-entry { min-width: auto !important; max-width: none !important; }
@@ -222,14 +203,12 @@
 }
 </style>`;
 
-  /* -- Main enhance --------------------------------------------- */
   function enhance() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
 
     document.head.insertAdjacentHTML('beforeend', CSS);
 
-    /* Page header */
     const contentWrap = mainContent.querySelector('.row > .col-sm-12') ||
                         mainContent.querySelector('.row > .col-xs-12') ||
                         mainContent.querySelector('.row > [class*="col-"]');
@@ -247,14 +226,12 @@
       );
     }
 
-    /* Action buttons panel */
     const regBtn = mainContent.querySelector('.text-center .btn-danger');
     if (regBtn) {
       const panel = regBtn.closest('.panel');
       if (panel) panel.classList.add('hom-actions');
     }
 
-    /* Schedule + Registration panels */
     mainContent.querySelectorAll('.panel-heading .panel-title').forEach(title => {
       const txt = title.textContent.trim();
       if (txt === 'Class Schedule') {
@@ -267,24 +244,20 @@
     });
   }
 
-  /* -- Schedule enhancement ------------------------------------- */
   function enhanceSchedule(panel) {
     const table = panel.querySelector('.scheduleTable');
     if (!table) return;
 
-    /* Inject a section heading above the schedule table */
     table.insertAdjacentHTML('beforebegin',
       '<div class="hom-section-head">Class <span>Schedule</span></div>'
     );
 
     table.querySelectorAll(':scope > .row').forEach(row => {
-      /* Day label */
       const dayLabelEl = row.querySelector('.col-md-2 label, .col-xs-12 label');
       const dayText = dayLabelEl ? dayLabelEl.textContent.trim() : '';
       if (/^today$/i.test(dayText)) row.classList.add('hom-day-today');
       else if (/^tomorrow$/i.test(dayText)) row.classList.add('hom-day-tomorrow');
 
-      /* Wrap label in styled badge */
       if (dayLabelEl) {
         dayLabelEl.outerHTML = '<span class="hom-day-badge">' + escHtml(dayText) + '</span>';
       }
@@ -296,14 +269,12 @@
         if (!link) return;
         entry.classList.add('hom-class-entry');
 
-        /* Read time + room from existing portal div */
         const infoDiv = entry.querySelector('div');
         if (!infoDiv) return;
         const labels = infoDiv.querySelectorAll('label');
         const timeStr = labels[0] ? labels[0].textContent.trim() : '';
         const roomStr = labels[1] ? labels[1].textContent.trim() : '';
 
-        /* Hide original info div, inject clean rows */
         infoDiv.classList.add('hom-original-info');
 
         if (timeStr) {
@@ -320,7 +291,6 @@
           );
         }
 
-        /* Timer */
         const timeRange = parseTimeRange(timeStr);
         if (date && timeRange) {
           const startDT = new Date(date);
@@ -342,7 +312,6 @@
     setInterval(updateTimers, 1000);
   }
 
-  /* -- Boot ----------------------------------------------------- */
   function tryEnhance() {
     if (document.getElementById('main-content')) {
       enhance();

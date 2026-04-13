@@ -3,7 +3,6 @@
   if (window.__aiubRegHomeEnhanced) return;
   window.__aiubRegHomeEnhanced = true;
 
-  /* -- Link external CSS --------------------------------------------- */
   function loadExternalCSS() {
     if (document.getElementById('reghome-style')) return;
     const link = document.createElement('link');
@@ -13,7 +12,6 @@
     document.head.appendChild(link);
   }
 
-  /* -- Main enhance --------------------------------------------- */
   function enhance() {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
@@ -26,7 +24,6 @@
         const panel = title.closest('.panel');
         if (panel) {
           panel.classList.add('reghome-reg-panel');
-          /* Inject section heading above the panel */
           panel.insertAdjacentHTML('beforebegin',
             '<div class="reghome-section-head">Course <span>Registration</span></div>'
           );
@@ -35,7 +32,6 @@
     });
   }
 
-  /* -- Boot ----------------------------------------------------- */
   function tryEnhance() {
     if (document.getElementById('main-content')) {
       enhance();

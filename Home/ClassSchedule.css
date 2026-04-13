@@ -1,5 +1,4 @@
 
-/* ── Section heading ──────────────────────────────────────────── */
 .sched-section-head {
   display: flex;
   align-items: center;
@@ -18,7 +17,6 @@
 }
 .sched-section-head span { color: #2563eb; }
 
-/* ── Schedule outer panel ─────────────────────────────────────── */
 .sched-schedule-panel {
   border: none !important;
   box-shadow: none !important;
@@ -31,14 +29,12 @@
   background: transparent !important;
 }
 
-/* ── Schedule table wrapper ───────────────────────────────────── */
 .sched-schedule-panel .scheduleTable {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-/* ── Day group row ────────────────────────────────────────────── */
 .sched-day-group {
   margin-bottom: 28px;
 }
@@ -62,7 +58,6 @@
   float: none !important;
 }
 
-/* ── Day header bar ───────────────────────────────────────────── */
 .sched-day-header {
   display: flex;
   align-items: center;
@@ -123,7 +118,6 @@
 .sched-day-today   .sched-day-count { background: #dbeafe; color: #2563eb; }
 .sched-day-tomorrow .sched-day-count { background: #ede9fe; color: #7c3aed; }
 
-/* ── List container ──────────────────────────────────────────── */
 .sched-cards-wrap {
   display: flex;
   flex-direction: column;
@@ -131,7 +125,6 @@
   padding: 0;
 }
 
-/* ── No-class placeholder ─────────────────────────────────────── */
 .sched-no-class {
   padding: 16px 14px;
   font-size: 13px;
@@ -151,7 +144,6 @@
   flex-shrink: 0;
 }
 
-/* ── Class entry list item ───────────────────────────────────── */
 .sched-class-entry {
   display: flex;
   align-items: center;
@@ -229,7 +221,6 @@
   opacity: 0.8;
 }
 
-/* ── Timer badge ──────────────────────────────────────────────── */
 .sched-timer {
   display: inline-flex;
   align-items: center;
@@ -280,7 +271,6 @@
   50%       { box-shadow: 0 0 0 5px rgba(34,197,94,.0); }
 }
 
-/* ── Mobile ───────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sched-cards-wrap { flex-direction: column; gap: 8px; }
   .sched-class-entry { flex-direction: column; align-items: flex-start; }

@@ -11,6 +11,11 @@
   ],
   "content_scripts": [
     {
+      "matches": ["https://portal.aiub.edu/Student*"],
+      "js": ["Shared/Sidebar.js"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["https://portal.aiub.edu/Student/Section/Offered*"],
       "js": ["content.js"],
       "css": ["styles.css"],
@@ -24,7 +29,7 @@
         "https://portal.aiub.edu/Student/Home/*"
       ],
       "js": ["Home/Intro.js", "Home/ClassSchedule.js", "Home/Registration.js"],
-      "css": ["Home/ClassSchedule.css", "Home/Registration.css"],
+      "css": ["Home/ClassSchedule.css", "Home/Registration.css", "Home/Intro.css"],
       "run_at": "document_idle"
     },
     {
@@ -78,7 +83,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["Home/Registration.css"],
+      "resources": ["Home/Registration.css", "Home/Intro.css", "Shared/Sidebar.css"],
       "matches": ["https://portal.aiub.edu/*"]
     }
   ]

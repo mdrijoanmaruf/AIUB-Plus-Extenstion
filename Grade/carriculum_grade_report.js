@@ -5,7 +5,6 @@
   if (window.__aiubGradeEnhanced) return;
   window.__aiubGradeEnhanced = true;
 
-  /* ── Grade colour map ────────────────────────────────────────── */
   const GRADE_BG = {
     'A+': '#059669', 'A':  '#10b981',
     'B+': '#2563eb', 'B':  '#3b82f6',
@@ -15,7 +14,6 @@
     '-':  '#7c3aed',
   };
 
-  /* ── XSS escape ──────────────────────────────────────────────── */
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -24,7 +22,6 @@
       .replace(/"/g, '&quot;');
   }
 
-  /* ── Inject CSS ──────────────────────────────────────────────── */
   function injectCSS() {
     if (document.getElementById('aiub-cgr-css')) return;
     const s = document.createElement('style');
@@ -37,7 +34,6 @@
         background: transparent !important; margin-bottom: 0 !important; }
       .cgr-root-panel > .panel-body { padding: 0 !important; background: transparent !important; }
 
-      /* ── Root card ── */
       .grade-report {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
         font-size: 13px;
@@ -49,7 +45,6 @@
         box-shadow: none;
       }
 
-      /* ── Top bar ── */
       .cgr-top {
         display: flex;
         align-items: center;
@@ -67,7 +62,6 @@
       }
       .cgr-print:hover { background: #e0e7ff; color: #1d4ed8; border-color: #a5b4fc; text-decoration: none; }
 
-      /* ── Info grid ── */
       .cgr-info {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -90,7 +84,6 @@
       .cgr-info-val { font-size: 13px; color: #0f172a; font-weight: 500; }
       .cgr-info-val.cgpa { font-size: 26px; font-weight: 800; color: #059669; line-height: 1.1; }
 
-      /* ── Section headings ── */
       .cgr-sh {
         display: flex; align-items: center; gap: 8px;
         font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px;
@@ -104,7 +97,6 @@
         font-size: 10px; font-weight: 700; padding: 1px 8px; min-width: 22px;
       }
 
-      /* ── Semester label ── */
       .cgr-sl {
         display: inline-flex; align-items: center;
         font-size: 11px; font-weight: 700; color: #334155;
@@ -113,7 +105,6 @@
         border-radius: 5px; padding: 4px 11px; margin: 14px 0 7px;
       }
 
-      /* ── Table wrapper ── */
       .cgr-tbl-wrap {
         border: 1px solid #e2e8f0; border-radius: 8px;
         overflow: hidden; margin-bottom: 6px;
@@ -132,13 +123,11 @@
       .cgr-tbl tbody tr:nth-child(even) td { background: #fafbfd; }
       .cgr-tbl tbody tr:hover td { background: #eff6ff !important; }
 
-      /* ── Row states ── */
       tr.cgr-ong > td { background: #f0f9ff !important; }
       tr.cgr-wdn > td { background: #fff5f5 !important; }
       tr.cgr-nd  > td { background: #fafafa; }
       tr.cgr-nd .cgr-cn { color: #94a3b8; }
 
-      /* ── Code cell ── */
       .cgr-code {
         font-family: 'Consolas', 'Cascadia Code', 'Courier New', monospace;
         font-size: 12px; font-weight: 600; white-space: nowrap; color: #1e3a8a;
@@ -147,10 +136,8 @@
       tr.cgr-ong .cgr-code { color: #2563eb; }
       tr.cgr-wdn .cgr-code { color: #dc2626; }
 
-      /* ── Semester text ── */
       .cgr-sem-ln { font-size: 11px; color: #64748b; line-height: 1.8; }
 
-      /* ── Grade pill ── */
       .cgr-gp {
         display: inline-block; padding: 2px 10px; border-radius: 20px;
         font-size: 11px; font-weight: 700; color: #059669;
@@ -158,7 +145,6 @@
       }
       .cgr-gp-nd { font-size: 12px; color: #cbd5e1; }
 
-      /* ── Not Attempted section ── */
       .cgr-na-section {
         background: #fffdf5; border: 1px solid #fde68a;
         border-radius: 10px; padding: 14px 16px 16px; margin-bottom: 20px;
@@ -173,7 +159,6 @@
         background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;
       }
 
-      /* ── Tab nav ── */
       .cgr-tabs-nav { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
       .cgr-tab-btn {
         display: inline-flex; align-items: center; gap: 6px;
@@ -194,11 +179,9 @@
       }
       .cgr-tab-btn.active .cgr-tab-cnt { background: rgba(255,255,255,.25); color: #fff; }
 
-      /* ── Tab panels ── */
       .cgr-tab-panel { display: none; }
       .cgr-tab-panel.active { display: block; }
 
-      /* ── Legend ── */
       .cgr-legend {
         display: flex; flex-wrap: wrap; gap: 14px;
         margin-top: 18px; padding-top: 12px;
@@ -220,7 +203,6 @@
     document.head.appendChild(s);
   }
 
-  /* ── Helpers ─────────────────────────────────────────────────── */
   function parseGrades(text) {
     const out = [];
     const re = /\(([^)]+)\)\s*\[([^\]]*)\]/g;
@@ -252,7 +234,6 @@
     return grades.map(g => `<div class="cgr-sem-ln">${esc(g.sem)}</div>`).join('');
   }
 
-  /* ── Parse student info table ────────────────────────────────── */
   function parseInfo(tbl) {
     const items = [];
     tbl.querySelectorAll('tr').forEach(tr => {
@@ -263,7 +244,6 @@
     return items;
   }
 
-  /* ── Info block ──────────────────────────────────────────────── */
   function infoHTML(items, printHref) {
     const cells = items.map(({ k, v }) =>
       `<div class="cgr-info-cell">
@@ -280,7 +260,6 @@
       <div class="cgr-info">${cells}</div>`;
   }
 
-  /* ── Not Attempted — tabbed per semester ─────────────────────── */
   function notAttemptedHTML(semSections, electiveRows) {
     const tabs = [];
     semSections.forEach((sec, i) => {
@@ -331,13 +310,11 @@
       </div>`;
   }
 
-  /* ── Section heading helper ──────────────────────────────────── */
   function sectionHeadHTML(label, type) {
     const cls = type === 'elective' ? ' el' : '';
     return `<div class="cgr-sh${cls}">${label}</div>`;
   }
 
-  /* ── Core semester table ─────────────────────────────────────── */
   function semTableHTML(sec) {
     const rowsHTML = sec.rows.map(r =>
       `<tr class="cgr-${r.state}">
@@ -362,7 +339,6 @@
       </div>`;
   }
 
-  /* ── Elective table ──────────────────────────────────────────── */
   function electiveTableHTML(rows) {
     const rowsHTML = rows.map(r =>
       `<tr class="cgr-${r.state}">
@@ -386,7 +362,6 @@
       </div>`;
   }
 
-  /* ── Legend ──────────────────────────────────────────────────── */
   function legendHTML() {
     return `
       <div class="cgr-legend">
@@ -397,7 +372,6 @@
       </div>`;
   }
 
-  /* ── Tab click handler ───────────────────────────────────────── */
   function initTabs(container) {
     container.querySelectorAll('.cgr-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -416,12 +390,10 @@
     });
   }
 
-  /* ── Enhance (two-pass) ──────────────────────────────────────── */
   function enhance() {
     const gr = document.querySelector('.grade-report');
     if (!gr) return;
 
-    /* Scope panel reset only to the direct ancestor .panel — sidebar is safe */
     const rootPanel = gr.closest('.panel');
     if (rootPanel) rootPanel.classList.add('cgr-root-panel');
 
@@ -434,7 +406,6 @@
     const semSections  = [];
     const electiveRows = [];
 
-    /* Pass 1 – collect data */
     for (const el of [...gr.children]) {
       const tag = el.tagName;
       if (tag === 'TABLE' && !infoItems) {
@@ -462,7 +433,6 @@
       }
     }
 
-    /* Pass 2 – render */
     let html = '';
     html += infoHTML(infoItems || [], printHref);
     html += notAttemptedHTML(semSections, electiveRows);
@@ -478,7 +448,6 @@
     initTabs(gr);
   }
 
-  /* ── Init ────────────────────────────────────────────────────── */
   function init() {
     if (!document.querySelector('.grade-report')) {
       setTimeout(init, 400);
