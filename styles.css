@@ -504,6 +504,74 @@
 .aiub-sc-status { background: #e8f5e9; color: #2e7d32; }
 .aiub-sc-seats  { background: #e3f2fd; color: #1565c0; }
 .aiub-sc-linked { background: #f3e5f5; color: #7b1fa2; }
+
+.aiub-sc-alt-box {
+  margin-top: 10px;
+  border: 1px solid #e0eaf5;
+  border-radius: 7px;
+  overflow: hidden;
+  font-size: 11px;
+}
+.aiub-sc-alt-header {
+  background: #eef4fc;
+  color: #1a3a6e;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #d4e3f5;
+}
+.aiub-sc-alt-row,
+.aiub-sc-alt-selected-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #f0f4f9;
+  flex-wrap: wrap;
+}
+.aiub-sc-alt-row:last-child { border-bottom: none; }
+.aiub-sc-alt-selected-row {
+  background: #f0faed;
+}
+.aiub-sc-alt-sec {
+  display: inline-block;
+  background: #e3effd;
+  color: #1565c0;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-weight: 700;
+  font-size: 10px;
+  white-space: nowrap;
+  min-width: 36px;
+  text-align: center;
+}
+.aiub-sc-alt-current {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+.aiub-sc-alt-sched {
+  flex: 1;
+  color: #546e7a;
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aiub-sc-alt-seats {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-weight: 600;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.aiub-sc-alt-full {
+  background: #ffebee;
+  color: #c62828;
+}
 .aiub-sc-remove {
   position: absolute;
   top: 8px;

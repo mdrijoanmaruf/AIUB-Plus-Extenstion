@@ -1,15 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "AIUB Course Filter",
-  "version": "1.0",
-  "description": "Advanced filtering for AIUB Portal Offered Courses — filter by status, seat availability, day, and time slot",
+  "name": "AIUB Portal+",
+  "version": "2.0",
+  "description": "Comprehensive enhancement suite for the AIUB Student Portal — advanced course filtering, clash detection, grade visualization, smart schedule display, and UI improvements across all portal pages.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "https://portal.aiub.edu/*"
   ],
   "content_scripts": [
+    {
+      "matches": ["https://portal.aiub.edu/Student*"],
+      "js": ["Shared/contentBridge.js"],
+      "run_at": "document_start"
+    },
     {
       "matches": ["https://portal.aiub.edu/Student*"],
       "js": ["Shared/Sidebar.js"],
@@ -83,7 +90,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["Home/Registration.css", "Home/Intro.css", "Shared/Sidebar.css"],
+      "resources": ["Home/Registration.css", "Home/Intro.css", "Shared/Sidebar.css", "Shared/contentBridge.js"],
       "matches": ["https://portal.aiub.edu/*"]
     }
   ]

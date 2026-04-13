@@ -40,9 +40,12 @@
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tryEnhance);
-  } else {
-    tryEnhance();
-  }
+  chrome.storage.sync.get({ extensionEnabled: true }, function (r) {
+    if (!r.extensionEnabled) return;
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', tryEnhance);
+    } else {
+      tryEnhance();
+    }
+  });
 })();

@@ -2,6 +2,7 @@
   'use strict';
 
   if (window.__aiubFilterInjected) return;
+  if (localStorage.getItem('__aiubPortalEnabled') === '0') return;
   window.__aiubFilterInjected = true;
 
   let allCourses = [];
@@ -476,7 +477,10 @@
              getTimeSignature(c) === timeSignature;
     });
     course._linkedSections = linkedSections.map(function (s) {
-      return { section: s.section, classId: s.classId, capacity: s.capacity, count: s.count };
+      return {
+        section: s.section, classId: s.classId, fullTitle: s.fullTitle,
+        capacity: s.capacity, count: s.count, status: s.status, timeSlots: s.timeSlots
+      };
     });
   }
 
@@ -521,7 +525,6 @@
     localStorage.removeItem('aiub_selectedSections');
     localStorage.removeItem('aiub_selectedTimestamp');
     resetFilters();
-    renderFilteredResults();
     renderSelectedCoursesPanel();
   }
 
@@ -763,11 +766,33 @@
       const scheduleLines = sec.timeSlots.map(function (ts) {
         return ts.classType + ': ' + ts.day + ' ' + ts.startTime + '\u2013' + ts.endTime;
       });
-      let linkedText = '';
+
+      let altHtml = '';
       if (sec._linkedSections && sec._linkedSections.length > 0) {
-        linkedText = 'Also: ' + sec._linkedSections.map(function (ls) {
-          return 'Sec ' + ls.section + ' (' + (ls.capacity - ls.count) + ')';
-        }).join(', ');
+        const altRows = sec._linkedSections.map(function (ls) {
+          const altAvail = ls.capacity - ls.count;
+          const isFull = altAvail <= 0;
+          const schedText = ls.timeSlots.length
+            ? ls.timeSlots.map(function (ts) { return ts.day + ' ' + ts.startTime + '\u2013' + ts.endTime; }).join(' &bull; ')
+            : 'No schedule';
+          return '<div class="aiub-sc-alt-row">'
+            + '<span class="aiub-sc-alt-sec">' + (ls.section || ls.classId) + '</span>'
+            + '<span class="aiub-sc-alt-sched">' + schedText + '</span>'
+            + '<span class="aiub-sc-alt-seats' + (isFull ? ' aiub-sc-alt-full' : '') + '">'
+            + (isFull ? 'Full' : altAvail + ' seats') + '</span>'
+            + '</div>';
+        }).join('');
+        altHtml = '<div class="aiub-sc-alt-box">'
+          + '<div class="aiub-sc-alt-header">All sections &mdash; ' + (sec._linkedSections.length + 1) + ' total</div>'
+          + '<div class="aiub-sc-alt-selected-row">'
+          + '<span class="aiub-sc-alt-sec aiub-sc-alt-current">' + (sec.section || sec.classId) + ' &#10003;</span>'
+          + '<span class="aiub-sc-alt-sched">'
+          + (sec.timeSlots.length ? sec.timeSlots.map(function (ts) { return ts.day + ' ' + ts.startTime + '\u2013' + ts.endTime; }).join(' &bull; ') : 'No schedule')
+          + '</span>'
+          + '<span class="aiub-sc-alt-seats">' + available + ' seats</span>'
+          + '</div>'
+          + altRows
+          + '</div>';
       }
 
       return '<div class="aiub-selected-card" style="border-left:4px solid ' + color.border + ';">'
@@ -778,8 +803,8 @@
         + '<div class="aiub-sc-info">'
         + '<span class="aiub-sc-status">' + sec.status + '</span>'
         + '<span class="aiub-sc-seats">' + available + ' seats</span>'
-        + (linkedText ? '<span class="aiub-sc-linked">' + linkedText + '</span>' : '')
         + '</div>'
+        + altHtml
         + '<button class="aiub-sc-remove" data-classid="' + sec.classId + '" title="Remove ' + sec.fullTitle + '">&#10005;</button>'
         + '</div>';
     }).join('');
@@ -840,7 +865,7 @@
   async function init() {
     try {
       await waitForTable();
-      injectLoadingPanel();   // show immediately while data loads
+      injectLoadingPanel();
       allCourses = await getAllCourses();
       console.log('[AIUB Filter] Parsed ' + allCourses.length + ' courses');
 

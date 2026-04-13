@@ -3,31 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AIUB Course Filter</title>
+  <title>AIUB Portal+</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="container">
-    <h1>AIUB Course Filter</h1>
-    <div class="info">
-      <p>This extension adds advanced filters to the AIUB Portal's
-         Offered Courses page.</p>
-      <p><strong>Filters available:</strong></p>
-      <ul>
-        <li>Course name / Class ID search</li>
-        <li>Status (Freshman, Sophomore, etc.)</li>
-        <li>Seat availability</li>
-        <li>Day of week</li>
-        <li>Time slot (Morning / Afternoon / Evening)</li>
-      </ul>
-    </div>
-    <div id="status" class="status"></div>
-    <div class="footer">
-      <p>Developed By
-         <a href="https://rijoan.com" target="_blank" rel="noopener noreferrer">
-           Md Rijoan Maruf</a></p>
+  <div class="pu-header">
+    <img src="aiub.jpg" alt="AIUB" class="pu-logo">
+    <div class="pu-header-text">
+      <div class="pu-title">AIUB Portal+</div>
+      <div class="pu-subtitle">Portal Enhancement Suite</div>
     </div>
   </div>
+
+  <div class="pu-body">
+
+    <div class="pu-toggle-card">
+      <div class="pu-toggle-info">
+        <div class="pu-toggle-label">Extension</div>
+        <div id="pu-toggle-desc" class="pu-toggle-desc">Enabled</div>
+      </div>
+      <label class="pu-switch" title="Toggle extension on/off">
+        <input type="checkbox" id="pu-toggle" checked aria-label="Enable or disable the extension">
+        <span class="pu-slider" aria-hidden="true"></span>
+      </label>
+    </div>
+
+    <div id="pu-status" class="pu-status"></div>
+
+    <div class="pu-section">
+      <div class="pu-section-title">Features</div>
+      <ul class="pu-list">
+        <li>Course name &amp; Class ID search</li>
+        <li>Status filter (Freshman, Sophomore…)</li>
+        <li>Day of week filter</li>
+        <li>Time slot range filter</li>
+        <li>Clash detection &amp; routine builder</li>
+        <li>Alternative sections viewer</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="pu-footer">
+    Developed by <a href="https://rijoan.com" target="_blank" rel="noopener noreferrer">Md Rijoan Maruf</a>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
