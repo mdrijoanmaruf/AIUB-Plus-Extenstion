@@ -18,6 +18,16 @@
       "world": "MAIN"
     },
     {
+      "matches": [
+        "https://portal.aiub.edu/Student",
+        "https://portal.aiub.edu/Student/",
+        "https://portal.aiub.edu/Student/Home/*"
+      ],
+      "js": ["Home/Intro.js", "Home/ClassSchedule.js", "Home/Registration.js"],
+      "css": ["Home/ClassSchedule.css", "Home/Registration.css"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["https://portal.aiub.edu/Student/Course?*"],
       "js": ["Academic/CourseAndResults.js"],
       "run_at": "document_idle"
@@ -65,5 +75,11 @@
     "16": "aiub.jpg",
     "48": "aiub.jpg",
     "128": "aiub.jpg"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["Home/Registration.css"],
+      "matches": ["https://portal.aiub.edu/*"]
+    }
+  ]
 }
