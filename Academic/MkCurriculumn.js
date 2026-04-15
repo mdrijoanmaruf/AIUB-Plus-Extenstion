@@ -7,6 +7,132 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  const NIL_TOKENS = new Set(['', 'NIL', 'NILL', 'N/A', 'NA', '-']);
+  let courseCatalog = [];
+  const courseByCode = new Map();
+  const courseByCodeAndName = new Map();
+
+  function norm(v) {
+    return String(v || '').replace(/\s+/g, ' ').trim().toUpperCase();
+  }
+
+  function normCode(v) {
+    return norm(v).replace(/\s+/g, '');
+  }
+
+  function buildCatalogIndex(items) {
+    items.forEach(item => {
+      const codeKey = normCode(item.course);
+      const nameKey = norm(item.course_name);
+      if (!courseByCode.has(codeKey)) courseByCode.set(codeKey, []);
+      courseByCode.get(codeKey).push(item);
+      courseByCodeAndName.set(`${codeKey}::${nameKey}`, item);
+    });
+  }
+
+  function loadCourseCatalog() {
+    return fetch(chrome.runtime.getURL('Academic/CSE.json'))
+      .then(r => (r.ok ? r.json() : []))
+      .then(items => {
+        if (!Array.isArray(items)) return;
+        courseCatalog = items;
+        buildCatalogIndex(items);
+      })
+      .catch(() => {
+        courseCatalog = [];
+      });
+  }
+
+  function findCourseMeta(code, name) {
+    const codeKey = normCode(code);
+    const nameKey = norm(name);
+    const exact = courseByCodeAndName.get(`${codeKey}::${nameKey}`);
+    if (exact) return exact;
+
+    const byCode = courseByCode.get(codeKey) || [];
+    if (byCode.length === 1) return byCode[0];
+    if (byCode.length > 1) {
+      const contains = byCode.find(item => {
+        const itemName = norm(item.course_name);
+        return itemName === nameKey || itemName.includes(nameKey) || nameKey.includes(itemName);
+      });
+      if (contains) return contains;
+      return byCode[0];
+    }
+
+    const fallback = courseCatalog.find(item => norm(item.course_name) === nameKey);
+    return fallback || null;
+  }
+
+  function formatPrerequisite(meta) {
+    if (!meta) return 'Nil';
+
+    if (Array.isArray(meta.prerequisites) && meta.prerequisites.length > 0) {
+      return meta.prerequisites.join(', ');
+    }
+
+    const raw = String(meta.prerequisite || '').trim();
+    if (!raw || NIL_TOKENS.has(norm(raw))) return 'Nil';
+    return raw;
+  }
+
+  function enhanceCurriculumTable(table) {
+    if (table.dataset.curPrereqEnhanced === '1') return;
+
+    const headerRow = table.querySelector('thead tr');
+    if (!headerRow) return;
+
+    const headerTexts = [...headerRow.querySelectorAll('th')].map(th => norm(th.textContent));
+    const hasCode = headerTexts.some(t => t.includes('CODE'));
+    const hasCourse = headerTexts.some(t => t.includes('COURSE'));
+    const hasCredit = headerTexts.some(t => t.includes('CREDIT'));
+    if (!hasCode || !hasCourse || !hasCredit) return;
+
+    const hasPrereq = headerTexts.some(t => t.includes('PREREQ'));
+    if (!hasPrereq) {
+      const th = document.createElement('th');
+      th.textContent = 'Prerequisite';
+      th.style.width = '22%';
+      const last = headerRow.lastElementChild;
+      if (last) {
+        headerRow.insertBefore(th, last);
+      } else {
+        headerRow.appendChild(th);
+      }
+    }
+
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      const cells = [...tr.querySelectorAll('td')];
+      if (!cells.length) return;
+
+      const rowText = norm(tr.textContent);
+      if (rowText.includes('TOTAL CREDIT') || rowText.includes('GRAND TOTAL')) {
+        return;
+      }
+
+      if (cells.length < 3) return;
+      const code = cells[0].textContent.trim();
+      const courseName = cells[1].textContent.trim();
+      if (!code || !courseName) return;
+
+      const meta = findCourseMeta(code, courseName);
+      const existingPrereq = cells.length >= 4 ? cells[2].textContent.trim() : '';
+      const prereqText = meta
+        ? formatPrerequisite(meta)
+        : (existingPrereq && !NIL_TOKENS.has(norm(existingPrereq)) ? existingPrereq : 'Nil');
+
+      if (cells.length === 3) {
+        const td = document.createElement('td');
+        td.textContent = prereqText;
+        tr.insertBefore(td, cells[2]);
+      } else {
+        cells[2].textContent = prereqText;
+      }
+    });
+
+    table.dataset.curPrereqEnhanced = '1';
+  }
+
   const CSS = `
 .cur-root-panel > .panel-heading { display: none !important; }
 .cur-root-panel { box-shadow: none !important; border: none !important; background: transparent !important; }
@@ -102,12 +228,13 @@
 
   function styleModalContent(div) {
     if (!div.innerHTML.trim() || div.innerHTML.trim() === 'Loading...') return;
-    if (div.querySelector('.cur-modal-inner')) return; // already styled
-
     div.querySelectorAll('table').forEach(t => {
+      enhanceCurriculumTable(t);
       t.classList.add('cur-modal-table');
       t.style.border = 'none';
     });
+
+    if (div.querySelector('.cur-modal-inner')) return; // already wrapped
 
     const wrapper = document.createElement('div');
     wrapper.className = 'cur-modal-inner';
@@ -160,17 +287,19 @@
 
   function init() {
     injectCSS();
-    if (document.querySelector('#main-content .panel.panel-default')) {
-      enhance();
-    } else {
-      const obs = new MutationObserver(() => {
-        if (document.querySelector('#main-content .panel.panel-default')) {
-          obs.disconnect();
-          enhance();
-        }
-      });
-      obs.observe(document.body, { childList: true, subtree: true });
-    }
+    loadCourseCatalog().finally(() => {
+      if (document.querySelector('#main-content .panel.panel-default')) {
+        enhance();
+      } else {
+        const obs = new MutationObserver(() => {
+          if (document.querySelector('#main-content .panel.panel-default')) {
+            obs.disconnect();
+            enhance();
+          }
+        });
+        obs.observe(document.body, { childList: true, subtree: true });
+      }
+    });
   }
 
   chrome.storage.sync.get({ extensionEnabled: true }, function (r) {

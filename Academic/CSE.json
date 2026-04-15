@@ -1,0 +1,821 @@
+[
+  {
+    "group": "Semester 1",
+    "course": "MAT1102",
+    "course_name": "DIFFERENTIAL CALCULUS & CO-ORDINATE GEOMETRY",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 1",
+    "course": "PHY 1101",
+    "course_name": "PHYSICS 1",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 1",
+    "course": "PHY 1102",
+    "course_name": "PHYSICS 1 LAB",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 1",
+    "course": "ENG1101",
+    "course_name": "ENGLISH READING SKILLS & PUBLIC SPEAKING",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 1",
+    "course": "CSC 1101",
+    "course_name": "INTRODUCTION TO COMPUTER STUDIES",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 1",
+    "course": "CSC 1103",
+    "course_name": "INTRODUCTION TO PROGRAMMING LAB",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 1",
+    "course": "CSC 1102",
+    "course_name": "INTRODUCTION TO PROGRAMMING",
+    "prerequisite": "Nil",
+    "prerequisites": [],
+    "credit": "3"
+  },
+
+  {
+    "group": "Semester 2",
+    "course": "CSC1204",
+    "course_name": "DISCRETE MATHEMATICS",
+    "prerequisite": "MAT1102 & CSC1102",
+    "prerequisites": ["MAT1102", "CSC1102"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 2",
+    "course": "MAT1205",
+    "course_name": "INTEGRAL CALCULUS & ORDINARY DIFFERENTIAL EQUATIONS",
+    "prerequisite": "MAT1102",
+    "prerequisites": ["MAT1102"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 2",
+    "course": "CSC1205",
+    "course_name": "OBJECT ORIENTED PROGRAMMING 1",
+    "prerequisite": "CSC1102 & CSC1103",
+    "prerequisites": ["CSC1102", "CSC1103"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 2",
+    "course": "PHY1203",
+    "course_name": "PHYSICS 2",
+    "prerequisite": "PHY1101",
+    "prerequisites": ["PHY1101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 2",
+    "course": "PHY1204",
+    "course_name": "PHYSICS 2 LAB",
+    "prerequisite": "PHY1102",
+    "prerequisites": ["PHY1102"],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 2",
+    "course": "ENG1202",
+    "course_name": "ENGLISH WRITING SKILLS & COMMUNICATIONS",
+    "prerequisite": "ENG1101",
+    "prerequisites": ["ENG1101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 2",
+    "course": "COE2101",
+    "course_name": "INTRODUCTION TO ELECTRICAL CIRCUITS",
+    "prerequisite": "PHY1101",
+    "prerequisites": ["PHY1101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 2",
+    "course": "COE2102",
+    "course_name": "INTRODUCTION TO ELECTRICAL CIRCUITS LAB",
+    "prerequisite": "PHY1102",
+    "prerequisites": ["PHY1102"],
+    "credit": "1"
+  },
+
+  {
+    "group": "Semester 3",
+    "course": "CHEM1101",
+    "course_name": "CHEMISTRY",
+    "prerequisite": "PHY1203",
+    "prerequisites": ["PHY1203"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 3",
+    "course": "MAT2101",
+    "course_name": "COMPLEX VARIABLE,LAPLACE & Z-TRANSFORMATION",
+    "prerequisite": "MAT1205",
+    "prerequisites": ["MAT1205"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 3",
+    "course": "CSC2108",
+    "course_name": "INTRODUCTION TO DATABASE",
+    "prerequisite": "CSC1205",
+    "prerequisites": ["CSC1205"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 3",
+    "course": "EEE2104",
+    "course_name": "ELECTRONIC DEVICES LAB",
+    "prerequisite": "COE2102",
+    "prerequisites": ["COE2102"],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 3",
+    "course": "BBA1102",
+    "course_name": "PRINCIPLES OF ACCOUNTING",
+    "prerequisite": "MAT1205",
+    "prerequisites": ["MAT1205"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 3",
+    "course": "EEE2103",
+    "course_name": "ELECTRONIC DEVICES",
+    "prerequisite": "COE2101",
+    "prerequisites": ["COE2101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 3",
+    "course": "CSC2106",
+    "course_name": "DATA STRUCTURE",
+    "prerequisite": "CSC1204 & CSC1205",
+    "prerequisites": ["CSC1204", "CSC1205"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 3",
+    "course": "CSC2107",
+    "course_name": "DATA STRUCTURE LAB",
+    "prerequisite": "CSC1204 & CSC1205",
+    "prerequisites": ["CSC1204", "CSC1205"],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 3",
+    "course": "BAE2101",
+    "course_name": "COMPUTER AIDED DESIGN & DRAFTING",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "1"
+  },
+
+  {
+    "group": "Semester 4",
+    "course": "CSC2211",
+    "course_name": "ALGORITHMS",
+    "prerequisite": "CSC2106",
+    "prerequisites": ["CSC2106"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 4",
+    "course": "MAT2202",
+    "course_name": "MATRICES, VECTORS, FOURIER ANALYSIS",
+    "prerequisite": "MAT2101",
+    "prerequisites": ["MAT2101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 4",
+    "course": "CSC2210",
+    "course_name": "OBJECT ORIENTED PROGRAMMING 2",
+    "prerequisite": "CSC2106 CSC2108",
+    "prerequisites": ["CSC2106", "CSC2108"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 4",
+    "course": "CSC2209",
+    "course_name": "OBJECT ORIENTED ANALYSIS AND DESIGN",
+    "prerequisite": "CSC2108",
+    "prerequisites": ["CSC2108"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 4",
+    "course": "BAS2101",
+    "course_name": "BANGLADESH STUDIES",
+    "prerequisite": "CSC1101",
+    "prerequisites": ["CSC1101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 4",
+    "course": "EEE3101",
+    "course_name": "DIGITAL LOGIC AND CIRCUITS",
+    "prerequisite": "EEE2103",
+    "prerequisites": ["EEE2103"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 4",
+    "course": "EEE3102",
+    "course_name": "DIGITAL LOGIC AND CIRCUITS LAB",
+    "prerequisite": "EEE2104",
+    "prerequisites": ["EEE2104"],
+    "credit": "1"
+  },
+  {
+    "group": "Semester 4",
+    "course": "MAT3103",
+    "course_name": "COMPUTATIONAL STATISTICS AND PROBABILITY",
+    "prerequisite": "MAT2101",
+    "prerequisites": ["MAT2101"],
+    "credit": "3"
+  },
+
+  {
+    "group": "Semester 5",
+    "course": "CSC3113",
+    "course_name": "THEORY OF COMPUTATION",
+    "prerequisite": "CSC2211",
+    "prerequisites": ["CSC2211"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 5",
+    "course": "ECO3150",
+    "course_name": "PRINCIPLES OF ECONOMICS",
+    "prerequisite": "MAT3103",
+    "prerequisites": ["MAT3103"],
+    "credit": "2"
+  },
+  {
+    "group": "Semester 5",
+    "course": "ENG2103",
+    "course_name": "BUSINESS COMMUNICATION",
+    "prerequisite": "BAS2101",
+    "prerequisites": ["BAS2101"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 5",
+    "course": "MAT3101",
+    "course_name": "NUMERICAL METHODS FOR SCIENCE AND ENGINEERING",
+    "prerequisite": "MAT2202",
+    "prerequisites": ["MAT2202"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 5",
+    "course": "COE3103",
+    "course_name": "DATA COMMUNICATION",
+    "prerequisite": "EEE3101 & EEE3102",
+    "prerequisites": ["EEE3101", "EEE3102"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 5",
+    "course": "COE3104",
+    "course_name": "MICROPROCESSOR AND EMBEDDED SYSTEMS",
+    "prerequisite": "EEE3101 & EEE3102",
+    "prerequisites": ["EEE3101", "EEE3102"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 5",
+    "course": "CSC3112",
+    "course_name": "SOFTWARE ENGINEERING",
+    "prerequisite": "CSC2209",
+    "prerequisites": ["CSC2209"],
+    "credit": "3/LAB"
+  },
+
+  {
+    "group": "Semester 6",
+    "course": "CSC3217",
+    "course_name": "ARTIFICIAL INTELLIGENCE AND EXPERT SYSTEM",
+    "prerequisite": "CSC2211 & MAT3103",
+    "prerequisites": ["CSC2211", "MAT3103"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 6",
+    "course": "COE3206",
+    "course_name": "COMPUTER NETWORKS",
+    "prerequisite": "COE3103",
+    "prerequisites": ["COE3103"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 6",
+    "course": "COE3205",
+    "course_name": "COMPUTER ORGANIZATION AND ARCHITECTURE",
+    "prerequisite": "COE3104",
+    "prerequisites": ["COE3104"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 6",
+    "course": "CSC3214",
+    "course_name": "OPERATING SYSTEM",
+    "prerequisite": "CSC2211 & COE3104",
+    "prerequisites": ["CSC2211", "COE3104"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 6",
+    "course": "CSC3215",
+    "course_name": "WEB TECHNOLOGIES",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 6",
+    "course": "EEE2216",
+    "course_name": "ENGINEERING ETHICS",
+    "prerequisite": "CSC3112 & COE3104",
+    "prerequisites": ["CSC3112", "COE3104"],
+    "credit": "2"
+  },
+  {
+    "group": "Semester 6",
+    "course": "CSC3216",
+    "course_name": "COMPILER DESIGN",
+    "prerequisite": "CSC3113",
+    "prerequisites": ["CSC3113"],
+    "credit": "3/LAB"
+  },
+
+  {
+    "group": "Semester 7",
+    "course": "CSC4118",
+    "course_name": "COMPUTER GRAPHICS",
+    "prerequisite": "CSC2211 & MAT2202",
+    "prerequisites": ["CSC2211", "MAT2202"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Semester 7",
+    "course": "CSC****",
+    "course_name": "COS ELECTIVE 1",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 7",
+    "course": "MGT3202",
+    "course_name": "ENGINEERING MANAGEMENT",
+    "prerequisite": "EEE2216",
+    "prerequisites": ["EEE2216"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 7",
+    "course": "CSC4197",
+    "course_name": "RESEARCH METHODOLOGY",
+    "prerequisite": "100 Credits",
+    "prerequisites": ["100 Credits"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 7",
+    "course": "CSC####",
+    "course_name": "CSE MAJOR 1",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 7",
+    "course": "CSC####",
+    "course_name": "CSE MAJOR 2",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 7",
+    "course": "CSC####",
+    "course_name": "CSE MAJOR 3",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "3"
+  },
+
+  {
+    "group": "Semester 8",
+    "course": "CSC4299",
+    "course_name": "THESIS",
+    "prerequisite": "CSC4197",
+    "prerequisites": ["CSC4197"],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 8",
+    "course": "CSC****",
+    "course_name": "COS ELECTIVE 2",
+    "prerequisite": "Nill",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Semester 8",
+    "course": "CSC4296",
+    "course_name": "INTERNSHIP",
+    "prerequisite": "139 Credits",
+    "prerequisites": ["139 Credits"],
+    "credit": "3"
+  },
+
+  {
+    "group": "Major in Information Systems",
+    "course": "CSC4181",
+    "course_name": "ADVANCE DATABASE MANAGEMENT SYSTEM",
+    "prerequisite": "CSC2108",
+    "prerequisites": ["CSC2108"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "MIS3101",
+    "course_name": "MANAGEMENT INFORMATION SYSTEM",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "MIS4011",
+    "course_name": "ENTERPRISE RESOURCE PLANNING",
+    "prerequisite": "MIS3101 & CSC3112",
+    "prerequisites": ["MIS3101", "CSC3112"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "CSC4285",
+    "course_name": "DATA WAREHOUSE AND DATA MINING",
+    "prerequisite": "CSC2211 & MAT3103",
+    "prerequisites": ["CSC2211", "MAT3103"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "CSC4182",
+    "course_name": "HUMAN COMPUTER INTERACTION",
+    "prerequisite": "CSC3217 & CSC3215",
+    "prerequisites": ["CSC3217", "CSC3215"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "MIS4014",
+    "course_name": "BUSINESS INTELLIGENCE AND DECISION SUPPORT SYSTEMS",
+    "prerequisite": "",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "CSC4180",
+    "course_name": "INTRODUCTION TO DATA SCIENCE",
+    "prerequisite": "",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "CSC4183",
+    "course_name": "CYBER LAWS & INFORMATION SECURITY",
+    "prerequisite": "",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "MIS4007",
+    "course_name": "DIGITAL MARKETING",
+    "prerequisite": "",
+    "prerequisites": [],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Information Systems",
+    "course": "MIS4012",
+    "course_name": "E-COMMERCE, E-GOVERNANCE & E-SERIES",
+    "prerequisite": "",
+    "prerequisites": [],
+    "credit": "3"
+  },
+
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4270",
+    "course_name": "SOFTWARE DEVELOPMENT PROJECT MANAGEMENT",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4160",
+    "course_name": "SOFTWARE REQUIREMENT ENGINEERING",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4271",
+    "course_name": "SOFTWARE QUALITY AND TESTING",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4162",
+    "course_name": "PROGRAMMING IN PYTHON",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4274",
+    "course_name": "VIRTUAL REALITY SYSTEMS DESIGN",
+    "prerequisite": "CSC2210",
+    "prerequisites": ["CSC2210"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4163",
+    "course_name": "ADVANCED PROGRAMMING WITH JAVA",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4164",
+    "course_name": "ADVANCED PROGRAMMING WITH .NET",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4161",
+    "course_name": "ADVANCED PROGRAMMING IN WEB TECHNOLOGY",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4272",
+    "course_name": "MOBILE APPLICATION DEVELOPMENT",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Software Engineering",
+    "course": "CSC4273",
+    "course_name": "SOFTWARE ARCHITECTURE AND DESIGN PATTERNS",
+    "prerequisite": "CSC3112",
+    "prerequisites": ["CSC3112"],
+    "credit": "3"
+  },
+
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4125",
+    "course_name": "COMPUTER SCIENCE MATHEMATICS",
+    "prerequisite": "CSC2211 & MAT3101",
+    "prerequisites": ["CSC2211", "MAT3101"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4126",
+    "course_name": "BASIC GRAPH THEORY",
+    "prerequisite": "CSC2211",
+    "prerequisites": ["CSC2211"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4127",
+    "course_name": "ADVANCED ALGORITHM TECHNIQUES",
+    "prerequisite": "CSC3217",
+    "prerequisites": ["CSC3217"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4233",
+    "course_name": "NATURAL LANGUAGE PROCESSING",
+    "prerequisite": "CSC3217 & CSC4162",
+    "prerequisites": ["CSC3217", "CSC4162"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4128",
+    "course_name": "LINEAR PROGRAMMING",
+    "prerequisite": "CSC3217 & MAT3103",
+    "prerequisites": ["CSC3217", "MAT3103"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4231",
+    "course_name": "PARALLEL COMPUTING",
+    "prerequisite": "CSC3217",
+    "prerequisites": ["CSC3217"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computational Theory",
+    "course": "CSC4232",
+    "course_name": "MACHINE LEARNING",
+    "prerequisite": "CSC3217",
+    "prerequisites": ["CSC3217"],
+    "credit": "3"
+  },
+
+  {
+    "group": "Major in Computer Engineering",
+    "course": "BAE1201",
+    "course_name": "BASIC MECHANICAL ENGG.",
+    "prerequisite": "PHY1203",
+    "prerequisites": ["PHY1203"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE3103",
+    "course_name": "DIGITAL SIGNAL PROCESSING",
+    "prerequisite": "EEE2213",
+    "prerequisites": ["EEE2213"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE4217",
+    "course_name": "VLSI CIRCUIT DESIGN",
+    "prerequisite": "EEE 3101 & EEE 3102",
+    "prerequisites": ["EEE3101", "EEE3102"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE2213",
+    "course_name": "SIGNALS & LINEAR SYSTEM",
+    "prerequisite": "MAT2202",
+    "prerequisites": ["MAT2202"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4128",
+    "course_name": "DIGITAL SYSTEM DESIGN",
+    "prerequisite": "COE3205",
+    "prerequisites": ["COE3205"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4231",
+    "course_name": "IMAGE PROCESSING",
+    "prerequisite": "CSC4118 & EEE2213",
+    "prerequisites": ["CSC4118", "EEE2213"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4129",
+    "course_name": "MULTIMEDIA SYSTEMS",
+    "prerequisite": "CSC3215",
+    "prerequisites": ["CSC3215"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4230",
+    "course_name": "SIMULATION & MODELING",
+    "prerequisite": "CSC3217",
+    "prerequisites": ["CSC3217"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4126",
+    "course_name": "ADVANCED COMPUTER NETWORKS",
+    "prerequisite": "COE3206",
+    "prerequisites": ["COE3206"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4234",
+    "course_name": "COMPUTER VISION AND PATTERN RECOGNITION",
+    "prerequisite": "CSC4118",
+    "prerequisites": ["CSC4118"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4232",
+    "course_name": "NETWORK SECURITY",
+    "prerequisite": "COE3103",
+    "prerequisites": ["COE3103"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4125",
+    "course_name": "ADVANCED OPERATING SYSTEM",
+    "prerequisite": "CSC3214",
+    "prerequisites": ["CSC3214"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE4233",
+    "course_name": "DIGITAL DESIGN WITH SYSTEM [ VERILOG,VHDL & FPGAS ]",
+    "prerequisite": "EEE4217",
+    "prerequisites": ["EEE4217"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4235",
+    "course_name": "ROBOTICS ENGINEERING",
+    "prerequisite": "CSC3217",
+    "prerequisites": ["CSC3217"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE4209",
+    "course_name": "TELECOMMUNICATIONS ENGINEERING",
+    "prerequisite": "COE3103",
+    "prerequisites": ["COE3103"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4127",
+    "course_name": "NETWORK RESOURCE MANAGEMENT & ORGANIZATION",
+    "prerequisite": "COE3103",
+    "prerequisites": ["COE3103"],
+    "credit": "3"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "COE4233",
+    "course_name": "WIRELESS SENSOR NETWORKS",
+    "prerequisite": "COE3103",
+    "prerequisites": ["COE3103"],
+    "credit": "3/LAB"
+  },
+  {
+    "group": "Major in Computer Engineering",
+    "course": "EEE4241",
+    "course_name": "INDUSTRIAL ELECTRONICS, DRIVES & INSTRUMENTATION",
+    "prerequisite": "EEE3101",
+    "prerequisites": ["EEE3101"],
+    "credit": "3/LAB"
+  }
+]

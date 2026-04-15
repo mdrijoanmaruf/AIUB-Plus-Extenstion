@@ -14,6 +14,11 @@
     '-':  '#7c3aed',
   };
 
+  const NIL_TOKENS = new Set(['', 'NIL', 'NILL', 'N/A', 'NA', '-']);
+  let courseCatalog = [];
+  const prereqByName = new Map();
+  const prereqByCode = new Map();
+
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -23,6 +28,71 @@
   }
 
   function injectCSS() { }
+
+  function norm(v) {
+    return String(v || '').replace(/\s+/g, ' ').trim().toUpperCase();
+  }
+
+  function normCode(v) {
+    return norm(v).replace(/\s+/g, '');
+  }
+
+  function normalizePrereqText(raw) {
+    const s = String(raw || '').trim();
+    if (!s || NIL_TOKENS.has(norm(s))) return 'Nil';
+    return s;
+  }
+
+  function prerequisiteFromMeta(meta) {
+    if (!meta) return 'Nil';
+    if (Array.isArray(meta.prerequisites) && meta.prerequisites.length) {
+      return meta.prerequisites.join(', ');
+    }
+    return normalizePrereqText(meta.prerequisite);
+  }
+
+  function buildCatalogIndex(items) {
+    items.forEach(item => {
+      const nameKey = norm(item.course_name);
+      const codeKey = normCode(item.course);
+      const prereq = prerequisiteFromMeta(item);
+
+      if (nameKey && !prereqByName.has(nameKey)) prereqByName.set(nameKey, prereq);
+      if (codeKey && !prereqByCode.has(codeKey)) prereqByCode.set(codeKey, prereq);
+    });
+  }
+
+  function loadCourseCatalog() {
+    return fetch(chrome.runtime.getURL('Academic/CSE.json'))
+      .then(r => (r.ok ? r.json() : []))
+      .then(items => {
+        if (!Array.isArray(items)) return;
+        courseCatalog = items;
+        buildCatalogIndex(items);
+      })
+      .catch(() => {
+        courseCatalog = [];
+      });
+  }
+
+  function findPrerequisite(code, name) {
+    const byName = prereqByName.get(norm(name));
+    if (byName) return byName;
+
+    const byCode = prereqByCode.get(normCode(code));
+    if (byCode) return byCode;
+
+    if (courseCatalog.length) {
+      const nameKey = norm(name);
+      const fuzzy = courseCatalog.find(item => {
+        const n = norm(item.course_name);
+        return n === nameKey || n.includes(nameKey) || nameKey.includes(n);
+      });
+      if (fuzzy) return prerequisiteFromMeta(fuzzy);
+    }
+
+    return 'Nil';
+  }
 
   function parseGrades(text) {
     const out = [];
@@ -107,6 +177,7 @@
         `<tr>
           <td class="cgr-code">${esc(r.code)}</td>
           <td class="cgr-cn">${esc(r.name)}</td>
+          <td class="cgr-pr">${esc(r.prerequisite || 'Nil')}</td>
         </tr>`
       ).join('');
       return `
@@ -116,6 +187,7 @@
               <thead><tr>
                 <th style="width:14%">Code</th>
                 <th>Course Name</th>
+                <th style="width:30%">Prerequisite</th>
               </tr></thead>
               <tbody>${rows}</tbody>
             </table>
@@ -141,6 +213,7 @@
       `<tr class="cgr-${r.state}">
         <td class="cgr-code">${esc(r.code)}</td>
         <td class="cgr-cn">${esc(r.name)}</td>
+        <td class="cgr-pr">${esc(r.prerequisite || 'Nil')}</td>
         <td>${semLines(r.grades)}</td>
         <td class="tc">${gradePill(r.grades)}</td>
       </tr>`
@@ -152,7 +225,8 @@
           <thead><tr>
             <th style="width:11%">Code</th>
             <th>Course</th>
-            <th style="width:28%">Semester Taken</th>
+            <th style="width:25%">Prerequisite</th>
+            <th style="width:23%">Semester Taken</th>
             <th class="tc" style="width:8%">Grade</th>
           </tr></thead>
           <tbody>${rowsHTML}</tbody>
@@ -165,6 +239,7 @@
       `<tr class="cgr-${r.state}">
         <td class="cgr-code">${esc(r.code)}</td>
         <td class="cgr-cn">${esc(r.name)}</td>
+        <td class="cgr-pr">${esc(r.prerequisite || 'Nil')}</td>
         <td>${semLines(r.grades)}</td>
         <td class="tc">${gradePill(r.grades)}</td>
       </tr>`
@@ -175,7 +250,8 @@
           <thead><tr>
             <th style="width:11%">Code</th>
             <th>Course</th>
-            <th style="width:28%">Semester Taken</th>
+            <th style="width:25%">Prerequisite</th>
+            <th style="width:23%">Semester Taken</th>
             <th class="tc" style="width:8%">Grade</th>
           </tr></thead>
           <tbody>${rowsHTML}</tbody>
@@ -242,7 +318,13 @@
           const code   = tds[0].textContent.trim();
           const name   = tds[1].textContent.trim();
           const grades = parseGrades(tds[2].textContent);
-          return { code, name, grades, state: getState(grades) };
+          return {
+            code,
+            name,
+            grades,
+            prerequisite: findPrerequisite(code, name),
+            state: getState(grades)
+          };
         }).filter(Boolean);
 
         if (inElective) {
@@ -275,7 +357,7 @@
       return;
     }
     injectCSS();
-    enhance();
+    loadCourseCatalog().finally(enhance);
   }
 
   chrome.storage.sync.get({ extensionEnabled: true }, function (r) {

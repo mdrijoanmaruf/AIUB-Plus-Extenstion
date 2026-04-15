@@ -106,6 +106,7 @@ tr.cgr-ong .cgr-code { color: #2563eb; }
 tr.cgr-wdn .cgr-code { color: #dc2626; }
 
 .cgr-sem-ln { font-size: 11px; color: #64748b; line-height: 1.8; }
+.cgr-pr { color: #475569; font-size: 12px; line-height: 1.45; }
 
 .cgr-gp {
   display: inline-block; padding: 2px 10px; border-radius: 20px;
