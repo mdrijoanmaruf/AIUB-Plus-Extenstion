@@ -16,8 +16,8 @@
 
   const NIL_TOKENS = new Set(['', 'NIL', 'NILL', 'N/A', 'NA', '-']);
   let courseCatalog = [];
-  const prereqByName = new Map();
-  const prereqByCode = new Map();
+  const metaByName = new Map();
+  const metaByCode = new Map();
 
   function esc(s) {
     return String(s)
@@ -51,14 +51,43 @@
     return normalizePrereqText(meta.prerequisite);
   }
 
+  function splitPrerequisiteTokens(text) {
+    const raw = normalizePrereqText(text);
+    if (raw === 'Nil') return [];
+
+    if (/\bCREDITS?\b/i.test(raw)) {
+      return [raw];
+    }
+
+    const dense = raw.replace(/\s+/g, ' ').trim();
+    const codeMatches = dense.match(/[A-Z]{2,4}\s*[0-9#*]{4}/gi);
+
+    if (codeMatches && codeMatches.length > 1) {
+      return codeMatches.map(t => t.replace(/\s+/g, ' ').trim());
+    }
+
+    return dense
+      .split(/\s*(?:,|&|\bAND\b)\s*/i)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => s.replace(/\s+/g, ' '));
+  }
+
+  function prerequisiteListFromMeta(meta) {
+    if (!meta) return [];
+    if (Array.isArray(meta.prerequisites) && meta.prerequisites.length) {
+      return meta.prerequisites.map(s => String(s).trim()).filter(Boolean);
+    }
+    return splitPrerequisiteTokens(meta.prerequisite);
+  }
+
   function buildCatalogIndex(items) {
     items.forEach(item => {
       const nameKey = norm(item.course_name);
       const codeKey = normCode(item.course);
-      const prereq = prerequisiteFromMeta(item);
 
-      if (nameKey && !prereqByName.has(nameKey)) prereqByName.set(nameKey, prereq);
-      if (codeKey && !prereqByCode.has(codeKey)) prereqByCode.set(codeKey, prereq);
+      if (nameKey && !metaByName.has(nameKey)) metaByName.set(nameKey, item);
+      if (codeKey && !metaByCode.has(codeKey)) metaByCode.set(codeKey, item);
     });
   }
 
@@ -75,11 +104,11 @@
       });
   }
 
-  function findPrerequisite(code, name) {
-    const byName = prereqByName.get(norm(name));
+  function findCourseMeta(code, name) {
+    const byName = metaByName.get(norm(name));
     if (byName) return byName;
 
-    const byCode = prereqByCode.get(normCode(code));
+    const byCode = metaByCode.get(normCode(code));
     if (byCode) return byCode;
 
     if (courseCatalog.length) {
@@ -88,10 +117,48 @@
         const n = norm(item.course_name);
         return n === nameKey || n.includes(nameKey) || nameKey.includes(n);
       });
-      if (fuzzy) return prerequisiteFromMeta(fuzzy);
+      if (fuzzy) return fuzzy;
     }
 
-    return 'Nil';
+    return null;
+  }
+
+  function findPrerequisite(code, name) {
+    return prerequisiteFromMeta(findCourseMeta(code, name));
+  }
+
+  function findPrerequisiteList(code, name) {
+    return prerequisiteListFromMeta(findCourseMeta(code, name));
+  }
+
+  function isRequirementSatisfied(req, completedCodes) {
+    const normalized = normalizePrereqText(req);
+    if (normalized === 'Nil') return true;
+    if (/\bCREDITS?\b/i.test(normalized)) return false;
+    return completedCodes.has(normCode(normalized));
+  }
+
+  function addLockInfoToNotAttempted(semSections, electiveRows) {
+    const allRows = [];
+    semSections.forEach(sec => allRows.push(...sec.rows));
+    allRows.push(...electiveRows);
+
+    // Ongoing counts as completed for prerequisite checks.
+    const completedCodes = new Set(
+      allRows
+        .filter(r => r.state === 'done' || r.state === 'ong')
+        .map(r => normCode(r.code))
+    );
+
+    allRows.forEach(r => {
+      if (r.state !== 'nd') return;
+      const reqList = findPrerequisiteList(r.code, r.name);
+      const missing = reqList.filter(req => !isRequirementSatisfied(req, completedCodes));
+      r.locked = missing.length > 0;
+      r.missingPrerequisites = missing;
+      r.prerequisiteStatus = r.locked ? 'Locked' : 'Unlocked';
+      r.needToComplete = r.locked ? missing.join(', ') : '-';
+    });
   }
 
   function parseGrades(text) {
@@ -178,6 +245,10 @@
           <td class="cgr-code">${esc(r.code)}</td>
           <td class="cgr-cn">${esc(r.name)}</td>
           <td class="cgr-pr">${esc(r.prerequisite || 'Nil')}</td>
+          <td class="tc">
+            <span class="cgr-lock-badge ${r.locked ? 'is-locked' : 'is-unlocked'}">${esc(r.prerequisiteStatus || 'Unlocked')}</span>
+          </td>
+          <td class="cgr-need">${esc(r.needToComplete || '-')}</td>
         </tr>`
       ).join('');
       return `
@@ -185,9 +256,11 @@
           <div class="cgr-tbl-wrap">
             <table class="cgr-tbl">
               <thead><tr>
-                <th style="width:14%">Code</th>
+                <th style="width:12%">Code</th>
                 <th>Course Name</th>
-                <th style="width:30%">Prerequisite</th>
+                <th style="width:22%">Prerequisite</th>
+                <th class="tc" style="width:10%">Status</th>
+                <th style="width:26%">Need To Complete</th>
               </tr></thead>
               <tbody>${rows}</tbody>
             </table>
@@ -335,6 +408,8 @@
         }
       }
     }
+
+    addLockInfoToNotAttempted(semSections, electiveRows);
 
     let html = '';
     html += infoHTML(infoItems || [], printHref);

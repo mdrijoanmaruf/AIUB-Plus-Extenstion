@@ -107,6 +107,25 @@ tr.cgr-wdn .cgr-code { color: #dc2626; }
 
 .cgr-sem-ln { font-size: 11px; color: #64748b; line-height: 1.8; }
 .cgr-pr { color: #475569; font-size: 12px; line-height: 1.45; }
+.cgr-need { color: #475569; font-size: 12px; line-height: 1.45; }
+
+.cgr-lock-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.cgr-lock-badge.is-locked {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.cgr-lock-badge.is-unlocked {
+  background: #dcfce7;
+  color: #166534;
+}
 
 .cgr-gp {
   display: inline-block; padding: 2px 10px; border-radius: 20px;
