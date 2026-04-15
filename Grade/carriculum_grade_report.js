@@ -139,6 +139,17 @@
     return prerequisiteListFromMeta(findCourseMeta(code, name));
   }
 
+  function parseCreditValue(raw) {
+    const m = String(raw || '').match(/\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  }
+
+  function findCourseCredit(code, name) {
+    const meta = findCourseMeta(code, name);
+    if (!meta) return 0;
+    return parseCreditValue(meta.credit);
+  }
+
   function isRequirementSatisfied(req, completedCodes) {
     const normalized = normalizePrereqText(req);
     if (normalized === 'Nil') return true;
@@ -242,6 +253,19 @@
     semSections.forEach(sec => allRows.push(...sec.rows));
     allRows.push(...electiveRows);
 
+    function sumCredit(rows, predicate) {
+      return rows
+        .filter(predicate)
+        .reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
+    }
+
+    const stateCredits = {
+      completed: sumCredit(allRows, r => r.state === 'done'),
+      ongoing: sumCredit(allRows, r => r.state === 'ong'),
+      withdrawn: sumCredit(allRows, r => r.state === 'wdn'),
+      notAttempted: sumCredit(allRows, r => r.state === 'nd'),
+    };
+
     const stateCounts = {
       completed: allRows.filter(r => r.state === 'done').length,
       ongoing: allRows.filter(r => r.state === 'ong').length,
@@ -253,17 +277,24 @@
     allRows.forEach(r => {
       const grade = r.grades.length ? r.grades[r.grades.length - 1].grade : '-';
       const key = !r.grades.length ? 'N/A' : (grade === '-' ? 'Ongoing' : grade);
-      gradeDistribution[key] = (gradeDistribution[key] || 0) + 1;
+      gradeDistribution[key] = (gradeDistribution[key] || 0) + parseCreditValue(r.credit);
     });
 
     const notAttemptedRows = allRows.filter(r => r.state === 'nd');
-    const locked = notAttemptedRows.filter(r => r.locked).length;
-    const unlocked = Math.max(notAttemptedRows.length - locked, 0);
+    const locked = notAttemptedRows.filter(r => r.locked);
+    const unlocked = notAttemptedRows.filter(r => !r.locked);
+
+    const lockedCredits = locked.reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
+    const unlockedCredits = unlocked.reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
 
     const semesterProgress = semSections.map(sec => {
-      const total = sec.rows.length;
-      const attempted = sec.rows.filter(r => r.state !== 'nd').length;
-      const completed = sec.rows.filter(r => r.state === 'done').length;
+      const total = sec.rows.reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
+      const attempted = sec.rows
+        .filter(r => r.state !== 'nd')
+        .reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
+      const completed = sec.rows
+        .filter(r => r.state === 'done')
+        .reduce((sum, r) => sum + parseCreditValue(r.credit), 0);
       return {
         label: sec.label || 'Semester',
         total,
@@ -277,12 +308,16 @@
       studentId: getInfoValue(infoItems, ['Id', 'Student Id']),
       program: getInfoValue(infoItems, ['Program', 'Department']),
       cgpa: extractNumber(getInfoValue(infoItems, ['Cgpa', 'CGPA'])),
+      totalCredits: allRows.reduce((sum, r) => sum + parseCreditValue(r.credit), 0),
       totalCourses: allRows.length,
+      stateCredits,
       stateCounts,
       gradeDistribution,
       prerequisite: {
-        locked,
-        unlocked,
+        lockedCredits,
+        unlockedCredits,
+        lockedCourses: locked.length,
+        unlockedCourses: unlocked.length,
       },
       semesterProgress,
       capturedAt: new Date().toISOString(),
@@ -494,6 +529,7 @@
           return {
             code,
             name,
+            credit: findCourseCredit(code, name),
             grades,
             prerequisite: findPrerequisite(code, name),
             state: getState(grades)

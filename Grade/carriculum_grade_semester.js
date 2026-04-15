@@ -58,6 +58,11 @@
     return m ? parseFloat(m[0]) : 0;
   }
 
+  function parseCreditValue(raw) {
+    const m = String(raw || '').match(/\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  }
+
   function saveGraphData(mutator) {
     if (!chrome.storage || !chrome.storage.local) return;
     chrome.storage.local.get({ aiubGraphData: {} }, function (res) {
@@ -72,11 +77,24 @@
     const allCourses = [];
     semesters.forEach(s => allCourses.push(...s.courses));
 
+    function sumCredit(courses, predicate) {
+      return courses
+        .filter(predicate)
+        .reduce((sum, c) => sum + parseCreditValue(c.creditValue), 0);
+    }
+
     const passFail = {
       passed: allCourses.filter(c => c.state === 'done').length,
       ongoing: allCourses.filter(c => c.state === 'ong').length,
       dropped: allCourses.filter(c => c.state === 'wdn').length,
       failed: allCourses.filter(c => c.state === 'fail').length,
+    };
+
+    const passFailCredits = {
+      passed: sumCredit(allCourses, c => c.state === 'done'),
+      ongoing: sumCredit(allCourses, c => c.state === 'ong'),
+      dropped: sumCredit(allCourses, c => c.state === 'wdn'),
+      failed: sumCredit(allCourses, c => c.state === 'fail'),
     };
 
     const semesterGpaTrend = semesters
@@ -105,8 +123,10 @@
       studentId: getInfoValue(infoItems, ['Id', 'Student Id']),
       program: getInfoValue(infoItems, ['Program', 'Department']),
       latestCgpa: extractNumber(getInfoValue(infoItems, ['Cgpa', 'CGPA'])),
+      totalCredits: allCourses.reduce((sum, c) => sum + parseCreditValue(c.creditValue), 0),
       totalCourses: allCourses.length,
       passFail,
+      passFailCredits,
       semesterGpaTrend,
       cgpaTrend,
       creditBySemester,
@@ -174,6 +194,7 @@
           classId: tds[0].textContent.trim(),
           name:    tds[1].textContent.trim(),
           credits: tds[2].textContent.trim(),
+          creditValue: parseCreditValue(tds[2].textContent.trim()),
           mtg,
           ftg,
           fg,
