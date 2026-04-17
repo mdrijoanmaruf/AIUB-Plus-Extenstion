@@ -100,13 +100,14 @@ function SummaryCards({ totalDebit, totalCredit, finalBalance }) {
         const cells = Array.from(row.querySelectorAll('td'));
         if (!cells.length) return;
 
-        if (cells[0].hasAttribute('colspan') || row.textContent.toLowerCase().includes('total')) {
+        if (cells[0].hasAttribute('colspan') || cells[0].textContent.trim().toLowerCase() === 'total') {
           row.style.background = 'linear-gradient(to right, #f1f5f9, #e0f2fe)';
           row.style.fontWeight = '700';
           if (cells.length >= 3) {
             const debCell = cells.length >= 4 ? cells[1] : cells[cells.length - 3];
             const credCell = cells.length >= 4 ? cells[2] : cells[cells.length - 2];
-            const bCell = cells[cells.length - 1];
+            // Total row has an extra empty footable-last-visible TD at the end; balance is second-to-last
+            const bCell = cells[cells.length - 2];
 
             totalDebit   = parseAmount(debCell.querySelector('label')?.textContent || debCell.textContent);
             totalCredit  = parseAmount(credCell.textContent);
@@ -122,11 +123,11 @@ function SummaryCards({ totalDebit, totalCredit, finalBalance }) {
         const creditCell = cells[3];
         const balCell = cells[cells.length - 1];
 
-        dateCell.style.cssText = 'color:#1f2937!important;white-space:nowrap;font-size:13px!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;background:#fff!important';
-        partCell.style.cssText = 'max-width:320px;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;vertical-align:middle;background:#fff!important;color:#1f2937!important';
-        debitCell.style.cssText = 'text-align:right;white-space:nowrap;font-weight:700!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
-        creditCell.style.cssText = 'text-align:right;white-space:nowrap;font-weight:700!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
-        balCell.style.cssText = 'text-align:right;white-space:nowrap;font-weight:800!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
+        dateCell.style.cssText = 'display:table-cell!important;color:#1f2937!important;white-space:nowrap;font-size:13px!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;background:#fff!important';
+        partCell.style.cssText = 'display:table-cell!important;max-width:320px;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;vertical-align:middle;background:#fff!important;color:#1f2937!important';
+        debitCell.style.cssText = 'display:table-cell!important;text-align:right;white-space:nowrap;font-weight:700!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
+        creditCell.style.cssText = 'display:table-cell!important;text-align:right;white-space:nowrap;font-weight:700!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
+        balCell.style.cssText = 'display:table-cell!important;text-align:right;white-space:nowrap;font-weight:800!important;padding:12px 14px!important;border:none!important;border-bottom:1px solid #e5e7eb!important;font-size:13px!important;background:#fff!important';
 
         const dAmt = parseAmount(debitCell.textContent);
         const cAmt = parseAmount(creditCell.textContent);
@@ -137,16 +138,16 @@ function SummaryCards({ totalDebit, totalCredit, finalBalance }) {
 
         const modalLink = partCell.querySelector('a[data-toggle="modal"]');
         if (modalLink) {
-          row.style.background = '#f0f9ff!important';
+          row.setAttribute('style', 'background:#f0f9ff!important');
           const badge = document.createElement('span');
           badge.style.cssText = 'display:inline-block;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;margin-right:8px;background:#dbeafe;color:#0284c7;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;border:1px solid #bfdbfe';
           badge.textContent = 'Assessment';
           modalLink.before(badge);
         } else if (partCell.textContent.trim().toLowerCase().includes('semester payment')) {
-          row.style.background = '#f0fdf4!important';
+          row.setAttribute('style', 'background:#f0fdf4!important');
           partCell.insertAdjacentHTML('afterbegin', '<span style="display:inline-block;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;margin-right:8px;background:#d1fae5;color:#059669;text-transform:uppercase;white-space:nowrap;border:1px solid #a7f3d0;letter-spacing:.4px">Payment</span>');
         } else {
-          row.style.background = '#fffbeb!important';
+          row.setAttribute('style', 'background:#fffbeb!important');
           partCell.insertAdjacentHTML('afterbegin', '<span style="display:inline-block;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;margin-right:8px;background:#fef3c7;color:#b45309;text-transform:uppercase;white-space:nowrap;border:1px solid #fcd34d;letter-spacing:.4px">Fee</span>');
         }
       });
