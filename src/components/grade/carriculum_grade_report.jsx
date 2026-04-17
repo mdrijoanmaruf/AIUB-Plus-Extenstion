@@ -368,7 +368,7 @@ function GradePill({ grades }) {
   const last = grades[grades.length - 1];
   const color = GRADE_BG[last.grade] || '#90a4ae';
   const label = last.grade === '-' ? 'Ongoing' : last.grade;
-  return <span className="text-[11px] font-bold" style={{ color }}>{label}</span>;
+  return <span className="text-[11px] font-extrabold" style={{ color }}>{label}</span>;
 }
 
 function SemLines({ grades }) {
@@ -385,10 +385,12 @@ function SemLines({ grades }) {
 function LockBadge({ status }) {
   const isLocked = status === 'Locked';
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-      isLocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-    }`}>
-      {status}
+    <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{
+      background: isLocked 
+        ? 'linear-gradient(135deg, #dc2626, #991b1b)' 
+        : 'linear-gradient(135deg, #10b981, #059669)'
+    }}>
+      {isLocked ? '🔒 ' : '✓ '}{status}
     </span>
   );
 }
@@ -398,16 +400,16 @@ function SemTable({ sec }) {
   const codeColor = (state) => ({ ong: 'text-blue-600', wdn: 'text-red-600', nd: 'text-slate-300', done: 'text-blue-900' }[state] || 'text-blue-900');
 
   return (
-    <div>
-      <div className="inline-flex items-center text-[11px] font-bold text-slate-600 uppercase tracking-wide bg-slate-100 border border-slate-200 rounded px-2.5 py-1 mt-3.5 mb-1.5">
-        {sec.label}
+    <div className="mb-2">
+      <div className="inline-flex items-center text-[11px] font-bold text-slate-700 uppercase tracking-wider rounded-lg px-3 py-1.5 mt-3 mb-2" style={{ background: '#e5e7eb' }}>
+        📍 {sec.label}
       </div>
-      <div className="border border-slate-200 rounded-lg overflow-hidden mb-1.5">
+      <div className="border border-slate-200 rounded-lg overflow-hidden mb-2">
         <table className="w-full border-collapse text-[13px]">
           <thead>
-            <tr>
+            <tr style={{ background: '#f3f4f6' }}>
               {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h, i) => (
-                <th key={h} className="bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 border-b border-slate-200 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
+                <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-700 border-b-2 border-slate-300 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
                   {h}
                 </th>
               ))}
@@ -432,6 +434,7 @@ function SemTable({ sec }) {
 
 function NotAttemptedSection({ semSections, electiveRows }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const tabs = [];
   semSections.forEach((sec, i) => {
@@ -441,11 +444,20 @@ function NotAttemptedSection({ semSections, electiveRows }) {
   const electiveNA = electiveRows.filter((r) => r.state === 'nd');
   if (electiveNA.length) tabs.push({ label: 'Elective', rows: electiveNA });
 
-  if (!tabs.length) {
+  // Search across all courses
+  const allCourses = [...semSections.flatMap((s) => s.rows), ...electiveRows];
+  const searchResults = searchQuery.trim() 
+    ? allCourses.filter((r) => 
+        r.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+
+  if (!tabs.length && !searchResults.length) {
     return (
-      <div className="bg-amber-50 border border-yellow-200 rounded-xl p-4 mb-5">
-        <div className="text-center text-green-600 text-[13px] font-semibold bg-green-50 rounded-lg border border-green-200 py-3.5">
-          ✓ All courses have been attempted!
+      <div className="rounded-xl p-4 mb-6 border-2" style={{ background: '#f0fdf4', borderColor: '#10b981' }}>
+        <div className="text-center text-white text-[14px] font-extrabold rounded-lg py-4" style={{ background: '#10b981' }}>
+          ✅ All courses completed!
         </div>
       </div>
     );
@@ -454,55 +466,159 @@ function NotAttemptedSection({ semSections, electiveRows }) {
   const total = tabs.reduce((s, t) => s + t.rows.length, 0);
   const cur = tabs[activeTab] || tabs[0];
 
+  // Determine status badge and color for search results
+  const getStatusBadge = (row) => {
+    if (row.state === 'done') return { label: 'Completed', color: '#10b981', bgColor: '#f0fdf4' };
+    if (row.state === 'ong') return { label: 'Ongoing', color: '#2563eb', bgColor: '#eff6ff' };
+    if (row.state === 'wdn') return { label: 'Withdrawn', color: '#dc2626', bgColor: '#fef2f2' };
+    if (row.locked) return { label: 'Locked', color: '#dc2626', bgColor: '#fef2f2' };
+    return { label: 'Unlocked', color: '#10b981', bgColor: '#f0fdf4' };
+  };
+
   return (
-    <div className="bg-amber-50 border border-yellow-200 rounded-xl p-4 mb-5">
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-amber-800 bg-amber-100 border-l-[3px] border-amber-500 rounded px-3 py-1.5 mb-3">
+    <div className="rounded-xl p-5 mb-6 border-2" style={{ background: '#fffbeb', borderColor: '#fbbf24' }}>
+      <div className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-wider text-amber-900 rounded-lg px-4 py-2.5 mb-4" style={{ background: '#fef3c7' }}>
         ⏳ Not Attempted Yet
-        <span className="ml-auto bg-yellow-200 text-amber-900 rounded-full text-[10px] font-bold px-2 py-0.5">{total}</span>
+        <span className="ml-auto bg-amber-600 text-white rounded-full text-[11px] font-extrabold px-3 py-1">{total}</span>
       </div>
 
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        {tabs.map((t, i) => (
+      {/* Search Input */}
+      <div className="mb-4" style={{ position: 'relative' }}>
+        <input
+          type="text"
+          placeholder="Search courses by code or name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2.5 text-[13px] rounded-lg border-2 outline-none transition-all"
+          style={{
+            borderColor: searchQuery ? '#d97706' : '#cbd5e1',
+            background: '#ffffff',
+            paddingRight: '2.5rem'
+          }}
+        />
+        {searchQuery && (
           <button
-            key={i}
-            onClick={() => setActiveTab(i)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-semibold border cursor-pointer transition-all outline-none ${
-              i === activeTab
-                ? 'bg-blue-700 text-white border-blue-700 shadow-sm'
-                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
-            }`}
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="cursor-pointer text-slate-400 font-bold"
+            style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: '16px',
+              lineHeight: 1,
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+            }}
+            title="Clear search"
+            aria-label="Clear search"
           >
-            {t.label}
-            <span className={`rounded-full text-[10px] font-bold px-1.5 ${i === activeTab ? 'bg-white/25 text-white' : 'bg-slate-200 text-slate-500'}`}>
-              {t.rows.length}
-            </span>
+            ✕
           </button>
-        ))}
+        )}
       </div>
 
-      {cur && (
-        <div className="border border-slate-200 rounded-lg overflow-hidden">
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div className="mb-4 border border-slate-200 rounded-lg overflow-hidden">
           <table className="w-full border-collapse text-[13px]">
             <thead>
-              <tr>
-                {['Code', 'Course Name', 'Prerequisite', 'Status', 'Need To Complete'].map((h) => (
-                  <th key={h} className="bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 border-b border-slate-200 text-left">{h}</th>
+              <tr style={{ background: '#fef3c7' }}>
+                {['Code', 'Course Name', 'Prerequisite', 'Status', 'Lock Status', 'Need To Complete'].map((h) => (
+                  <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900 border-b-2" style={{ borderColor: '#fbbf24' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {cur.rows.map((r, i) => (
-                <tr key={i} className="border-b border-slate-100 last:border-b-0 hover:bg-amber-50/60">
-                  <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-300">{r.code}</td>
-                  <td className="px-3 py-2 text-slate-500">{r.name}</td>
-                  <td className="px-3 py-2 text-[12px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
-                  <td className="px-3 py-2 text-center"><LockBadge status={r.prereqStatus || 'Unlocked'} /></td>
-                  <td className="px-3 py-2 text-[12px] text-slate-400">{r.needToComplete || '-'}</td>
-                </tr>
-              ))}
+              {searchResults.map((r, i) => {
+                const statusBadge = getStatusBadge(r);
+                return (
+                  <tr key={i} className="border-b border-slate-100 last:border-b-0 hover:bg-amber-50/60">
+                    <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-700">{r.code}</td>
+                    <td className="px-3 py-2 text-slate-700">{r.name}</td>
+                    <td className="px-3 py-2 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
+                    <td className="px-3 py-2 text-center">
+                      <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ background: statusBadge.color }}>
+                        {r.state === 'ong' ? '▶ Ongoing' : r.state === 'done' ? '✓ Completed' : r.state === 'wdn' ? '✕ Withdrawn' : ''}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      {r.state === 'nd' ? (
+                        <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ background: r.locked ? '#dc2626' : '#10b981' }}>
+                          {r.locked ? '🔒 Locked' : '✓ Unlocked'}
+                        </span>
+                      ) : (
+                        <span className="text-[12px] text-slate-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-[12px] text-slate-600">
+                      {r.state === 'nd' && r.locked ? (
+                        <span className="text-red-600 font-semibold">{r.needToComplete || 'Check prerequisites'}</span>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Tabs */}
+      {!searchResults.length && (
+        <>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {tabs.map((t, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveTab(i)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[12px] font-semibold cursor-pointer transition-all outline-none border ${
+                  i === activeTab
+                    ? 'text-amber-900 border-yellow-200 shadow-sm'
+                    : 'text-slate-700 border-slate-300 hover:bg-amber-50/60'
+                }`}
+                style={i === activeTab ? { background: '#fef3c7' } : { background: '#fffdf7' }}
+              >
+                {t.label}
+                <span
+                  className={`rounded-full text-[10px] font-bold px-2.5 py-0.5 ${i === activeTab ? 'text-amber-900' : 'text-slate-700'}`}
+                  style={i === activeTab ? { background: '#fde68a' } : { background: '#f1f5f9' }}
+                >
+                  {t.rows.length}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {cur && (
+            <div className="border border-slate-200 rounded-lg overflow-hidden">
+              <table className="w-full border-collapse text-[13px]">
+                <thead>
+                  <tr style={{ background: '#fef3c7' }}>
+                    {['Code', 'Course Name', 'Prerequisite', 'Status', 'Need To Complete'].map((h) => (
+                      <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900 border-b-2" style={{ borderColor: '#fbbf24' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {cur.rows.map((r, i) => (
+                    <tr key={i} className="border-b border-slate-100 last:border-b-0 hover:bg-amber-50/60">
+                      <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-300">{r.code}</td>
+                      <td className="px-3 py-2 text-slate-500">{r.name}</td>
+                      <td className="px-3 py-2 text-[12px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
+                      <td className="px-3 py-2 text-center"><LockBadge status={r.prereqStatus || 'Unlocked'} /></td>
+                      <td className="px-3 py-2 text-[12px] text-slate-400">{r.needToComplete || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -514,18 +630,18 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
   return (
     <div className="text-[13px] text-slate-800 py-4 px-1" style={{ boxSizing: 'border-box' }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-slate-100">
-        <h2 className="text-[16px] font-bold text-slate-900 m-0">
-          Curriculum <span className="text-blue-600">Grade Report</span>
+      <div className="flex items-center justify-between mb-6 pb-4 rounded-lg p-4" style={{ background: 'linear-gradient(135deg, #3b82f6, #1e3a8a)' }}>
+        <h2 className="text-[22px] font-extrabold text-white m-0">
+          Curriculum <span style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Grade Report</span>
         </h2>
         <div className="flex items-center gap-2">
           {printHref && (
-            <a href={printHref} className="text-[11px] font-semibold text-slate-500 border border-slate-300 rounded-md px-3 py-1.5 bg-slate-50 hover:bg-indigo-50 hover:text-blue-700 hover:border-indigo-300 no-underline transition-all">
+            <a href={printHref} className="text-[11px] font-bold text-white rounded-lg px-4 py-2 no-underline transition-all hover:shadow-lg" style={{ background: 'linear-gradient(135deg, #ec4899, #f43f5e)' }}>
               🖨 Print
             </a>
           )}
           {graphHref && (
-            <a href={graphHref} className="text-[11px] font-semibold text-sky-700 border border-sky-200 rounded-md px-3 py-1.5 bg-sky-50 hover:bg-sky-100 no-underline transition-all">
+            <a href={graphHref} className="text-[11px] font-bold text-white rounded-lg px-4 py-2 no-underline transition-all hover:shadow-lg" style={{ background: 'linear-gradient(135deg, #06b6d4, #0284c7)' }}>
               📊 Graph
             </a>
           )}
@@ -534,15 +650,18 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
 
       {/* Info grid */}
       {infoItems.length > 0 && (
-        <div className="grid gap-2 mb-5" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {infoItems.map(({ k, v }) => (
-            <div key={k} className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-200 hover:shadow-sm transition-all cursor-default">
-              <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">{k}</div>
-              <div className={k === 'Cgpa' ? 'text-[26px] font-extrabold text-green-600 leading-tight' : 'text-[13px] font-medium text-slate-900'}>
-                {v || '—'}
+        <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          {infoItems.map(({ k, v }) => {
+            const color = k === 'Cgpa' ? '#3b82f6' : k === 'Student Id' ? '#10b981' : '#6366f1';
+            return (
+              <div key={k} className="px-4 py-4 rounded-xl bg-white border-2 hover:shadow-md transition-all cursor-default" style={{ borderColor: color }}>
+                <div className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color }}>{k}</div>
+                <div className={k === 'Cgpa' ? 'text-[28px] font-extrabold text-green-700 leading-tight' : 'text-[13px] font-bold text-slate-700'}>
+                  {v || '—'}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -550,23 +669,23 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       <NotAttemptedSection semSections={semSections} electiveRows={electiveRows} />
 
       {/* Core curriculum */}
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-blue-800 bg-blue-50 border-l-[3px] border-blue-600 rounded px-3 py-1.5 mb-2 mt-5">
-        Core Curriculum
+      <div className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-wider text-white rounded-lg px-4 py-2.5 mb-3 mt-6" style={{ background: 'linear-gradient(135deg, #3b82f6, #1e3a8a)' }}>
+        📚 Core Curriculum
       </div>
       {semSections.map((sec, i) => <SemTable key={i} sec={sec} />)}
 
       {/* Elective curriculum */}
       {electiveRows.length > 0 && (
         <>
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-green-800 bg-green-50 border-l-[3px] border-green-600 rounded px-3 py-1.5 mb-2 mt-5">
-            Elective Curriculum
+          <div className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-wider text-white rounded-lg px-4 py-2.5 mb-3 mt-6" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+            ✨ Elective Curriculum
           </div>
           <div className="border border-slate-200 rounded-lg overflow-hidden">
             <table className="w-full border-collapse text-[13px]">
               <thead>
-                <tr>
+                <tr style={{ background: '#dcfce7' }}>
                   {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h) => (
-                    <th key={h} className="bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-500 border-b border-slate-200 text-left">{h}</th>
+                    <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-green-900 border-b-2" style={{ borderColor: '#10b981' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -587,10 +706,10 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3.5 mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-        {[['#2563eb','Ongoing'],['#059669','Completed'],['#dc2626','Withdrawn'],['#cbd5e1','Not Attempted']].map(([c, l]) => (
-          <span key={l} className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c }} />
+      <div className="flex flex-wrap gap-4 mt-6 pt-4 rounded-lg px-4 py-3 border-l-4" style={{ background: '#f9fafb', borderColor: '#3b82f6' }}>
+        {[['#2563eb','🔵 Ongoing'],['#059669','✅ Completed'],['#dc2626','🚫 Withdrawn'],['#cbd5e1','⭕ Not Attempted']].map(([c, l]) => (
+          <span key={l} className="flex items-center gap-2 text-[12px] font-semibold text-slate-700">
+            <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: c }} />
             {l}
           </span>
         ))}
