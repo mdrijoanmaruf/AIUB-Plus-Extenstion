@@ -230,9 +230,7 @@
       // ── Hover state ──────────────────────────────────────────────────────────────────
       item.addEventListener('mouseenter', function () {
         if (!this.classList.contains('active')) {
-          this.style.background = 'rgba(255, 255, 255, 0.6) !important';
           this.style.color = '#1e3a8a !important';
-          this.style.paddingLeft = '16px !important';
           const glyphicon = this.querySelector('.glyphicon');
           if (glyphicon) glyphicon.style.color = '#2563eb !important';
         }
@@ -240,9 +238,7 @@
 
       item.addEventListener('mouseleave', function () {
         if (!this.classList.contains('active')) {
-          this.style.background = 'transparent !important';
           this.style.color = '#6b7280 !important';
-          this.style.paddingLeft = '12px !important';
           const glyphicon = this.querySelector('.glyphicon');
           if (glyphicon) glyphicon.style.color = '#d1d5db !important';
         }
