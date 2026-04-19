@@ -83,9 +83,9 @@ function parseTerm(termEl) {
 
 function SectionCard({ sec, isMidterm }) {
   const [open, setOpen] = useState(false);
-  const scoreColor = isMidterm ? '#0891b2' : '#a855f7';
-  const hoverBg = isMidterm ? 'rgba(6, 182, 212, 0.1)' : 'rgba(168, 85, 247, 0.1)';
-  const borderColor = isMidterm ? '#b3e5fc' : '#e9d5ff';
+  const scoreColor = isMidterm ? '#059669' : '#d97706';
+  const hoverBg = isMidterm ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)';
+  const borderColor = isMidterm ? '#6ee7b7' : '#fcd34d';
   const activeBg = open ? hoverBg : 'rgba(255, 255, 255, 0.6)';
 
   return (
@@ -160,7 +160,7 @@ function TermCard({ term }) {
       className="rounded-xl mb-5 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md"
       style={{
         background: cardGradient,
-        border: `1.5px solid ${borderBgColor}`,
+        // border: `1.5px solid ${borderBgColor}`,
         borderLeft: `6px solid ${borderColor}`
       }}
     >
@@ -210,7 +210,7 @@ function CourseAndResultsView({ sectionOpts, semesterOpts, courseName, courseMet
         <div className="flex flex-col gap-1.5 flex-1 min-w-[180px]" style={{ flex: '2.5 1 0' }}>
           <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500 ml-1">Course</span>
           <select
-            className="border-[1.5px] border-slate-300 rounded-xl px-4 py-2.5 text-[14px] font-medium text-slate-800 bg-white cursor-pointer outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-slate-400 w-full transition-all shadow-sm"
+            className="border border-slate-200 rounded-lg px-4 py-3 text-[14px] font-medium text-slate-800 bg-gradient-to-br from-white to-slate-50 cursor-pointer outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 hover:border-emerald-300 hover:shadow-md w-full transition-all shadow-sm"
             onChange={(e) => onSectionChange(e.target.value)}
             defaultValue={sectionOpts.find((o) => o.selected)?.value || ''}
           >
@@ -220,7 +220,7 @@ function CourseAndResultsView({ sectionOpts, semesterOpts, courseName, courseMet
         <div className="flex flex-col gap-1.5 flex-1 min-w-[150px]">
           <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500 ml-1">Semester</span>
           <select
-            className="border-[1.5px] border-slate-300 rounded-xl px-4 py-2.5 text-[14px] font-medium text-slate-800 bg-white cursor-pointer outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 hover:border-slate-400 w-full transition-all shadow-sm"
+            className="border border-slate-200 rounded-lg px-4 py-3 text-[14px] font-medium text-slate-800 bg-gradient-to-br from-white to-slate-50 cursor-pointer outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 hover:border-emerald-300 hover:shadow-md w-full transition-all shadow-sm"
             onChange={(e) => onSemesterChange(e.target.value)}
             defaultValue={semesterOpts.find((o) => o.selected)?.value || ''}
           >

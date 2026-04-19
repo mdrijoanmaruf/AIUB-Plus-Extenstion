@@ -107,8 +107,10 @@ function CourseCard({ course }) {
   const dropDetail = dropMatch ? dropMatch[1] : '';
   const safeHref = course.href && /^[/?#]/.test(course.href) ? course.href : '#';
   
-  const cardBg = isDropped ? '#fef2f2' : '#f8fafc';
-  const cardBorder = isDropped ? '#fecaca' : '#cbd5e1';
+  const cardBg = isDropped
+    ? 'linear-gradient(135deg, #fff8f8 0%, #fff1f2 50%, #ffe4e6 100%)'
+    : 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 50%, #dbeafe 100%)';
+  const cardBorder = isDropped ? '#fecdd3' : '#bfdbfe';
   const codeColor = isDropped ? '#991b1b' : '#0284c7';
   const sectionBg = isDropped ? '#fee2e2' : '#dbeafe';
   const sectionBorder = isDropped ? '#fca5a5' : '#0284c7';
@@ -117,7 +119,7 @@ function CourseCard({ course }) {
     <div 
       className="border rounded-lg overflow-hidden transition-all hover:shadow-md shadow-sm"
       style={{
-        backgroundColor: cardBg,
+        background: cardBg,
         borderColor: cardBorder,
         borderWidth: '1px'
       }}
@@ -277,7 +279,7 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
             }}
           >
             <div 
-              className="px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700 text-white"
+              className="px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-blue-700 text-gray-600"
               style={{ borderBottom: '1px solid #cbd5e1' }}
             >
               💰 Fees
