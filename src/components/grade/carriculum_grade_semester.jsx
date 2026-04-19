@@ -118,14 +118,14 @@ function MiniGrade({ grade }) {
 
 function StatusBadge({ state }) {
   const map = {
-    ong:  { text: 'Ongoing', cls: 'bg-violet-100 text-violet-700' },
-    wdn:  { text: 'Dropped', cls: 'bg-slate-100 text-slate-500' },
-    fail: { text: 'Failed',  cls: 'bg-red-100 text-red-700' },
-    done: { text: 'Passed',  cls: 'bg-emerald-100 text-emerald-700' },
+    ong:  { text: 'Ongoing', color: '#7c3aed' },
+    wdn:  { text: 'Dropped', color: '#6b7280' },
+    fail: { text: 'Failed',  color: '#dc2626' },
+    done: { text: 'Passed',  color: '#059669' },
   };
-  const { text, cls } = map[state] || map.done;
+  const { text, color } = map[state] || map.done;
   return (
-    <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md ${cls}`}>
+    <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color }}>
       {text}
     </span>
   );
@@ -140,18 +140,17 @@ function SummaryBar({ summary }) {
     { label: 'Cumulative GPA', value: summary.cgpa, colored: true },
   ];
   return (
-    <div className="flex gap-3 flex-wrap px-4 py-3 bg-slate-50 border-t border-slate-100">
-      {items.map(({ label, value, colored }) => (
-        <div key={label} className="flex flex-col items-center flex-1 min-w-[80px]">
-          <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-0.5">{label}</div>
-          <span
-            className="text-[15px] font-bold"
-            style={colored ? { color: gpaColor(value) } : { color: '#0f172a' }}
-          >
-            {value || '—'}
-          </span>
-        </div>
-      ))}
+    <div className="border-t border-sky-100" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
+      <div className="flex divide-x divide-sky-100">
+        {items.map(({ label, value, colored }) => (
+          <div key={label} className="flex flex-col items-center flex-1 min-w-[80px] px-3 py-3">
+            <div className="text-[10px] uppercase tracking-wide text-sky-500 font-bold mb-0.5">{label}</div>
+            <span className="text-[15px] font-bold" style={colored ? { color: gpaColor(value) } : { color: '#0f172a' }}>
+              {value || '—'}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -159,29 +158,28 @@ function SummaryBar({ summary }) {
 function SemesterCard({ sem }) {
   const [open, setOpen] = useState(true);
   const isActive = sem.courses.some((c) => c.state === 'ong');
-  const borderColor = isActive ? 'border-violet-300' : 'border-slate-200';
-  const dotColor = isActive ? 'bg-violet-500' : 'bg-slate-300';
 
   return (
-    <div className={`rounded-xl overflow-hidden mb-3 border ${borderColor}`} style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+    <div
+      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all"
+      style={{ borderColor: isActive ? '#7dd3fc' : '#bfdbfe' }}
+    >
       <div
-        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none transition-all"
-        style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.15)' }}
+        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
+        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
         onClick={() => setOpen((v) => !v)}
       >
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-yellow-300' : 'bg-white/40'}`} />
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
           <span className="text-[14px] font-bold text-white">{sem.label}</span>
           {isActive && (
-            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-yellow-300 text-indigo-900">Current</span>
+            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-sky-900">Current</span>
           )}
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[12px] text-white/80">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
           {sem.summary?.gpa && sem.summary.gpa !== '0.00' && (
-            <span className="text-[12px] font-semibold text-white/90">
-              GPA {sem.summary.gpa}
-            </span>
+            <span className="text-[12px] font-semibold text-white/90">GPA {sem.summary.gpa}</span>
           )}
           <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
         </div>
@@ -189,33 +187,37 @@ function SemesterCard({ sem }) {
 
       {open && (
         <>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)' }}>
             <table className="w-full text-[12px] border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[9%]">Class ID</th>
-                  <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500">Course</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[5%]">Cr.</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[6%]">Mid</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[7%]">Final</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[8%]">Grade</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[6%]">TGP</th>
-                  <th className="text-center px-2 py-2 font-semibold text-[10px] uppercase tracking-wide text-slate-500 w-[9%]">Status</th>
+                <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)', borderBottom: '1px solid #bfdbfe' }}>
+                  <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[9%]">Class ID</th>
+                  <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600">Course</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[5%]">Cr.</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[6%]">Mid</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[7%]">Final</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[8%]">Grade</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[6%]">TGP</th>
+                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[9%]">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {sem.courses.map((c, i) => {
-                  const rowBg = c.state === 'ong' ? '#faf5ff' : c.state === 'fail' ? '#fff5f5' : c.state === 'wdn' ? '#f8fafc' : '#fff';
+                  const rowBg =
+                    c.state === 'ong'  ? 'linear-gradient(135deg, #faf5ff, #ede9fe)' :
+                    c.state === 'fail' ? 'linear-gradient(135deg, #fff8f8, #ffe4e6)' :
+                    c.state === 'wdn'  ? 'linear-gradient(135deg, #f8fafc, #f1f5f9)' :
+                    'linear-gradient(135deg, #f8fbff, #eff6ff)';
                   return (
-                    <tr key={i} style={{ background: rowBg }} className="border-b border-slate-100 hover:brightness-95">
-                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{c.classId}</td>
-                      <td className="px-3 py-2 text-slate-800 font-medium">{c.name}</td>
-                      <td className="px-2 py-2 text-center text-slate-600">{c.credits.replace(/[()]/g, '')}</td>
-                      <td className="px-2 py-2 text-center"><MiniGrade grade={c.mtg} /></td>
-                      <td className="px-2 py-2 text-center"><MiniGrade grade={c.ftg} /></td>
-                      <td className="px-2 py-2 text-center"><GradePill grade={c.fg} /></td>
-                      <td className="px-2 py-2 text-center text-slate-600">{c.tgp || '—'}</td>
-                      <td className="px-2 py-2 text-center"><StatusBadge state={c.state} /></td>
+                    <tr key={i} style={{ background: rowBg }} className="border-b border-sky-50 hover:brightness-95 transition-all">
+                      <td className="px-3 py-2.5 font-mono text-[11px] text-slate-500">{c.classId}</td>
+                      <td className="px-3 py-2.5 text-slate-800 font-medium">{c.name}</td>
+                      <td className="px-2 py-2.5 text-center text-slate-600">{c.credits.replace(/[()]/g, '')}</td>
+                      <td className="px-2 py-2.5 text-center"><MiniGrade grade={c.mtg} /></td>
+                      <td className="px-2 py-2.5 text-center"><MiniGrade grade={c.ftg} /></td>
+                      <td className="px-2 py-2.5 text-center"><GradePill grade={c.fg} /></td>
+                      <td className="px-2 py-2.5 text-center text-slate-600">{c.tgp || '—'}</td>
+                      <td className="px-2 py-2.5 text-center"><StatusBadge state={c.state} /></td>
                     </tr>
                   );
                 })}
@@ -231,20 +233,20 @@ function SemesterCard({ sem }) {
 
 function InfoGrid({ items }) {
   const isCgpa = (k) => /^cgpa$/i.test(k.replace(/\s/g, ''));
-  const getCardColor = (k) => {
-    if (isCgpa(k)) return '#3b82f6';
-    if (/^student\s*id$/i.test(k.replace(/\s/g, ''))) return '#10b981';
-    return '#6366f1';
+  const getCardStyle = (k) => {
+    if (isCgpa(k)) return { border: '#0ea5e9', bg: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', label: '#0284c7' };
+    if (/^student\s*id$/i.test(k.replace(/\s/g, ''))) return { border: '#34d399', bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', label: '#059669' };
+    return { border: '#93c5fd', bg: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)', label: '#2563eb' };
   };
   return (
     <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
       {items.map(({ k, v }) => {
-        const color = getCardColor(k);
+        const s = getCardStyle(k);
         return (
-          <div key={k} className="px-4 py-4 rounded-xl bg-white border-2 hover:shadow-md transition-all cursor-default" style={{ borderColor: color }}>
-            <div className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color }}>{k}</div>
+          <div key={k} className="px-4 py-4 rounded-xl border hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg, borderColor: s.border, borderWidth: '1.5px' }}>
+            <div className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
             {isCgpa(k) ? (
-              <div className="text-[28px] font-extrabold text-green-700 leading-tight">{v || '—'}</div>
+              <div className="text-[28px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>
             ) : (
               <div className="text-[13px] font-semibold text-slate-700">{v || '—'}</div>
             )}
@@ -258,21 +260,20 @@ function InfoGrid({ items }) {
 function SemesterGradeReport({ infoItems, semesters, printHref }) {
   return (
     <div className="text-[13px] text-slate-800 px-1 py-4" style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
-      <div className="flex items-center justify-between mb-6 pb-4 rounded-lg p-4" style={{ background: 'linear-gradient(135deg, #3b82f6, #1e3a8a)' }}>
-        <h2 className="text-[22px] font-extrabold text-white m-0">
-          Semester <span style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Grade Report</span>
+      {/* Header — matches Registration style */}
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6 pb-4" style={{ borderBottom: '1px solid #e2e8f0' }}>
+        <h2 className="text-[18px] font-bold text-slate-900 tracking-tight m-0">
+          Semester <span style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Grade Report</span>
         </h2>
-        <div className="flex items-center gap-2">
-          {printHref && (
-            <a
-              href={printHref}
-              className="text-[11px] font-bold text-white rounded-lg px-4 py-2 no-underline transition-all hover:shadow-lg"
-              style={{ background: 'linear-gradient(135deg, #ec4899, #f43f5e)' }}
-            >
-              🖨 Print
-            </a>
-          )}
-        </div>
+        {printHref && (
+          <a
+            href={printHref}
+            className="text-[11px] font-semibold text-white rounded-lg px-3 py-2 no-underline transition-all shadow-sm hover:shadow-md whitespace-nowrap border"
+            style={{ background: 'linear-gradient(to right, #0284c7, #0369a1)', borderColor: '#0369a1' }}
+          >
+            🖨 Print
+          </a>
+        )}
       </div>
 
       <InfoGrid items={infoItems} />
