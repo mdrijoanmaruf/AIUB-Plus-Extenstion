@@ -1,1 +1,544 @@
 @tailwind utilities;
+
+/* ── Offered Courses Filter – Custom AIUB styles ───────────────────── */
+
+/* Panel header flex layout */
+#aiub-filter-panel .panel-heading,
+#aiub-selected-panel .panel-heading {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#aiub-results-container .panel-heading {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.aiub-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aiub-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aiub-badge-total {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.22);
+  color: inherit;
+  border-radius: 20px;
+  padding: 2px 10px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.aiub-badge-results {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 20px;
+  padding: 2px 10px;
+  border: 1px solid #ffc107;
+  white-space: nowrap;
+}
+
+/* ── Filter rows ─────────────────────────────────────────────────────── */
+
+.aiub-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.aiub-filter-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aiub-col-search {
+  flex: 1;
+  min-width: 200px;
+}
+
+.aiub-col-status-row {
+  flex: 2;
+  min-width: 280px;
+}
+
+.aiub-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+/* ── Status buttons ──────────────────────────────────────────────────── */
+
+.aiub-status-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.aiub-status-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 13px;
+  border-radius: 20px;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  line-height: 1.4;
+}
+
+.aiub-sb-green               { border-color: #16a34a; color: #16a34a; }
+.aiub-sb-green.active        { background: #16a34a; color: #fff; }
+.aiub-sb-blue                { border-color: #2563eb; color: #2563eb; }
+.aiub-sb-blue.active         { background: #2563eb; color: #fff; }
+.aiub-sb-red                 { border-color: #dc2626; color: #dc2626; }
+.aiub-sb-red.active          { background: #dc2626; color: #fff; }
+.aiub-sb-purple              { border-color: #7c3aed; color: #7c3aed; }
+.aiub-sb-purple.active       { background: #7c3aed; color: #fff; }
+.aiub-sb-grey                { border-color: #6b7280; color: #6b7280; }
+.aiub-sb-grey.active         { background: #6b7280; color: #fff; }
+
+/* ── Divider ─────────────────────────────────────────────────────────── */
+
+.aiub-filter-divider {
+  margin: 12px 0 !important;
+  border: none !important;
+  border-top: 1px solid #e5e7eb !important;
+}
+
+/* ── Day buttons ─────────────────────────────────────────────────────── */
+
+.aiub-col-days {
+  flex: 1.5;
+  min-width: 260px;
+}
+
+.aiub-days-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.aiub-day-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 13px;
+  border-radius: 20px;
+  border: 1.5px solid #d1d5db;
+  cursor: pointer;
+  background: transparent;
+  color: #374151;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+.aiub-day-btn.active {
+  border-color: #1159b8;
+  background: #1159b8;
+  color: #fff;
+}
+
+/* ── Time controls ───────────────────────────────────────────────────── */
+
+.aiub-col-time {
+  flex: 2;
+  min-width: 280px;
+}
+
+.aiub-time-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.aiub-time-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aiub-time-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.aiub-time-pair {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.aiub-time-pair .form-control {
+  width: auto !important;
+  min-width: 58px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.aiub-time-arr {
+  font-size: 18px;
+  color: #9ca3af;
+  padding-bottom: 2px;
+  line-height: 1;
+  align-self: flex-end;
+  margin-bottom: 6px;
+}
+
+/* ── Rows-per-page ───────────────────────────────────────────────────── */
+
+.aiub-rpp-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.aiub-rpp-wrap select {
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+/* ── Status badges in table ──────────────────────────────────────────── */
+
+.aiub-status {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aiub-status-freshman  { background: #dbeafe; color: #1e40af; }
+.aiub-status-sophomore { background: #d1fae5; color: #065f46; }
+.aiub-status-junior    { background: #ede9fe; color: #5b21b6; }
+.aiub-status-senior    { background: #fef3c7; color: #92400e; }
+.aiub-status-default   { background: #f3f4f6; color: #374151; }
+
+/* ── Seats badges ────────────────────────────────────────────────────── */
+
+.aiub-seats-full {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.aiub-seats-ok {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+/* ── High-count cell ─────────────────────────────────────────────────── */
+
+.aiub-count-high {
+  color: #b45309 !important;
+  font-weight: 700;
+  background: #fef9c3;
+}
+
+/* ── Schedule slots ──────────────────────────────────────────────────── */
+
+.aiub-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  margin-right: 4px;
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.aiub-slot-day {
+  font-weight: 700;
+  color: #374151;
+}
+
+.aiub-slot-room {
+  font-size: 10px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+}
+
+/* ── Action buttons ──────────────────────────────────────────────────── */
+
+.aiub-select-btn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+
+.aiub-sel-pick        { background: #1159b8; color: #fff; }
+.aiub-sel-pick:hover  { background: #0d3a73; }
+.aiub-sel-high        { background: #b45309; color: #fff; }
+.aiub-sel-high:hover  { background: #92400e; }
+.aiub-sel-done        { background: #16a34a; color: #fff; cursor: default; }
+.aiub-sel-clash       { background: #dc2626; color: #fff; cursor: not-allowed; }
+.aiub-sel-added       { background: #6b7280; color: #fff; cursor: default; }
+
+/* ── Reset button ────────────────────────────────────────────────────── */
+
+#aiub-reset-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+#aiub-reset-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* ── Selected courses panel ──────────────────────────────────────────── */
+
+.aiub-selected-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.aiub-selected-card {
+  position: relative;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 36px 10px 14px;
+  min-width: 220px;
+  max-width: 340px;
+  flex: 1 1 220px;
+}
+
+.aiub-sc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.aiub-sc-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.aiub-sc-schedule span {
+  font-size: 11px;
+  color: #475569;
+}
+
+.aiub-sc-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.aiub-sc-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #dbeafe;
+  color: #1e40af;
+  text-transform: uppercase;
+}
+
+.aiub-sc-seats {
+  font-size: 10px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* ── Alt sections ────────────────────────────────────────────────────── */
+
+.aiub-sc-alt-box {
+  margin-top: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.aiub-sc-alt-header {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.aiub-sc-alt-row,
+.aiub-sc-alt-selected-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.aiub-sc-alt-selected-row {
+  background: #f0fdf4;
+}
+
+.aiub-sc-alt-sec {
+  font-weight: 700;
+  color: #374151;
+  min-width: 32px;
+  flex-shrink: 0;
+}
+
+.aiub-sc-alt-current {
+  color: #16a34a;
+}
+
+.aiub-sc-alt-sched {
+  flex: 1;
+  color: #6b7280;
+  font-size: 10px;
+}
+
+.aiub-sc-alt-seats {
+  font-size: 10px;
+  font-weight: 600;
+  color: #16a34a;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.aiub-sc-alt-full {
+  color: #dc2626 !important;
+}
+
+/* ── Remove button ───────────────────────────────────────────────────── */
+
+.aiub-sc-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.aiub-sc-remove:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* ── Pagination footer ───────────────────────────────────────────────── */
+
+#aiub-results-container .panel-footer {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px !important;
+}
+
+#aiub-results-container .panel-footer .pagination {
+  margin: 0 !important;
+}
+
+.aiub-page-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── Clear-all button ────────────────────────────────────────────────── */
+
+#aiub-clear-all-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #fca5a5;
+  background: #fff;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+#aiub-clear-all-btn:hover {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}

@@ -146,14 +146,14 @@ function TermCard({ term }) {
   const isMidterm = term.termName.toLowerCase().includes('midterm');
 
   const cardGradient = isMidterm
-    ? 'linear-gradient(135deg, #ecf7fe 0%, #e0f2fe 50%, #e0f9ff 100%)'
-    : 'linear-gradient(135deg, #f3e8ff 0%, #ede9fe 50%, #ddd6fe 100%)';
-  
-  const borderColor = isMidterm ? '#06b6d4' : '#a855f7';
-  const borderBgColor = isMidterm ? '#b3e5fc' : '#e9d5ff';
-  const labelBg = isMidterm ? '#cffafe' : '#e9d5ff';
-  const labelText = isMidterm ? '#0369a1' : '#6d28d9';
-  const chevronColor = isMidterm ? '#0891b2' : '#d946ef';
+    ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #ccfbf1 100%)'
+    : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fed7aa 100%)';
+
+  const borderColor = isMidterm ? '#10b981' : '#f59e0b';
+  const borderBgColor = isMidterm ? '#6ee7b7' : '#fcd34d';
+  const labelBg = isMidterm ? '#d1fae5' : '#fef3c7';
+  const labelText = isMidterm ? '#065f46' : '#92400e';
+  const chevronColor = isMidterm ? '#059669' : '#d97706';
 
   return (
     <div 
