@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 
 const features = [
-  'Course name and Class ID search',
-  'Status filter (Freshman, Sophomore, etc.)',
-  'Day of week filter',
-  'Time slot range filter',
-  'Clash detection and routine builder',
-  'Alternative sections viewer',
+  'Advanced offered-course filters and clash detection',
+  'Routine builder with PNG download',
+  'Registration and fee insights panel',
+  'Grade reports (semester and curriculum views)',
+  'Financial dashboard with balance summary',
+  'Curriculum prerequisite and drop/refund enhancements',
 ]
 
 function getChromeApi() {
@@ -87,6 +87,10 @@ function App() {
     currentTab?.url?.includes('portal.aiub.edu/Student/Section/Offered'),
   )
 
+  const isStudentPortalPage = Boolean(
+    currentTab?.url?.includes('portal.aiub.edu/Student'),
+  )
+
   const status = useMemo(() => {
     if (!ready) {
       return {
@@ -111,16 +115,23 @@ function App() {
 
     if (isOfferedPage) {
       return {
-        text: 'Filter panel is active on this page.',
+        text: 'Advanced filter tools are active on this page.',
+        classes: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      }
+    }
+
+    if (isStudentPortalPage) {
+      return {
+        text: 'AIUB+ enhancements are active on this portal page.',
         classes: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       }
     }
 
     return {
-      text: 'Go to Offered Courses page to use filters.',
+      text: 'Go to AIUB Student Portal pages to use AIUB+ tools.',
       classes: 'bg-amber-50 text-amber-800 border-amber-200',
     }
-  }, [chromeApi, enabled, isOfferedPage, ready])
+  }, [chromeApi, enabled, isOfferedPage, isStudentPortalPage, ready])
 
   const handleToggle = async () => {
     if (!chromeApi) return
