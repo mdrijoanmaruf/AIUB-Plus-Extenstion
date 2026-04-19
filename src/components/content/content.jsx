@@ -1,4 +1,12 @@
-﻿(function () {
+// ── LEGACY: vanilla JS IIFE filter — replaced by OfferedCoursesFilter.jsx ──────
+// All parsing/rendering logic has been moved to:
+//   src/components/entries/offeredFilters.content.jsx  (FooTable parsing + mount)
+//   src/components/content/OfferedCoursesFilter.jsx    (React component)
+//
+// Keeping this file for reference only. Do NOT import it.
+
+/*
+(function () {
   'use strict';
 
   if (window.__aiubFilterInjected) return;
@@ -379,7 +387,7 @@
       if ((!isNaN(timeFrom) || !isNaN(timeTo)) && course.timeSlots.length > 0) {
         const hasMatchingTime = course.timeSlots.some(ts => {
           const startHour = parseTimeToHours(ts.startTime);
-          if (startHour === null) return true; // can't parse ΓåÆ don't exclude
+          if (startHour === null) return true;
           if (!isNaN(timeFrom) && startHour < timeFrom) return false;
           if (!isNaN(timeTo) && startHour > timeTo) return false;
           return true;
@@ -577,36 +585,35 @@
     container.innerHTML = `
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h5 class="panel-title">${filteredCourses.length} course(s) found</h5>
+          <h5 class="panel-title">&#128203;&nbsp;${filteredCourses.length} course(s) found</h5>
           <div class="aiub-rpp-wrap">
             Show
             <select id="aiub-rows-per-page">
-              <option value="10" ${rowsPerPage===10?'selected':''}>10</option>
-              <option value="25" ${rowsPerPage===25?'selected':''}>25</option>
-              <option value="50" ${rowsPerPage===50?'selected':''}>50</option>
+              <option value="10"  ${rowsPerPage===10 ?'selected':''}>10</option>
+              <option value="25"  ${rowsPerPage===25 ?'selected':''}>25</option>
+              <option value="50"  ${rowsPerPage===50 ?'selected':''}>50</option>
               <option value="100" ${rowsPerPage===100?'selected':''}>100</option>
             </select>
             per page
           </div>
         </div>
         <div class="panel-body" style="padding:0;">
-          <table class="table table-bordered table-condensed table-striped"
-                 style="margin-bottom:0;">
+          <table class="table table-condensed table-striped" style="margin-bottom:0;">
             <thead>
               <tr>
                 <th style="width:70px;">Class ID</th>
                 <th>Title</th>
-                <th style="width:90px;">Status</th>
-                <th style="width:70px;">Capacity</th>
-                <th style="width:60px;">Count</th>
-                <th style="width:80px;">Available</th>
+                <th style="width:100px;">Status</th>
+                <th style="width:70px;text-align:center;">Capacity</th>
+                <th style="width:55px;text-align:center;">Count</th>
+                <th style="width:85px;text-align:center;">Available</th>
                 <th>Schedule</th>
-                <th style="width:90px;text-align:center;">Action</th>
+                <th style="width:95px;text-align:center;">Action</th>
               </tr>
             </thead>
             <tbody>
               ${pageData.length === 0
-                ? '<tr><td colspan="8" class="text-center text-muted" style="padding:20px;">No courses match your filters.</td></tr>'
+                ? '<tr><td colspan="8" style="text-align:center;color:#64748b;padding:24px;font-size:13px;background:linear-gradient(135deg,#f8fbff,#eff6ff);">No courses match your filters.</td></tr>'
                 : pageData.map(c => renderCourseRow(c)).join('')}
             </tbody>
           </table>
@@ -665,14 +672,14 @@
 
     return `
       <tr>
-        <td style="font-weight:600;color:#2c3e50;">${course.classId}</td>
-        <td>${course.fullTitle}</td>
+        <td style="font-weight:700;color:#0284c7;font-family:ui-monospace,monospace;font-size:11px;">${course.classId}</td>
+        <td style="font-weight:600;color:#1e293b;font-size:12px;">${course.fullTitle}</td>
         <td><span class="${statusClass}">${course.status}</span></td>
-        <td class="text-center">${course.capacity}</td>
-        <td class="text-center${countClass}">${course.count}</td>
-        <td class="text-center">${seatsHtml}</td>
+        <td style="text-align:center;color:#475569;">${course.capacity}</td>
+        <td style="text-align:center;" class="${countClass}">${course.count}</td>
+        <td style="text-align:center;">${seatsHtml}</td>
         <td>${scheduleHtml}</td>
-        <td class="text-center">${actionHtml}</td>
+        <td style="text-align:center;">${actionHtml}</td>
       </tr>
     `;
   }
@@ -887,3 +894,4 @@
 
   init();
 })();
+*/
