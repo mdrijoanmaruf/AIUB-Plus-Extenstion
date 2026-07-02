@@ -271,7 +271,28 @@
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
         position: relative !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
       `;
+
+      // ── AIUB Logo ─────────────────────────────────────────────────────────────
+      const logoImg = document.createElement('img');
+      logoImg.src = chrome.runtime.getURL('logo/icon48.png');
+      logoImg.alt = 'AIUB';
+      logoImg.style.cssText = `
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        border: 2px solid rgba(255,255,255,0.35) !important;
+        object-fit: contain !important;
+        background: rgba(255,255,255,0.12) !important;
+        flex-shrink: 0 !important;
+      `;
+      profileDiv.appendChild(logoImg);
+
+      const textWrap = document.createElement('div');
+      textWrap.style.cssText = 'min-width: 0 !important; flex: 1 !important;';
 
       const nameDiv = document.createElement('div');
       nameDiv.className = 'nav-profile-name';
@@ -289,7 +310,7 @@
         letter-spacing: -0.3px !important;
       `;
       nameDiv.textContent = name;
-      profileDiv.appendChild(nameDiv);
+      textWrap.appendChild(nameDiv);
 
       if (studentId) {
         const idDiv = document.createElement('div');
@@ -303,8 +324,10 @@
           z-index: 1 !important;
         `;
         idDiv.textContent = studentId;
-        profileDiv.appendChild(idDiv);
+        textWrap.appendChild(idDiv);
       }
+
+      profileDiv.appendChild(textWrap);
 
       sidebar.insertBefore(profileDiv, sidebar.firstChild);
     }

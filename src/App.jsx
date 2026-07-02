@@ -147,9 +147,9 @@ function App() {
 
       <header className="relative flex items-center gap-3 bg-gradient-to-r from-aiub-navy via-aiub-blue to-[#2f7be7] px-4 py-4 text-white">
         <img
-          src="/aiub.jpg"
-          alt="AIUB"
-          className="h-10 w-10 rounded-xl border border-white/40 object-cover"
+          src="/logo/logo128.png"
+          alt="AIUB Portal+"
+          className="h-10 w-10 rounded-xl border border-white/40 object-contain"
         />
         <div>
           <h1 className="text-[15px] font-bold leading-tight tracking-wide">AIUB Portal+</h1>

@@ -9,15 +9,15 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "16": "aiub.jpg",
-      "48": "aiub.jpg",
-      "128": "aiub.jpg"
+      "16": "logo/icon16.png",
+      "48": "logo/icon48.png",
+      "128": "logo/icon128.png"
     }
   },
   "icons": {
-    "16": "aiub.jpg",
-    "48": "aiub.jpg",
-    "128": "aiub.jpg"
+    "16": "logo/icon16.png",
+    "48": "logo/icon48.png",
+    "128": "logo/icon128.png"
   },
   "content_scripts": [
     {
@@ -89,7 +89,10 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "aiub.jpg",
+        "logo/icon16.png",
+        "logo/icon48.png",
+        "logo/icon128.png",
+        "logo/logo128.png",
         "Academic/CSE.json"
       ],
       "matches": ["https://portal.aiub.edu/*"]
