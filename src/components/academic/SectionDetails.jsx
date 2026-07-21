@@ -349,13 +349,17 @@ function SectionDetailsView({ data }) {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2.5 px-5 py-2.5 rounded-[12px] transition-all duration-300 ${
                 isActive 
-                  ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/50 shadow-[0_2px_12px_-4px_rgba(59,130,246,0.15)]' 
-                  : 'bg-white hover:bg-slate-50/80 shadow-sm'
+                  ? 'bg-gradient-to-r from-blue-50 to-blue-100 shadow-[0_2px_12px_-4px_rgba(59,130,246,0.2)]' 
+                  : 'bg-gradient-to-r from-blue-50/50 to-blue-50/20 hover:from-blue-50/80 hover:to-blue-100/40 shadow-sm opacity-80 hover:opacity-100'
               }`}
+              style={{ border: 'none', outline: 'none' }}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
-                isActive ? 'bg-white text-blue-600' : 'bg-slate-50 text-slate-500'
-              }`}>
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
+                  isActive ? 'bg-white text-blue-600' : 'bg-white/90 text-blue-500'
+                }`}
+                style={{ border: 'none' }}
+              >
                 <Icon className="text-[16px]" />
               </div>
               <span className={`text-[14px] font-bold ${isActive ? 'text-slate-800' : 'text-slate-600'}`}>
