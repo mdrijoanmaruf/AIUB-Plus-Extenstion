@@ -231,8 +231,13 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
             </select>
           )}
           {printHref && (
-            <a href={printHref} className="text-[11px] font-semibold text-white rounded-lg px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all no-underline whitespace-nowrap shadow-sm hover:shadow-md border border-blue-700">
-              🖨 Print
+            <a 
+              href={printHref} 
+              style={{ background: '#2563eb', color: '#ffffff', borderColor: '#1d4ed8' }}
+              className="text-[12px] font-semibold rounded-lg px-4 py-2 transition-all no-underline shadow-sm hover:shadow border flex items-center gap-1.5"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              Print
             </a>
           )}
         </div>
@@ -322,9 +327,10 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
           }))
         : [];
 
-      const printBtn = panel.querySelector('a.btn-danger');
+      const printBtn = document.querySelector('a[href*="Registration/Print"]') || 
+                       Array.from(document.querySelectorAll('a')).find(a => a.textContent.trim().toLowerCase() === 'print');
+      
       const printHref = printBtn ? printBtn.getAttribute('href') : null;
-      const safeHref = printHref && /^[/?#]/.test(printHref) ? printHref : null;
 
       const creditTbl = panel.querySelector('.panel-body table');
       const creditItems = creditTbl ? parseCreditSummary(creditTbl) : [];
@@ -349,7 +355,7 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
       createRoot(root).render(
         <RegistrationView
           semOptions={semOptions}
-          printHref={safeHref}
+          printHref={printHref}
           creditItems={creditItems}
           courses={courses}
           fees={fees}
