@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
+import { FiCalendar, FiFolder, FiBell, FiMail, FiMapPin, FiClock, FiFileText } from 'react-icons/fi';
 import '../../content.css';function parseSectionData() {
   const root = document.querySelector('#main-content');
   if (!root) return null;
@@ -140,6 +141,98 @@ import '../../content.css';function parseSectionData() {
   };
 }
 
+function UpcomingConsulting({ events }) {
+  const [timeText, setTimeText] = useState('');
+
+  React.useEffect(() => {
+    const daysArr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const consultingEvents = events.filter(e => e.type === 'consulting');
+    
+    if (consultingEvents.length === 0) {
+      setTimeText('No consulting hours');
+      return;
+    }
+
+    const updateTimer = () => {
+      const now = new Date();
+      const currentDayIdx = now.getDay();
+      const currentHour = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+
+      let nextEvent = null;
+      let daysToAdd = 0;
+
+      for (let offset = 0; offset < 7; offset++) {
+        const checkDayIdx = (currentDayIdx + offset) % 7;
+        const checkDayName = daysArr[checkDayIdx];
+        
+        const dayEvents = consultingEvents
+          .filter(e => e.day === checkDayName)
+          .sort((a, b) => a.startHour - b.startHour);
+
+        for (const ev of dayEvents) {
+          if (offset === 0) {
+            if (currentHour < ev.startHour) {
+              nextEvent = ev;
+              break;
+            } else if (currentHour >= ev.startHour && currentHour < ev.endHour) {
+              setTimeText('Happening right now!');
+              return;
+            }
+          } else {
+            nextEvent = ev;
+            break;
+          }
+        }
+        if (nextEvent) {
+          daysToAdd = offset;
+          break;
+        }
+      }
+
+      if (nextEvent) {
+        let hoursUntil;
+        if (daysToAdd === 0) {
+          hoursUntil = nextEvent.startHour - currentHour;
+        } else {
+          hoursUntil = (24 - currentHour) + (daysToAdd - 1) * 24 + nextEvent.startHour;
+        }
+
+        const totalSecs = Math.floor(hoursUntil * 3600);
+        const d = Math.floor(totalSecs / 86400);
+        const h = Math.floor((totalSecs % 86400) / 3600);
+        const m = Math.floor((totalSecs % 3600) / 60);
+        const s = totalSecs % 60;
+
+        const parts = [];
+        if (d > 0) parts.push(`${d}d`);
+        if (h > 0) parts.push(`${h}h`);
+        if (m > 0) parts.push(`${m}m`);
+        parts.push(`${s}s`);
+
+        setTimeText(`in ${parts.join(' ')}`);
+      } else {
+        setTimeText('No upcoming consulting');
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [events]);
+
+  return (
+    <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-teal-50/50 text-emerald-800 px-3.5 py-2 rounded-xl border border-emerald-200/60 shadow-sm shadow-emerald-100/50">
+      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm border border-emerald-100">
+        <FiClock className="text-[16px] text-emerald-600" />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600/80 mb-0.5">Next Consulting</span>
+        <span className="text-[13px] font-bold font-mono tracking-tight">{timeText || 'Calculating...'}</span>
+      </div>
+    </div>
+  );
+}
+
 function TimetableGrid({ events }) {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const startHour = 8;
@@ -183,12 +276,12 @@ function TimetableGrid({ events }) {
               return (
                 <div 
                   key={i} 
-                  className={`absolute left-1 right-1 rounded-md border p-1.5 shadow-sm overflow-hidden flex flex-col justify-start transition-transform hover:scale-[1.02] hover:z-10 hover:shadow-md cursor-default ${ev.colorClass}`}
+                  className={`absolute left-1 right-1 rounded-md border p-1 shadow-sm overflow-hidden flex flex-col items-center justify-center text-center transition-transform hover:scale-[1.02] hover:z-10 hover:shadow-md cursor-default ${ev.colorClass}`}
                   style={{ top: `${top}px`, height: `${height}px` }}
                   title={`${ev.title}\n${ev.timeStr}`}
                 >
-                  <div className="text-[10px] font-bold leading-tight line-clamp-2 mb-0.5">{ev.title}</div>
-                  <div className="text-[9px] font-semibold opacity-80 leading-none">{ev.timeStr}</div>
+                  <div className="text-[12px] font-bold leading-tight line-clamp-2 mb-0.5 px-1">{ev.title}</div>
+                  <div className="text-[11px] font-semibold opacity-90 leading-none">{ev.timeStr}</div>
                 </div>
               );
             })}
@@ -212,12 +305,12 @@ function SectionDetailsView({ data }) {
             <img src={data.imgUrl} alt="Faculty" className="w-[80px] h-[80px] rounded-full object-cover shadow border-2 border-white" />
           )}
           <div className="flex flex-col">
-            <h2 className="text-[18px] font-bold text-slate-900 mb-1">{data.facultyName || 'Unknown Faculty'}</h2>
+            <h2 className="text-[18px] font-bold text-slate-900 mb-1.5">{data.facultyName || 'Unknown Faculty'}</h2>
             <div className="flex items-center gap-3 text-[13px] text-slate-500 font-medium">
-              {data.facultyEmail && <span className="flex items-center gap-1">✉️ {data.facultyEmail}</span>}
-              {data.facultyRoom && <span className="flex items-center gap-1">🚪 {data.facultyRoom.replace('Faculty', '').trim()}</span>}
+              {data.facultyEmail && <span className="flex items-center gap-1.5"><FiMail className="text-slate-400 text-[14px]" /> {data.facultyEmail}</span>}
+              {data.facultyRoom && <span className="flex items-center gap-1.5"><FiMapPin className="text-slate-400 text-[14px]" /> {data.facultyRoom.replace('Faculty', '').trim()}</span>}
             </div>
-            <div className="mt-2 text-[12px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full self-start">
+            <div className="mt-2.5 text-[12px] font-bold text-blue-600 bg-blue-50/80 border border-blue-100 px-3 py-1 rounded-full self-start">
               {data.courseTitle}
             </div>
           </div>
@@ -242,34 +335,47 @@ function SectionDetailsView({ data }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1">
-        <div className="flex p-1 gap-1 bg-slate-100 rounded-lg">
-          {[
-            { id: 'tsf', label: '📅 Teacher Schedule' },
-            { id: 'notes', label: `📁 Files & Notes (${data.notes.length})` },
-            { id: 'notices', label: `🔔 Notices (${data.notices.length})` }
-          ].map(t => (
+      <div className="flex flex-wrap gap-3 mt-6 mb-2">
+        {[
+          { id: 'tsf', label: 'Teacher Schedule', count: null, icon: FiCalendar },
+          { id: 'notes', label: 'Files & Notes', count: data.notes.length, icon: FiFolder },
+          { id: 'notices', label: 'Notices', count: data.notices.length, icon: FiBell }
+        ].map(t => {
+          const Icon = t.icon;
+          const isActive = activeTab === t.id;
+          return (
             <button 
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`flex-1 py-2.5 text-[13px] font-bold rounded-md transition-all ${
-                activeTab === t.id 
-                  ? 'bg-white text-blue-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-[12px] transition-all duration-300 ${
+                isActive 
+                  ? 'bg-gradient-to-r from-blue-50/80 to-blue-100/50 shadow-[0_2px_12px_-4px_rgba(59,130,246,0.15)]' 
+                  : 'bg-white hover:bg-slate-50/80 shadow-sm'
               }`}
             >
-              {t.label}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
+                isActive ? 'bg-white text-blue-600' : 'bg-slate-50 text-slate-500'
+              }`}>
+                <Icon className="text-[16px]" />
+              </div>
+              <span className={`text-[14px] font-bold ${isActive ? 'text-slate-800' : 'text-slate-600'}`}>
+                {t.label} {t.count !== null && <span className={isActive ? 'text-blue-600' : 'text-slate-400 font-semibold'}>({t.count})</span>}
+              </span>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        <div className="p-4 md:p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6">
           {activeTab === 'tsf' && (
             <div className="overflow-x-auto pb-4">
-              <div className="flex items-center gap-4 mb-4 text-[12px] font-bold">
-                <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-400"></div> Regular Class</span>
-                <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-400"></div> Consulting</span>
-                <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-purple-400"></div> Admin</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                <div className="flex items-center gap-4 text-[12px] font-bold">
+                  <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-400"></div> Regular Class</span>
+                  <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-emerald-400"></div> Consulting</span>
+                  <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-purple-400"></div> Admin</span>
+                </div>
+                <UpcomingConsulting events={data.scheduleEvents} />
               </div>
               {data.scheduleEvents.length > 0 ? (
                  <TimetableGrid events={data.scheduleEvents} />
@@ -294,7 +400,7 @@ function SectionDetailsView({ data }) {
                     <tr key={i} className="border-b last:border-0 hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <a href={n.href} className="text-[13px] font-bold text-blue-600 hover:underline flex items-center gap-2" target="_blank" rel="noreferrer">
-                          📄 {n.name}
+                          <FiFileText className="text-[15px] text-blue-500" /> {n.name}
                         </a>
                       </td>
                       <td className="px-4 py-3 text-[12px] text-slate-500 font-medium">{n.date}</td>
@@ -326,7 +432,6 @@ function SectionDetailsView({ data }) {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 }
