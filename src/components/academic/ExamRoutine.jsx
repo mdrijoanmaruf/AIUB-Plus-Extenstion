@@ -5,6 +5,7 @@ import '../../content.css';
 const GRAD = {
   blue: 'linear-gradient(135deg,#1e3a8a,#2563eb)',
   bodyBg: 'linear-gradient(135deg,#f8fbff 0%,#eff6ff 100%)',
+  navbar: 'linear-gradient(to right, #111827, #1e3a8a, #2f7be7)',
 };
 
 function parseTimePart(str) {
@@ -43,7 +44,7 @@ function fmtDuration(ms) {
   return `${s}s`;
 }
 
-function ExamTimer({ startTs }) {
+function ExamTimer({ startTs, isTba }) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -51,127 +52,118 @@ function ExamTimer({ startTs }) {
     return () => clearInterval(id);
   }, []);
 
+  if (isTba) {
+    return <span className="italic text-slate-400 font-medium text-[13px]">TBA</span>;
+  }
+
   if (!startTs) return null;
 
   if (now >= startTs) {
     return (
-      <div style={{
-        marginTop: '12px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '4px 10px',
-        borderRadius: '20px',
-        background: '#f1f5f9',
-        border: '1px solid #e2e8f0',
-        alignSelf: 'flex-start'
-      }}>
-        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#94a3b8', display: 'inline-block', flexShrink: 0 }} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', letterSpacing: '0.04em' }}>Exam started/ended</span>
+      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#dcfce7]">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span className="text-[10px] font-bold text-[#16a34a] tracking-wider uppercase">Completed</span>
       </div>
     );
   }
 
-  return (
-    <div style={{
-      marginTop: '12px',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      padding: '4px 10px',
-      borderRadius: '20px',
-      background: '#eff6ff',
-      border: '1px solid #bfdbfe',
-      alignSelf: 'flex-start'
-    }}>
-      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3b82f6', display: 'inline-block', flexShrink: 0 }} />
-      <span style={{ fontSize: 11, fontWeight: 600, color: '#1d4ed8', letterSpacing: '0.04em' }}>
-        Starts in {fmtDuration(startTs - now)}
-      </span>
-    </div>
-  );
-}
-
-function ExamCard({ exam }) {
-  const isTba = exam.date.toLowerCase() === 'tba' || exam.room.toLowerCase() === 'tba';
-  const startTs = getExamTimestamp(exam.date, exam.time);
+  const ms = startTs - now;
+  const t = Math.floor(ms / 1000);
+  const d = Math.floor(t / 86400), h = Math.floor((t % 86400) / 3600);
+  const m = Math.floor((t % 3600) / 60);
   
+  const pad = (n) => n.toString().padStart(2, '0');
+  
+  const Unit = ({ val, unit, colorClass }) => (
+    <span className="inline-flex items-baseline mx-[2px]">
+      <span className="text-[#334669] font-medium text-[13px]">{val}</span>
+      <span className={`${colorClass} font-medium ml-[1px] text-[12px]`}>{unit}</span>
+    </span>
+  );
+
   return (
-    <div className="relative rounded-2xl border shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 p-5 bg-white flex flex-col"
-         style={{ borderColor: '#e0e7ff', borderLeftColor: isTba ? '#f59e0b' : '#3b82f6', borderLeftWidth: '5px' }}>
-         <div className="flex flex-col gap-3 flex-1">
-             <h4 className="text-[15px] font-bold text-slate-900 leading-snug m-0">{exam.section}</h4>
-             
-             <div className="grid grid-cols-2 gap-3 mt-2">
-                 <div className="flex items-start gap-2">
-                     <span className="text-[16px] leading-tight">📅</span>
-                     <div className="flex flex-col">
-                         <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Date</span>
-                         <span className={`text-[13px] font-semibold ${exam.date.toLowerCase() === 'tba' ? 'text-amber-600' : 'text-slate-800'}`}>{exam.date}</span>
-                     </div>
-                 </div>
-                 
-                 <div className="flex items-start gap-2">
-                     <span className="text-[16px] leading-tight">⏰</span>
-                     <div className="flex flex-col">
-                         <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Time</span>
-                         <span className={`text-[13px] font-semibold ${exam.time.toLowerCase() === 'tba' ? 'text-amber-600' : 'text-slate-800'}`}>{exam.time}</span>
-                     </div>
-                 </div>
-                 
-                 <div className="flex items-start gap-2">
-                     <span className="text-[16px] leading-tight">🚪</span>
-                     <div className="flex flex-col">
-                         <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Room</span>
-                         <span className={`text-[13px] font-semibold ${exam.room.toLowerCase() === 'tba' ? 'text-amber-600' : 'text-slate-800'}`}>{exam.room}</span>
-                     </div>
-                 </div>
-                 
-                 <div className="flex items-start gap-2">
-                     <span className="text-[16px] leading-tight">🪑</span>
-                     <div className="flex flex-col">
-                         <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">Seat</span>
-                         <span className={`text-[13px] font-semibold ${exam.seat.toLowerCase() === 'tba' ? 'text-amber-600' : 'text-slate-800'}`}>
-                             {exam.column !== 'TBA' && exam.column ? `${exam.column}, Seat ${exam.seat}` : exam.seat}
-                         </span>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <ExamTimer startTs={startTs} />
+    <div className="tracking-wide text-center leading-relaxed flex flex-wrap justify-center items-center gap-y-0.5 gap-x-1 max-w-[120px]">
+      <Unit val={pad(d)} unit="d" colorClass="text-indigo-500" />
+      <Unit val={pad(h)} unit="h" colorClass="text-sky-500" />
+      <Unit val={pad(m)} unit="m" colorClass="text-emerald-500" />
     </div>
   );
 }
 
-function ExamRoutineView({ title, disclaimer, exams }) {
+function ExamRoutineView({ disclaimer, exams }) {
   return (
-    <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", maxWidth: '900px' }}>
-      <div className="rounded-2xl overflow-hidden shadow-lg mb-6" style={{ border: 'none' }}>
-        <div className="flex items-center justify-between flex-wrap gap-3 px-5 py-4" style={{ background: GRAD.blue }}>
-          <div className="flex items-center gap-3">
-             <span className="text-[20px]">📝</span>
-             <span className="text-[16px] font-bold text-white">{title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)', border: '1px solid rgba(255,255,255,0.25)' }}>
-                {exams.length} Exams
-             </span>
-          </div>
-        </div>
-        
-        <div className="px-5 py-6" style={{ background: GRAD.bodyBg }}>
-            {exams.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 font-semibold">No exams scheduled.</div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {exams.map((exam, i) => <ExamCard key={i} exam={exam} />)}
-                </div>
-            )}
+    <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="rounded-md border border-[#e2e8f0] overflow-hidden bg-white shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-[#eef2f9] border-b border-[#e2e8f0]">
+                <th className="px-6 py-5 text-left text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[28%]">Section</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[12%]">Exam<br/>Date</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[15%]">Exam Time</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Room<br/>No</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Column<br/>No</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Seat<br/>No</th>
+                <th className="px-4 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[15%]">Timer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exams.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-10 text-slate-500 font-medium text-[14px]">No exams scheduled.</td>
+                </tr>
+              ) : (
+                exams.map((exam, i) => {
+                  const isTba = exam.date.toLowerCase() === 'tba' || exam.time.toLowerCase() === 'tba';
+                  const startTs = getExamTimestamp(exam.date, exam.time);
+                  
+                  const renderCell = (val) => {
+                    const isValTba = val && val.toLowerCase() === 'tba';
+                    if (isValTba) return <span className="italic text-slate-400 font-medium">TBA</span>;
+                    return <span className="text-[#475569] font-medium text-[13px]">{val}</span>;
+                  };
+
+                  return (
+                    <tr key={i} className="border-b border-[#f1f5f9] last:border-0 hover:bg-slate-50 transition-colors even:bg-[#f0fdf4]">
+                      <td className="px-6 py-6 align-middle">
+                        <div className="font-bold text-[13px] text-[#334669] leading-relaxed pr-4 uppercase">
+                          {exam.section}
+                        </div>
+                      </td>
+                      <td className="px-3 py-6 align-middle text-center">
+                        {renderCell(exam.date)}
+                      </td>
+                      <td className="px-3 py-6 align-middle text-center">
+                        {renderCell(exam.time)}
+                      </td>
+                      <td className="px-3 py-6 align-middle text-center">
+                        {renderCell(exam.room)}
+                      </td>
+                      <td className="px-3 py-6 align-middle text-center">
+                        {renderCell(exam.column)}
+                      </td>
+                      <td className="px-3 py-6 align-middle text-center">
+                        {renderCell(exam.seat)}
+                      </td>
+                      <td className="px-4 py-6 align-middle text-center">
+                        <div className="flex justify-center w-full">
+                          <ExamTimer startTs={startTs} isTba={isTba} />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
       
       {disclaimer && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm flex gap-3 items-start">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm flex gap-3 items-start mt-4">
             <span className="text-[20px] leading-none">⚠️</span>
             <div className="text-[12px] text-rose-800 leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: disclaimer }} />
         </div>
