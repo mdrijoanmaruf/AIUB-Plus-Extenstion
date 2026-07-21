@@ -1,1 +1,0 @@
-import '../academic/MkCurriculumn.jsx'

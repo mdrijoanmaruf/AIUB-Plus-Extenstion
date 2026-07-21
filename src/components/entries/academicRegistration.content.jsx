@@ -1,1 +1,0 @@
-import '../academic/Registration.jsx'

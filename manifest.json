@@ -22,12 +22,15 @@
   "content_scripts": [
     {
       "matches": ["https://portal.aiub.edu/Student*"],
-      "js": ["src/components/entries/sharedBridge.content.jsx"],
+      "js": ["src/components/shared/contentBridge.jsx"],
       "run_at": "document_start"
     },
     {
       "matches": ["https://portal.aiub.edu/Student*"],
-      "js": ["src/components/entries/sharedSidebar.content.jsx"],
+      "js": [
+        "src/components/shared/Sidebar.jsx",
+        "src/components/shared/Navbar.jsx"
+      ],
       "run_at": "document_idle"
     },
     {
@@ -36,58 +39,62 @@
         "https://portal.aiub.edu/Student/",
         "https://portal.aiub.edu/Student/Home/*"
       ],
-      "js": ["src/components/entries/homeBundle.content.jsx"],
+      "js": [
+        "src/components/home/Intro.jsx",
+        "src/components/home/ClassSchedule.jsx",
+        "src/components/home/HomeRegistration.jsx"
+      ],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Section/Offered*"],
-      "js": ["src/components/entries/offeredFilters.content.jsx"],
+      "js": ["src/components/content/OfferedFilters.jsx"],
       "run_at": "document_idle",
       "world": "MAIN"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Course?*"],
-      "js": ["src/components/entries/academicCourseResults.content.jsx"],
+      "js": ["src/components/academic/CourseAndResults.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Registration?*"],
-      "js": ["src/components/entries/academicRegistration.content.jsx"],
+      "js": ["src/components/academic/AcademicRegistration.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Curriculum*"],
-      "js": ["src/components/entries/academicCurriculum.content.jsx"],
+      "js": ["src/components/academic/MkCurriculumn.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Accounts*"],
-      "js": ["src/components/entries/academicFinancials.content.jsx"],
+      "js": ["src/components/academic/Financials.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Adrop/DropApplication*"],
-      "js": ["src/components/entries/academicDropApplication.content.jsx"],
+      "js": ["src/components/academic/DropApplication.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/ExamRoutineSchedule*"],
-      "js": ["src/components/entries/academicExamRoutine.content.jsx"],
+      "js": ["src/components/academic/ExamRoutine.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/ByCurriculum*"],
-      "js": ["src/components/entries/gradeCurriculum.content.jsx"],
+      "js": ["src/components/grade/carriculum_grade_report.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/BySemester*"],
-      "js": ["src/components/entries/gradeSemester.content.jsx"],
+      "js": ["src/components/grade/carriculum_grade_semester.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/Home/Profile*"],
-      "js": ["src/components/entries/profileContent.content.jsx"],
+      "js": ["src/components/content/ProfileContent.jsx"],
       "run_at": "document_idle"
     }
   ],
