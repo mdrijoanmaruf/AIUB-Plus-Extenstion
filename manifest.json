@@ -47,6 +47,11 @@
       "run_at": "document_idle"
     },
     {
+      "matches": ["https://portal.aiub.edu/Student/Section?*"],
+      "js": ["src/components/academic/SectionDetails.jsx"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": ["https://portal.aiub.edu/Student/Section/Offered*"],
       "js": ["src/components/content/OfferedFilters.jsx"],
       "run_at": "document_idle",
