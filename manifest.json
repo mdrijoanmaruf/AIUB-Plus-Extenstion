@@ -5,7 +5,11 @@
   "description": "Enhance the AIUB Student Portal with course filters, clash detection, grade analytics, schedule tools, and UI improvements.",
   "version": "2.0.0",
   "permissions": ["activeTab", "storage", "tabs"],
-  "host_permissions": ["https://portal.aiub.edu/*"],
+  "host_permissions": ["https://portal.aiub.edu/*", "https://aiub.edu/*"],
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
   "action": {
     "default_popup": "index.html",
     "default_icon": {

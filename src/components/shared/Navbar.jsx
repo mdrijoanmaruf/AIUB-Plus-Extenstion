@@ -1,3 +1,5 @@
+import { scrapeNotices } from '../../utils/notices';
+
 (function () {
   if (window.__aiubNavbarEnhanced) return;
 
@@ -362,6 +364,110 @@
         }
       } catch (_) {}
     });
+
+    // ── Custom Notices Dropdown ────────────────────────────────────────────────
+    setTimeout(async () => {
+      try {
+        const notiBtn = topbar.querySelector('#noti_Button');
+        if (!notiBtn) return;
+        const parentLi = notiBtn.parentElement;
+        const ul = parentLi.parentElement;
+        if (!ul) return;
+
+        // Create the new list item for our notices button
+        const customNotiLi = document.createElement('li');
+        customNotiLi.style.cssText = `
+          display: flex !important;
+          align-items: center !important;
+          height: 85px !important;
+          position: relative !important;
+          float: none !important;
+        `;
+        
+        // Use a bell SVG for the icon
+        customNotiLi.innerHTML = `
+          <a id="aiub_custom_notices_btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 10px !important; height: 85px !important; color: #1a73c8 !important; text-decoration: none !important; transition: background 0.18s !important; background: transparent !important; cursor: pointer !important;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+            </svg>
+            <div id="aiub_custom_notices_counter" style="display: none !important; position: absolute !important; top: 22px !important; right: 2px !important; min-width: 16px !important; height: 16px !important; background: #ef4444 !important; color: #fff !important; font-size: 9px !important; font-weight: 800 !important; border-radius: 999px !important; align-items: center !important; justify-content: center !important; padding: 0 3px !important; z-index: 10 !important; border: 2px solid #fff !important;"></div>
+          </a>
+          <div id="aiub_custom_notices_dropdown" style="display: none; position: absolute; top: 77px; right: -50px; width: 320px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); padding: 0; z-index: 9999; max-height: 400px; overflow-y: auto;">
+             <div style="padding: 12px 16px; font-weight: 700; color: #1e3a5f; border-bottom: 1px solid rgba(0,0,0,0.05); font-family: system-ui, sans-serif;">Latest Notices</div>
+             <div id="aiub_custom_notices_list" style="padding: 8px;">
+               <div style="padding: 20px; text-align: center; color: #64748b; font-size: 13px;">Loading notices...</div>
+             </div>
+          </div>
+        `;
+        
+        // Insert right before the native notification button
+        ul.insertBefore(customNotiLi, parentLi);
+
+        const btn = customNotiLi.querySelector('#aiub_custom_notices_btn');
+        const dropdown = customNotiLi.querySelector('#aiub_custom_notices_dropdown');
+        const list = customNotiLi.querySelector('#aiub_custom_notices_list');
+        const counter = customNotiLi.querySelector('#aiub_custom_notices_counter');
+
+        btn.addEventListener('mouseenter', () => btn.style.background = 'rgba(26,115,200,0.08) !important');
+        btn.addEventListener('mouseleave', () => btn.style.background = 'transparent !important');
+
+        // Toggle dropdown visibility
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isHidden = dropdown.style.display === 'none';
+          dropdown.style.display = isHidden ? 'block' : 'none';
+          if (isHidden) {
+            counter.style.display = 'none !important'; // dismiss badge on open
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!customNotiLi.contains(e.target)) {
+            dropdown.style.display = 'none';
+          }
+        });
+
+        // Fetch notices
+        const notices = await scrapeNotices();
+        if (notices && notices.length > 0) {
+          const topNotices = notices.slice(0, 10);
+          
+          counter.textContent = topNotices.length.toString();
+          counter.style.display = 'flex !important';
+
+          list.innerHTML = '';
+          topNotices.forEach((notice, idx) => {
+            const item = document.createElement('a');
+            item.href = notice.url;
+            item.target = '_blank';
+            item.style.cssText = `
+              display: block;
+              padding: 10px 12px;
+              margin-bottom: 6px;
+              text-decoration: none;
+              background: ${idx % 2 === 0 ? 'rgba(240,247,255,0.7)' : 'rgba(248,250,252,0.7)'};
+              border-radius: 8px;
+              transition: background 0.2s;
+            `;
+            item.addEventListener('mouseenter', () => item.style.background = 'rgba(219,234,254,0.9)');
+            item.addEventListener('mouseleave', () => item.style.background = idx % 2 === 0 ? 'rgba(240,247,255,0.7)' : 'rgba(248,250,252,0.7)');
+            
+            item.innerHTML = `
+              <div style="font-size: 13px; font-weight: 600; color: #1e3a5f; margin-bottom: 4px; line-height: 1.3;">${notice.title}</div>
+              <div style="font-size: 11px; color: #64748b;">${notice.date}</div>
+            `;
+            list.appendChild(item);
+          });
+        } else {
+          list.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b; font-size: 13px;">No notices found.</div>';
+        }
+      } catch (err) {
+        console.error('Failed to load notices', err);
+      }
+    }, 500); // slight delay to let native scripts finish loading
+
   }
 
   function styleNavLink(a) {
