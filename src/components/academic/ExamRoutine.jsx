@@ -101,12 +101,12 @@ function ExamRoutineView({ disclaimer, exams }) {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-[#eef2f9] border-b border-[#e2e8f0]">
-                <th className="px-6 py-5 text-left text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[28%]">Section</th>
-                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[12%]">Exam<br/>Date</th>
-                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[15%]">Exam Time</th>
-                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Room<br/>No</th>
-                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Column<br/>No</th>
-                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]">Seat<br/>No</th>
+                <th className="px-6 py-5 text-left text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[28%]" style={{ borderRight: '1px solid #e2e8f0' }}>Section</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[12%]" style={{ borderRight: '1px solid #e2e8f0' }}>Exam<br/>Date</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[15%]" style={{ borderRight: '1px solid #e2e8f0' }}>Exam Time</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]" style={{ borderRight: '1px solid #e2e8f0' }}>Room<br/>No</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]" style={{ borderRight: '1px solid #e2e8f0' }}>Column<br/>No</th>
+                <th className="px-3 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[10%]" style={{ borderRight: '1px solid #e2e8f0' }}>Seat<br/>No</th>
                 <th className="px-4 py-5 text-center text-[11px] font-bold text-[#334669] uppercase tracking-wider w-[15%]">Timer</th>
               </tr>
             </thead>
@@ -128,24 +128,24 @@ function ExamRoutineView({ disclaimer, exams }) {
 
                   return (
                     <tr key={i} className="border-b border-[#f1f5f9] last:border-0 hover:bg-slate-50 transition-colors even:bg-[#f0fdf4]">
-                      <td className="px-6 py-6 align-middle">
+                      <td className="px-6 py-6 align-middle" style={{ borderRight: '1px solid #e2e8f0' }}>
                         <div className="font-bold text-[13px] text-[#334669] leading-relaxed pr-4 uppercase">
                           {exam.section}
                         </div>
                       </td>
-                      <td className="px-3 py-6 align-middle text-center">
+                      <td className="px-3 py-6 align-middle text-center" style={{ borderRight: '1px solid #e2e8f0' }}>
                         {renderCell(exam.date)}
                       </td>
-                      <td className="px-3 py-6 align-middle text-center">
+                      <td className="px-3 py-6 align-middle text-center" style={{ borderRight: '1px solid #e2e8f0' }}>
                         {renderCell(exam.time)}
                       </td>
-                      <td className="px-3 py-6 align-middle text-center">
+                      <td className="px-3 py-6 align-middle text-center" style={{ borderRight: '1px solid #e2e8f0' }}>
                         {renderCell(exam.room)}
                       </td>
-                      <td className="px-3 py-6 align-middle text-center">
+                      <td className="px-3 py-6 align-middle text-center" style={{ borderRight: '1px solid #e2e8f0' }}>
                         {renderCell(exam.column)}
                       </td>
-                      <td className="px-3 py-6 align-middle text-center">
+                      <td className="px-3 py-6 align-middle text-center" style={{ borderRight: '1px solid #e2e8f0' }}>
                         {renderCell(exam.seat)}
                       </td>
                       <td className="px-4 py-6 align-middle text-center">
