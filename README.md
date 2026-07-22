@@ -129,7 +129,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ### 🎓 Grade Report — By Curriculum
 **Entry:** `src/components/entries/gradeCurriculum.content.jsx`  
-**Component:** `src/components/grade/carriculum_grade_report.jsx`
+**Component:** `src/components/grade/by_carriculum.jsx`
 
 - Parses curriculum report rows and summary info
 - Applies status/grade-aware visual cues
@@ -139,7 +139,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ### 📆 Grade Report — By Semester
 **Entry:** `src/components/entries/gradeSemester.content.jsx`  
-**Component:** `src/components/grade/carriculum_grade_semester.jsx`
+**Component:** `src/components/grade/by_semester.jsx`
 
 - Parses semester groups and course rows
 - Displays compact semester cards with GPA indicators

@@ -363,6 +363,9 @@ function LockBadge({ status }) {
 }
 
 function SemTable({ sec }) {
+  const [open, setOpen] = useState(true);
+  const isActive = sec.rows.some((r) => r.state === 'ong');
+
   const rowBg = (state) => ({
     ong:  'linear-gradient(135deg, #faf5ff, #ede9fe)',
     wdn:  'linear-gradient(135deg, #fff8f8, #ffe4e6)',
@@ -372,34 +375,54 @@ function SemTable({ sec }) {
   const codeColor = (state) => ({ ong: '#7c3aed', wdn: '#dc2626', nd: '#94a3b8', done: '#0284c7' }[state] || '#0284c7');
 
   return (
-    <div className="mb-2">
-      <div className="inline-flex items-center text-[11px] font-bold text-white uppercase tracking-wider rounded-lg px-3 py-1.5 mt-3 mb-2 shadow-sm" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' }}>
-        📍 {sec.label}
+    <div
+      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all"
+      style={{ borderColor: isActive ? '#7dd3fc' : '#bfdbfe' }}
+    >
+      <div
+        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
+        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
+          <span className="text-[14px] font-bold text-white">{sec.label}</span>
+          {isActive && (
+            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-sky-900">Current</span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] text-white/80">{sec.rows.length} course{sec.rows.length !== 1 ? 's' : ''}</span>
+          <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+        </div>
       </div>
-      <div className="border rounded-lg overflow-hidden mb-2 shadow-sm" style={{ borderColor: '#bfdbfe' }}>
-        <table className="w-full border-collapse text-[13px]">
-          <thead>
-            <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)', borderBottom: '1px solid #bfdbfe' }}>
-              {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h, i) => (
-                <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-sky-600 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sec.rows.map((r, i) => (
-              <tr key={i} style={{ background: rowBg(r.state) }} className="border-b border-sky-50 last:border-b-0 hover:brightness-95 transition-all">
-                <td className="px-3 py-2.5 font-mono text-[12px] font-semibold whitespace-nowrap" style={{ color: codeColor(r.state) }}>{r.code}</td>
-                <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
-                <td className="px-3 py-2.5 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
-                <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
-                <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
+      
+      {open && (
+        <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)' }}>
+          <table className="w-full border-collapse text-[13px]">
+            <thead>
+              <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)' }}>
+                {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h, i) => (
+                  <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-sky-600 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
+                    {h}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {sec.rows.map((r, i) => (
+                <tr key={i} style={{ background: rowBg(r.state) }} className="hover:brightness-95 transition-all">
+                  <td className="px-3 py-2.5 font-mono text-[12px] font-semibold whitespace-nowrap" style={{ color: codeColor(r.state) }}>{r.code}</td>
+                  <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
+                  <td className="px-3 py-2.5 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
+                  <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
+                  <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -499,7 +522,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
             <thead>
               <tr style={{ background: '#fef3c7' }}>
                 {['Code', 'Course Name', 'Prerequisite', 'Status', 'Lock Status', 'Need To Complete'].map((h) => (
-                  <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900 border-b-2" style={{ borderColor: '#fbbf24' }}>{h}</th>
+                  <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -507,7 +530,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
               {searchResults.map((r, i) => {
                 const statusBadge = getStatusBadge(r);
                 return (
-                  <tr key={i} className="border-b border-slate-100 last:border-b-0 hover:bg-amber-50/60">
+                  <tr key={i} className="hover:bg-amber-50/60">
                     <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-700">{r.code}</td>
                     <td className="px-3 py-2 text-slate-700">{r.name}</td>
                     <td className="px-3 py-2 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
@@ -572,13 +595,13 @@ function NotAttemptedSection({ semSections, electiveRows }) {
                 <thead>
                   <tr style={{ background: '#fef3c7' }}>
                     {['Code', 'Course Name', 'Prerequisite', 'Status', 'Need To Complete'].map((h) => (
-                      <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900 border-b-2" style={{ borderColor: '#fbbf24' }}>{h}</th>
+                      <th key={h} className="px-3 py-3 text-[11px] font-extrabold uppercase tracking-wider text-amber-900">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {cur.rows.map((r, i) => (
-                    <tr key={i} className="border-b border-slate-100 last:border-b-0 hover:bg-amber-50/60">
+                    <tr key={i} className="hover:bg-amber-50/60">
                       <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-300">{r.code}</td>
                       <td className="px-3 py-2 text-slate-500">{r.name}</td>
                       <td className="px-3 py-2 text-[12px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
@@ -596,72 +619,114 @@ function NotAttemptedSection({ semSections, electiveRows }) {
   );
 }
 
-function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref }) {
+function InfoGrid({ items }) {
   const isCgpa = (k) => /^cgpa$/i.test(k.replace(/\s/g, ''));
-  const isName = (k) => /^(student\s*name|name)$/i.test(k.replace(/\s+/g, ' ').trim());
-  const isId   = (k) => /^student\s*id$/i.test(k.replace(/\s/g, ''));
+  const getCardStyle = (k) => {
+    if (isCgpa(k)) return { border: '#0ea5e9', bg: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', label: '#0284c7' };
+    if (/^student\s*id$/i.test(k.replace(/\s/g, ''))) return { border: '#34d399', bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', label: '#059669' };
+    return { border: '#93c5fd', bg: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)', label: '#2563eb' };
+  };
+  return (
+    <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+      {items.map(({ k, v }) => {
+        const s = getCardStyle(k);
+        return (
+          <div key={k} className="px-4 py-4 rounded-xl border hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg, borderColor: s.border, borderWidth: '1.5px' }}>
+            <div className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
+            {isCgpa(k) ? (
+              <div className="text-[32px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>
+            ) : (
+              <div className="text-[15px] font-semibold text-slate-700">{v || '—'}</div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
-  const cgpa   = infoItems.find((i) => isCgpa(i.k))?.v || '—';
-  const name   = infoItems.find((i) => isName(i.k))?.v || '';
-  const sid    = infoItems.find((i) => isId(i.k))?.v || '';
-  const others = infoItems.filter((i) => !isCgpa(i.k) && !isName(i.k) && !isId(i.k));
-
-  const cgpaNum = parseFloat(cgpa);
-  const cgpaColor = isNaN(cgpaNum) ? '#64748b' : cgpaNum >= 3.5 ? '#059669' : cgpaNum >= 3.0 ? '#2563eb' : cgpaNum >= 2.5 ? '#d97706' : '#dc2626';
+function ElectiveSection({ electiveRows }) {
+  const [open, setOpen] = useState(true);
+  const isActive = electiveRows.some((c) => c.state === 'ong');
 
   return (
-    <div className="text-[13px] text-slate-800 py-4 px-1" style={{ boxSizing: 'border-box' }}>
-
-      {/* ── Hero Header ── */}
-      <div className="relative rounded-2xl overflow-hidden mb-6 shadow-md" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%)' }}>
-        {/* Decorative blobs */}
-        <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-30px', left: '30%', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
-
-        <div className="relative flex items-center justify-between flex-wrap gap-4 px-6 py-5">
-          {/* Left: title + student info */}
-          <div>
-            <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Academic Record</div>
-            <h2 className="text-[22px] font-extrabold text-white m-0 leading-tight">
-              Curriculum{' '}
-              <span style={{ background: 'linear-gradient(135deg, #38bdf8, #7dd3fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Grade Report
-              </span>
-            </h2>
-            {(name || sid) && (
-              <div className="flex items-center gap-3 mt-2.5 flex-wrap">
-                {name && <span className="text-[13px] font-semibold text-white/90">{name}</span>}
-                {name && sid && <span style={{ color: 'rgba(255,255,255,0.3)' }}>·</span>}
-                {sid && <span className="font-mono text-[12px] font-bold px-2 py-0.5 rounded-md" style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)' }}>{sid}</span>}
-              </div>
-            )}
-            {others.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {others.map(({ k, v }) => (
-                  <span key={k} className="text-[11px] px-2.5 py-1 rounded-lg font-medium" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.45)' }}>{k}:</span> {v || '—'}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right: CGPA + print */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="text-center px-5 py-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>CGPA</div>
-              <div className="text-[36px] font-black leading-none" style={{ color: cgpaColor === '#059669' ? '#6ee7b7' : cgpaColor === '#2563eb' ? '#93c5fd' : cgpaColor === '#d97706' ? '#fcd34d' : '#fca5a5' }}>
-                {cgpa}
-              </div>
-            </div>
-            {printHref && (
-              <a href={printHref} className="no-underline" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 700, color: '#1e3a8a', background: 'linear-gradient(135deg, #e0f2fe, #bfdbfe)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '10px', padding: '8px 14px', whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
-                🖨 Print
-              </a>
-            )}
-          </div>
+    <div
+      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all mt-6"
+      style={{ borderColor: isActive ? '#6ee7b7' : '#a7f3d0' }}
+    >
+      <div
+        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
+        style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', boxShadow: '0 2px 8px rgba(16,185,129,0.25)' }}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
+          <span className="text-[14px] font-bold text-white">Elective Curriculum</span>
+          {isActive && (
+            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-emerald-900">Current</span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] text-white/80">{electiveRows.length} course{electiveRows.length !== 1 ? 's' : ''}</span>
+          <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
         </div>
       </div>
+      
+      {open && (
+        <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' }}>
+          <table className="w-full border-collapse text-[13px]">
+            <thead>
+              <tr style={{ background: 'linear-gradient(to right, #d1fae5, #a7f3d0)' }}>
+                {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h) => (
+                  <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 text-left">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {electiveRows.map((r, i) => {
+                const rowBg =
+                  r.state === 'ong' ? 'linear-gradient(135deg, #faf5ff, #ede9fe)' :
+                  r.state === 'wdn' ? 'linear-gradient(135deg, #fff8f8, #ffe4e6)' :
+                  r.state === 'nd'  ? 'linear-gradient(135deg, #f8fafc, #f1f5f9)' :
+                  'linear-gradient(135deg, #f0fdf4, #dcfce7)';
+                return (
+                  <tr key={i} style={{ background: rowBg }} className="hover:brightness-95 transition-all">
+                    <td className="px-3 py-2.5 font-mono text-[12px] font-semibold text-emerald-700">{r.code}</td>
+                    <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
+                    <td className="px-3 py-2.5 text-[12px] text-slate-500">{r.prerequisite || 'Nil'}</td>
+                    <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
+                    <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref }) {
+  return (
+    <div className="text-[15px] text-slate-800 py-4 px-1 aiub-custom-grade-table" style={{ boxSizing: 'border-box' }}>
+      <style>{`.aiub-custom-grade-table table td, .aiub-custom-grade-table table th { border: none !important; }`}</style>
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6 pb-4" style={{ borderBottom: '1px solid #e2e8f0' }}>
+        <h2 className="text-[26px] font-extrabold text-blue-800 tracking-tight m-0">
+          Student Grade Report
+        </h2>
+        {printHref && (
+          <a
+            href={printHref}
+            className="text-[11px] font-semibold text-white rounded-lg px-3 py-2 no-underline transition-all shadow-sm hover:shadow-md whitespace-nowrap border"
+            style={{ background: 'linear-gradient(to right, #0284c7, #0369a1)', borderColor: '#0369a1' }}
+          >
+            🖨 Print
+          </a>
+        )}
+      </div>
+
+      <InfoGrid items={infoItems} />
 
       {/* Not attempted section */}
       <NotAttemptedSection semSections={semSections} electiveRows={electiveRows} />
@@ -673,42 +738,7 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       {semSections.map((sec, i) => <SemTable key={i} sec={sec} />)}
 
       {/* Elective curriculum */}
-      {electiveRows.length > 0 && (
-        <>
-          <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-white rounded-lg px-4 py-2.5 mb-3 mt-6 shadow-sm" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' }}>
-            ✨ Elective Curriculum
-          </div>
-          <div className="border rounded-lg overflow-hidden shadow-sm" style={{ borderColor: '#6ee7b7' }}>
-            <table className="w-full border-collapse text-[13px]">
-              <thead>
-                <tr style={{ background: 'linear-gradient(to right, #d1fae5, #a7f3d0)', borderBottom: '1px solid #6ee7b7' }}>
-                  {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h) => (
-                    <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 text-left">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {electiveRows.map((r, i) => {
-                  const rowBg =
-                    r.state === 'ong' ? 'linear-gradient(135deg, #faf5ff, #ede9fe)' :
-                    r.state === 'wdn' ? 'linear-gradient(135deg, #fff8f8, #ffe4e6)' :
-                    r.state === 'nd'  ? 'linear-gradient(135deg, #f8fafc, #f1f5f9)' :
-                    'linear-gradient(135deg, #f0fdf4, #dcfce7)';
-                  return (
-                    <tr key={i} style={{ background: rowBg }} className="border-b border-emerald-50 last:border-b-0 hover:brightness-95 transition-all">
-                      <td className="px-3 py-2.5 font-mono text-[12px] font-semibold text-emerald-700">{r.code}</td>
-                      <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
-                      <td className="px-3 py-2.5 text-[12px] text-slate-500">{r.prerequisite || 'Nil'}</td>
-                      <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
-                      <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+      {electiveRows.length > 0 && <ElectiveSection electiveRows={electiveRows} />}
 
       {/* Legend */}
       <div className="flex flex-wrap gap-5 mt-6 pt-3 border-t border-slate-100">

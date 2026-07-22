@@ -145,15 +145,12 @@ function TermCard({ term }) {
   const [open, setOpen] = useState(true);
   const isMidterm = term.termName.toLowerCase().includes('midterm');
 
-  const cardGradient = isMidterm
-    ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #ccfbf1 100%)'
-    : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fed7aa 100%)';
+  const cardGradient = 'linear-gradient(180deg, #f8fafc 0%, #e0e7ff 100%)';
 
-  const borderColor = isMidterm ? '#10b981' : '#f59e0b';
-  const borderBgColor = isMidterm ? '#6ee7b7' : '#fcd34d';
-  const labelBg = isMidterm ? '#d1fae5' : '#fef3c7';
-  const labelText = isMidterm ? '#065f46' : '#92400e';
-  const chevronColor = isMidterm ? '#059669' : '#d97706';
+  const borderColor = isMidterm ? '#3b82f6' : '#6366f1';
+  const labelBg = isMidterm ? '#dbeafe' : '#e0e7ff';
+  const labelText = isMidterm ? '#1e40af' : '#3730a3';
+  const chevronColor = isMidterm ? '#2563eb' : '#4f46e5';
 
   return (
     <div 
@@ -233,7 +230,7 @@ function CourseAndResultsView({ sectionOpts, semesterOpts, courseName, courseMet
       <div className="flex flex-wrap sm:flex-nowrap justify-between items-center gap-5 bg-gradient-to-br from-blue-50 via-white to-indigo-50 border border-blue-100 rounded-2xl px-6 py-5 mb-8 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
         <div className="relative z-10">
-          <div className="text-[20px] font-extrabold mb-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-green-700 drop-shadow-sm">{courseName}</div>
+          <div className="text-[20px] font-extrabold mb-1.5 text-blue-800 drop-shadow-sm">{courseName}</div>
           {courseMeta.total && <div className="text-[13px] text-slate-500 mb-2 font-medium">{metaLine(courseMeta)}</div>}
           {teacherText && <div className="text-[13px] text-slate-700 bg-white/60 border border-slate-200/60 inline-block px-2.5 py-1 rounded-md backdrop-blur-sm shadow-sm">
             <span className="mr-1.5 opacity-80">👨‍🏫</span>{teacherText}

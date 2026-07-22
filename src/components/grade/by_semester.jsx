@@ -190,7 +190,7 @@ function SemesterCard({ sem }) {
           <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)' }}>
             <table className="w-full text-[12px] border-collapse">
               <thead>
-                <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)', borderBottom: '1px solid #bfdbfe' }}>
+                <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)' }}>
                   <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[9%]">Class ID</th>
                   <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600">Course</th>
                   <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[5%]">Cr.</th>
@@ -209,7 +209,7 @@ function SemesterCard({ sem }) {
                     c.state === 'wdn'  ? 'linear-gradient(135deg, #f8fafc, #f1f5f9)' :
                     'linear-gradient(135deg, #f8fbff, #eff6ff)';
                   return (
-                    <tr key={i} style={{ background: rowBg }} className="border-b border-sky-50 hover:brightness-95 transition-all">
+                    <tr key={i} style={{ background: rowBg }} className="hover:brightness-95 transition-all">
                       <td className="px-3 py-2.5 font-mono text-[11px] text-slate-500">{c.classId}</td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{c.name}</td>
                       <td className="px-2 py-2.5 text-center text-slate-600">{c.credits.replace(/[()]/g, '')}</td>
@@ -244,11 +244,11 @@ function InfoGrid({ items }) {
         const s = getCardStyle(k);
         return (
           <div key={k} className="px-4 py-4 rounded-xl border hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg, borderColor: s.border, borderWidth: '1.5px' }}>
-            <div className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
+            <div className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
             {isCgpa(k) ? (
-              <div className="text-[28px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>
+              <div className="text-[32px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>
             ) : (
-              <div className="text-[13px] font-semibold text-slate-700">{v || '—'}</div>
+              <div className="text-[15px] font-semibold text-slate-700">{v || '—'}</div>
             )}
           </div>
         );
@@ -259,11 +259,12 @@ function InfoGrid({ items }) {
 
 function SemesterGradeReport({ infoItems, semesters, printHref }) {
   return (
-    <div className="text-[13px] text-slate-800 px-1 py-4" style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
+    <div className="text-[15px] text-slate-800 px-1 py-4 aiub-custom-grade-table" style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
+      <style>{`.aiub-custom-grade-table table td, .aiub-custom-grade-table table th { border: none !important; }`}</style>
       {/* Header — matches Registration style */}
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6 pb-4" style={{ borderBottom: '1px solid #e2e8f0' }}>
-        <h2 className="text-[18px] font-bold text-slate-900 tracking-tight m-0">
-          Semester <span style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Grade Report</span>
+        <h2 className="text-[26px] font-extrabold text-blue-800 tracking-tight m-0">
+          Student Grade Report
         </h2>
         {printHref && (
           <a

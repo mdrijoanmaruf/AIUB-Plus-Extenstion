@@ -93,12 +93,12 @@
     },
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/ByCurriculum*"],
-      "js": ["src/components/grade/carriculum_grade_report.jsx"],
+      "js": ["src/components/grade/by_carriculum.jsx"],
       "run_at": "document_idle"
     },
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/BySemester*"],
-      "js": ["src/components/grade/carriculum_grade_semester.jsx"],
+      "js": ["src/components/grade/by_semester.jsx"],
       "run_at": "document_idle"
     },
     {
