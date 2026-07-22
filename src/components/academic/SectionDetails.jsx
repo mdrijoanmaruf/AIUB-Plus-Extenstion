@@ -233,61 +233,37 @@ function UpcomingConsulting({ events }) {
   );
 }
 
-function TimetableGrid({ events }) {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const startHour = 8;
-  const endHour = 18;
-  const totalHours = endHour - startHour;
+function OriginalTimetable() {
+  const containerRef = React.useRef(null);
   
+  React.useEffect(() => {
+    // Find the original calendar or its container
+    let originalCal = document.getElementById('calendar');
+    if (!originalCal) {
+      const fcContainer = document.querySelector('.fc-view-container');
+      if (fcContainer) originalCal = fcContainer.parentElement;
+    }
+    
+    if (originalCal && containerRef.current) {
+      // Move it into our React container
+      containerRef.current.appendChild(originalCal);
+      originalCal.style.display = 'block';
+      originalCal.style.visibility = 'visible';
+      originalCal.style.opacity = '1';
+    }
+    
+    return () => {
+      // Put it back in the hidden original content container when unmounting
+      const hiddenContainer = document.getElementById('aiub-original-content');
+      if (originalCal && hiddenContainer) {
+         hiddenContainer.appendChild(originalCal);
+      }
+    };
+  }, []);
+
   return (
-    <div className="relative mt-4 bg-white rounded-xl border shadow-sm overflow-hidden" style={{ minWidth: '700px' }}>
-      <div className="grid border-b" style={{ gridTemplateColumns: '60px repeat(7, 1fr)' }}>
-        <div className="border-r bg-slate-50"></div>
-        {days.map(day => (
-          <div key={day} className="py-2.5 text-center font-bold text-slate-600 text-[12px] border-r last:border-0 bg-slate-50 uppercase tracking-wider">
-            {day}
-          </div>
-        ))}
-      </div>
-      
-      <div className="relative grid" style={{ gridTemplateColumns: '60px repeat(7, 1fr)', height: `${totalHours * 60}px` }}>
-        <div className="border-r bg-white relative">
-          {Array.from({ length: totalHours + 1 }).map((_, i) => {
-            const h = startHour + i;
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            const displayH = h > 12 ? h - 12 : h;
-            return (
-              <div key={i} className="absolute w-full text-right pr-2 text-[10px] font-semibold text-slate-400" style={{ top: `${i * 60 - 8}px` }}>
-                {displayH} {ampm}
-              </div>
-            );
-          })}
-        </div>
-        
-        {days.map((day, dayIdx) => (
-          <div key={day} className="relative border-r last:border-0 border-slate-100">
-            {Array.from({ length: totalHours }).map((_, i) => (
-              <div key={i} className="absolute w-full border-b border-slate-100" style={{ top: `${(i + 1) * 60}px`, height: '1px' }}></div>
-            ))}
-            
-            {events.filter(e => e.day === day).map((ev, i) => {
-              const top = (ev.startHour - startHour) * 60;
-              const height = (ev.endHour - ev.startHour) * 60;
-              return (
-                <div 
-                  key={i} 
-                  className={`absolute left-1 right-1 rounded-md border p-1 shadow-sm overflow-hidden flex flex-col items-center justify-center text-center transition-transform hover:scale-[1.02] hover:z-10 hover:shadow-md cursor-default ${ev.colorClass}`}
-                  style={{ top: `${top}px`, height: `${height}px` }}
-                  title={`${ev.title}\n${ev.timeStr}`}
-                >
-                  <div className="text-[12px] font-bold leading-tight line-clamp-2 mb-0.5 px-1">{ev.title}</div>
-                  <div className="text-[11px] font-semibold opacity-90 leading-none">{ev.timeStr}</div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+    <div className="mt-4 bg-white rounded-xl border shadow-sm p-4 overflow-x-auto">
+      <div ref={containerRef} className="min-w-[700px]"></div>
     </div>
   );
 }
@@ -381,11 +357,7 @@ function SectionDetailsView({ data }) {
                 </div>
                 <UpcomingConsulting events={data.scheduleEvents} />
               </div>
-              {data.scheduleEvents.length > 0 ? (
-                 <TimetableGrid events={data.scheduleEvents} />
-              ) : (
-                 <div className="py-8 text-center text-slate-400 text-[13px] italic border rounded-xl border-dashed">No schedule found for this faculty.</div>
-              )}
+              <OriginalTimetable />
             </div>
           )}
 

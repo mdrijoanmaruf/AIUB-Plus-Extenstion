@@ -415,11 +415,22 @@ import { scrapeNotices } from '../../utils/notices';
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          
+          // Close native notification dropdown if open
+          if (parentLi && parentLi.classList.contains('open')) {
+            parentLi.classList.remove('open');
+          }
+
           const isHidden = dropdown.style.display === 'none';
           dropdown.style.display = isHidden ? 'block' : 'none';
           if (isHidden) {
             counter.style.display = 'none !important'; // dismiss badge on open
           }
+        });
+
+        // Close our custom dropdown when native notification is clicked
+        notiBtn.addEventListener('click', () => {
+          dropdown.style.display = 'none';
         });
 
         // Close dropdown when clicking outside
@@ -468,6 +479,34 @@ import { scrapeNotices } from '../../utils/notices';
       }
     }, 500); // slight delay to let native scripts finish loading
 
+    // ── Inject Scrollbar Styles ───────────────────────────────────────────────
+    if (!document.getElementById('aiub_custom_scrollbar_styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'aiub_custom_scrollbar_styles';
+      styleEl.textContent = `
+        /* Thin light blue scrollbar for custom notices and native notifications */
+        #aiub_custom_notices_dropdown::-webkit-scrollbar,
+        #notifications .scrollable-menu::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+        #aiub_custom_notices_dropdown::-webkit-scrollbar-track,
+        #notifications .scrollable-menu::-webkit-scrollbar-track {
+          background: rgba(240, 247, 255, 0.5); 
+          border-radius: 8px;
+        }
+        #aiub_custom_notices_dropdown::-webkit-scrollbar-thumb,
+        #notifications .scrollable-menu::-webkit-scrollbar-thumb {
+          background: rgba(147, 197, 253, 0.9); 
+          border-radius: 8px;
+        }
+        #aiub_custom_notices_dropdown::-webkit-scrollbar-thumb:hover,
+        #notifications .scrollable-menu::-webkit-scrollbar-thumb:hover {
+          background: rgba(96, 165, 250, 1);
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
   }
 
   function styleNavLink(a) {
