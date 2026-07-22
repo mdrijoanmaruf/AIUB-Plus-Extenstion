@@ -131,15 +131,77 @@ function injectPageHeader(panelBody) {
 
 function styleModalContent(div) {
   if (!div.innerHTML.trim() || div.innerHTML.trim() === 'Loading...') return;
-  div.querySelectorAll('table:not([data-cur-modal])').forEach((t) => {
+
+  // Style Headers
+  div.querySelectorAll('h3').forEach(h3 => {
+      h3.style.cssText = 'font-size:20px!important;font-weight:800!important;text-align:center!important;margin:24px 0 8px 0!important;background:linear-gradient(135deg, #1e3a8a, #2563eb)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important;letter-spacing:-0.5px!important;';
+  });
+  div.querySelectorAll('h5').forEach(h5 => {
+      h5.style.cssText = 'font-size:13px!important;font-weight:700!important;text-align:center!important;color:#64748b!important;margin-bottom:24px!important;text-transform:uppercase;letter-spacing:1px;';
+  });
+
+  // Style Curriculum Info table
+  div.querySelectorAll('table.curriculum-info:not([data-cur-modal])').forEach(t => {
+      t.setAttribute('data-cur-modal', '1');
+      t.style.cssText = 'width:100%!important;border-collapse:collapse!important;margin:0 0 24px 0!important;background:#fff!important;border-radius:12px!important;overflow:hidden!important;box-shadow:0 1px 3px rgba(0,0,0,0.05)!important;border:1px solid #e2e8f0!important;';
+      t.querySelectorAll('td').forEach((td, i) => {
+          td.style.cssText = 'padding:14px 18px!important;border:none!important;font-size:13px!important;border-bottom:1px solid #f1f5f9!important;';
+          if(i % 2 === 0) { // Labels (Curriculum No:, Title:)
+              td.style.fontWeight = '700';
+              td.style.color = '#475569';
+              td.style.textTransform = 'uppercase';
+              td.style.letterSpacing = '0.5px';
+              td.style.fontSize = '11px';
+              td.style.background = '#f8fafc';
+              td.style.width = '15%';
+          } else { // Values
+              td.style.fontWeight = '600';
+              td.style.color = '#1e293b';
+              td.style.borderRight = '1px solid #e2e8f0';
+          }
+      });
+  });
+
+  // Style Semester Labels
+  div.querySelectorAll('label').forEach(lbl => {
+      if(lbl.textContent.includes('Semester:')) {
+          lbl.style.cssText = 'display:inline-block!important;font-size:11px!important;font-weight:800!important;background:linear-gradient(135deg, #eff6ff, #dbeafe)!important;color:#1d4ed8!important;padding:6px 16px!important;border-radius:9999px!important;margin:24px 0 12px 0!important;border:1px solid #bfdbfe!important;letter-spacing:1px;text-transform:uppercase;';
+      }
+  });
+
+  // Style Course Tables
+  div.querySelectorAll('table:not(.curriculum-info):not([data-cur-modal])').forEach((t) => {
     enhanceCurriculumTable(t);
     t.setAttribute('data-cur-modal', '1');
-    t.style.cssText = 'width:100%!important;border-collapse:collapse!important;margin:0!important;font-size:13px';
-    t.querySelectorAll('thead th').forEach((th) => {
-      th.style.cssText = 'background:#f8fafc!important;color:#475569!important;font-size:11px!important;font-weight:700!important;text-transform:uppercase!important;letter-spacing:.5px!important;padding:9px 16px!important;border:none!important;border-bottom:2px solid #e2e8f0!important';
-    });
-    t.querySelectorAll('tbody td').forEach((td) => {
-      td.style.cssText = 'padding:8px 16px!important;border:none!important;border-bottom:1px solid #f1f5f9!important;color:#374151!important;font-size:13px!important';
+    t.style.cssText = 'width:100%!important;border-collapse:separate!important;border-spacing:0!important;margin:0 0 16px 0!important;border-radius:12px!important;overflow:hidden!important;border:1px solid #e2e8f0!important;box-shadow:0 1px 3px rgba(0,0,0,0.02)!important;';
+    
+    t.querySelectorAll('tbody tr').forEach((tr, index) => {
+        if (index === 0) { // Header row
+            tr.querySelectorAll('th').forEach((th, i, arr) => {
+                th.style.cssText = 'background:#eef2f9!important;color:#334669!important;font-size:11px!important;font-weight:700!important;text-transform:uppercase!important;letter-spacing:.6px!important;padding:14px 16px!important;border:none!important;border-bottom:1px solid #e2e8f0!important;border-right:1px solid #e2e8f0!important;text-align:left!important;';
+                if (i === arr.length - 1) th.style.borderRight = 'none!important';
+            });
+        } else { // Body rows
+            tr.style.transition = 'background-color 0.2s';
+            tr.onmouseenter = () => tr.style.background = '#f8fafc';
+            tr.onmouseleave = () => tr.style.background = 'transparent';
+            
+            const tds = tr.querySelectorAll('td');
+            tds.forEach((td, i) => {
+                td.style.cssText = 'padding:14px 16px!important;border:none!important;border-bottom:1px solid #f1f5f9!important;border-right:1px solid #e2e8f0!important;color:#475569!important;font-size:13px!important;font-weight:500!important;vertical-align:middle!important;';
+                if(i === 0) { // Code
+                    td.style.color = '#2563eb!important';
+                    td.style.fontWeight = '600!important';
+                    td.style.whiteSpace = 'nowrap!important';
+                } else if(i === 1) { // Name
+                    td.style.color = '#1e293b!important';
+                    td.style.fontWeight = '600!important';
+                }
+                if (i === tds.length - 1) {
+                    td.style.borderRight = 'none!important';
+                }
+            });
+        }
     });
   });
 }
