@@ -133,6 +133,46 @@ function applyIntroCardDesign(contentWrap) {
     }
   }
 
+  const infoAlert = contentWrap.querySelector('.alert.alert-info');
+  if (infoAlert) {
+    infoAlert.style.cssText = `
+      background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 100%) !important;
+      border: 1px solid rgba(59, 130, 246, 0.24) !important;
+      border-left: 4px solid #2563eb !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 10px rgba(30, 58, 138, 0.06) !important;
+      color: #1f2937 !important;
+      padding: 16px !important;
+      margin-bottom: 14px !important;
+      line-height: 1.6 !important;
+    `;
+    
+    infoAlert.querySelectorAll('b').forEach((b) => {
+      b.style.color = '#1e3a8a';
+      b.style.fontWeight = '700';
+    });
+
+    const infoLink = infoAlert.querySelector('a');
+    if (infoLink) {
+      infoLink.style.cssText = `
+        display: inline-block !important;
+        border: none !important;
+        border-radius: 6px !important;
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        padding: 4px 12px !important;
+        text-decoration: none !important;
+        margin-left: 4px !important;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
+      `;
+      const linkBold = infoLink.querySelector('b');
+      if (linkBold) {
+        linkBold.style.color = '#ffffff';
+      }
+    }
+  }
+
   const warningAlert = contentWrap.querySelector('.alert.alert-warning');
   if (warningAlert) {
     warningAlert.style.cssText = `

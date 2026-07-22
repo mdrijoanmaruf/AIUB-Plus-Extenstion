@@ -2,8 +2,6 @@ import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
 import '../../content.css';
 
-// ── Data extraction ────────────────────────────────────────────────────────────
-
 function getSemesterOptions(panel) {
   const sel = panel.querySelector('#SemesterDropDown');
   if (!sel) return { options: [], current: '' };
@@ -58,18 +56,18 @@ function parseCourses(panel) {
   return courses;
 }
 
-// ── Card colour palettes ───────────────────────────────────────────────────────
 
 const PALETTES = [
-  { bg: 'linear-gradient(145deg,#fdf4ff,#fae8ff,#ede9fe)', accent: 'linear-gradient(90deg,#a855f7,#8b5cf6)', border: '#e9d5ff', name: '#3b0764', sub: '#7e22ce' },
-  { bg: 'linear-gradient(145deg,#fff7ed,#ffedd5,#fef9c3)', accent: 'linear-gradient(90deg,#f97316,#eab308)', border: '#fed7aa', name: '#431407', sub: '#9a3412' },
-  { bg: 'linear-gradient(145deg,#f0fdf4,#dcfce7,#d1fae5)', accent: 'linear-gradient(90deg,#22c55e,#10b981)', border: '#bbf7d0', name: '#052e16', sub: '#166534' },
-  { bg: 'linear-gradient(145deg,#eff6ff,#dbeafe,#e0f2fe)', accent: 'linear-gradient(90deg,#3b82f6,#06b6d4)', border: '#bfdbfe', name: '#1e3a5f', sub: '#1d4ed8' },
-  { bg: 'linear-gradient(145deg,#fff1f2,#ffe4e6,#fce7f3)', accent: 'linear-gradient(90deg,#f43f5e,#ec4899)', border: '#fecdd3', name: '#4c0519', sub: '#be123c' },
-  { bg: 'linear-gradient(145deg,#f0fdfa,#ccfbf1,#cffafe)', accent: 'linear-gradient(90deg,#14b8a6,#06b6d4)', border: '#99f6e4', name: '#042f2e', sub: '#0f766e' },
+  {
+    bg: 'linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)',
+    accent: 'linear-gradient(90deg, #2563eb, #60a5fa)',
+    border: '#dbeafe',
+    name: '#1e3a8a',
+    sub: '#1d4ed8'
+  }
 ];
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+
 
 function LabelBadge({ type, text }) {
   const s = {
@@ -115,16 +113,37 @@ function CourseCard({ course, index }) {
 
       <div style={{ padding: '13px 15px', flex: 1 }}>
         {/* Course name */}
-        {course.name && (
-          <div style={{
-            fontWeight: 700, fontSize: 13, lineHeight: 1.45, marginBottom: 8,
-            color: isDropped ? '#6b7280' : p.name,
-            textDecoration: isDropped ? 'line-through' : 'none',
-            textDecorationColor: '#9ca3af', textDecorationThickness: '2px',
-          }}>
-            {course.name}
-          </div>
-        )}
+        {course.name && (() => {
+          const tfsLink = course.links.find(lk => /tfs/i.test(lk.text) || /teachingfeedback/i.test(lk.href))?.href;
+          
+          if (tfsLink && !isDropped) {
+            return (
+              <a 
+                href={tfsLink}
+                title="Go to TFS"
+                style={{
+                  display: 'block', fontWeight: 700, fontSize: 13, lineHeight: 1.45, marginBottom: 8,
+                  color: '#1e293b', textDecoration: 'none', transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#2563eb'}
+                onMouseLeave={e => e.currentTarget.style.color = '#1e293b'}
+              >
+                {course.name}
+              </a>
+            );
+          }
+          
+          return (
+            <div style={{
+              fontWeight: 700, fontSize: 13, lineHeight: 1.45, marginBottom: 8,
+              color: isDropped ? '#6b7280' : '#1e293b',
+              textDecoration: isDropped ? 'line-through' : 'none',
+              textDecorationColor: '#9ca3af', textDecorationThickness: '2px',
+            }}>
+              {course.name}
+            </div>
+          );
+        })()}
 
         {/* Result */}
         {course.resultText && (() => {
@@ -184,8 +203,6 @@ function CourseCard({ course, index }) {
     </div>
   );
 }
-
-// ── Main view ──────────────────────────────────────────────────────────────────
 
 function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registerUpdater }) {
   const [courses, setCourses]   = useState(initialCourses);
@@ -298,7 +315,6 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
   );
 }
 
-// ── Mount ──────────────────────────────────────────────────────────────────────
 
 (function mount() {
   if (window.__aiubHomeRegMounted) return;
