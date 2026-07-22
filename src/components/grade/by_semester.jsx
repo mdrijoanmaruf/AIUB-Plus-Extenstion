@@ -104,16 +104,16 @@ function parseSemesters(tbl) {
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function GradePill({ grade }) {
-  if (!grade) return <span className="text-slate-300 text-[12px]">—</span>;
-  if (grade === '-') return <span className="text-[12px] font-semibold" style={{ color: '#7c3aed' }}>Ongoing</span>;
+  if (!grade) return <span className="text-slate-300 text-[14px]">—</span>;
+  if (grade === '-') return <span className="text-[14px] font-semibold" style={{ color: '#7c3aed' }}>Ongoing</span>;
   const color = GRADE_COLORS[grade] || '#6b7280';
-  return <span className="text-[13px] font-bold" style={{ color }}>{grade}</span>;
+  return <span className="text-[15px] font-bold" style={{ color }}>{grade}</span>;
 }
 
 function MiniGrade({ grade }) {
-  if (!grade || grade === '-' || grade === '') return <span className="text-slate-300 text-[11px]">—</span>;
+  if (!grade || grade === '-' || grade === '') return <span className="text-slate-300 text-[13px]">—</span>;
   const color = GRADE_COLORS[grade] || '#6b7280';
-  return <span className="text-[11px] font-semibold" style={{ color }}>{grade}</span>;
+  return <span className="text-[13px] font-semibold" style={{ color }}>{grade}</span>;
 }
 
 function StatusBadge({ state }) {
@@ -161,44 +161,43 @@ function SemesterCard({ sem }) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all"
-      style={{ borderColor: isActive ? '#7dd3fc' : '#bfdbfe' }}
+      className="rounded-xl overflow-hidden mb-4 shadow-sm hover:shadow-md transition-all"
     >
       <div
-        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
-        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
+        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none border-b border-sky-100"
+        style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
         onClick={() => setOpen((v) => !v)}
       >
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
-          <span className="text-[14px] font-bold text-white">{sem.label}</span>
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-400 shadow-sm' : 'bg-sky-200'}`} />
+          <span className="text-[16px] font-bold text-sky-900">{sem.label}</span>
           {isActive && (
-            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-sky-900">Current</span>
+            <span className="text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-200 text-amber-900">Current</span>
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[12px] text-white/80">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
+          <span className="text-[13px] font-semibold text-sky-700">{sem.courses.length} course{sem.courses.length !== 1 ? 's' : ''}</span>
           {sem.summary?.gpa && sem.summary.gpa !== '0.00' && (
-            <span className="text-[12px] font-semibold text-white/90">GPA {sem.summary.gpa}</span>
+            <span className="text-[13px] font-extrabold text-sky-800">GPA {sem.summary.gpa}</span>
           )}
-          <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+          <span className={`text-[11px] text-sky-600 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
         </div>
       </div>
 
       {open && (
         <>
           <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)' }}>
-            <table className="w-full text-[12px] border-collapse">
+            <table className="w-full text-[14px] border-collapse">
               <thead>
                 <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)' }}>
-                  <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[9%]">Class ID</th>
-                  <th className="text-left px-3 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600">Course</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[5%]">Cr.</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[6%]">Mid</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[7%]">Final</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[8%]">Grade</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[6%]">TGP</th>
-                  <th className="text-center px-2 py-2 font-bold text-[10px] uppercase tracking-wide text-sky-600 w-[9%]">Status</th>
+                  <th className="text-left px-3 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[9%]">Class ID</th>
+                  <th className="text-left px-3 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600">Course</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[5%]">Cr.</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[6%]">Mid</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[7%]">Final</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[8%]">Grade</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[6%]">TGP</th>
+                  <th className="text-center px-2 py-2 font-bold text-[11px] uppercase tracking-wide text-sky-600 w-[9%]">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -210,8 +209,8 @@ function SemesterCard({ sem }) {
                     'linear-gradient(135deg, #f8fbff, #eff6ff)';
                   return (
                     <tr key={i} style={{ background: rowBg }} className="hover:brightness-95 transition-all">
-                      <td className="px-3 py-2.5 font-mono text-[11px] text-slate-500">{c.classId}</td>
-                      <td className="px-3 py-2.5 text-slate-800 font-medium">{c.name}</td>
+                      <td className="px-3 py-2.5 font-mono text-[13px] text-slate-500">{c.classId}</td>
+                      <td className="px-3 py-2.5 text-[13px] text-slate-800 font-medium">{c.name}</td>
                       <td className="px-2 py-2.5 text-center text-slate-600">{c.credits.replace(/[()]/g, '')}</td>
                       <td className="px-2 py-2.5 text-center"><MiniGrade grade={c.mtg} /></td>
                       <td className="px-2 py-2.5 text-center"><MiniGrade grade={c.ftg} /></td>
@@ -243,7 +242,7 @@ function InfoGrid({ items }) {
       {items.map(({ k, v }) => {
         const s = getCardStyle(k);
         return (
-          <div key={k} className="px-4 py-4 rounded-xl border hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg, borderColor: s.border, borderWidth: '1.5px' }}>
+          <div key={k} className="px-4 py-4 rounded-xl hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg }}>
             <div className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
             {isCgpa(k) ? (
               <div className="text-[32px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>

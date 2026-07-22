@@ -155,6 +155,8 @@ function injectCurriculumStyles() {
     .text-\[11px\] { font-size: 11px !important; }
     .text-\[12px\] { font-size: 12px !important; }
     .text-\[13px\] { font-size: 13px !important; }
+    .text-\[14px\] { font-size: 14px !important; }
+    .text-\[15px\] { font-size: 15px !important; }
     .text-\[16px\] { font-size: 16px !important; }
     .text-\[26px\] { font-size: 26px !important; }
     
@@ -283,7 +285,8 @@ function getState(grades) {
   if (!grades.length) return 'nd';
   const last = grades[grades.length - 1].grade;
   if (last === '-') return 'ong';
-  if (last === 'W') return 'wdn';
+  if (last === 'W' || last === 'UW') return 'wdn';
+  if (last === 'F' || last === 'F*') return 'fail';
   return 'done';
 }
 
@@ -313,7 +316,7 @@ function addLockInfo(semSections, electiveRows) {
   const allRows = [...semSections.flatMap((s) => s.rows), ...electiveRows];
   const completedCodes = new Set(allRows.filter((r) => r.state === 'done' || r.state === 'ong').map((r) => normCode(r.code)));
   allRows.forEach((r) => {
-    if (r.state !== 'nd') return;
+    if (r.state === 'done' || r.state === 'ong') return;
     const reqList = prerequisiteListFromMeta(findCourseMeta(r.code, r.name));
     const missing = reqList.filter((req) => {
       const n = normalizePrereqText(req);
@@ -331,19 +334,19 @@ function addLockInfo(semSections, electiveRows) {
 // ── React components ─────────────────────────────────────────────────────────
 
 function GradePill({ grades }) {
-  if (!grades.length) return <span className="text-[12px] text-slate-300">—</span>;
+  if (!grades.length) return <span className="text-[14px] text-slate-300">—</span>;
   const last = grades[grades.length - 1];
   const color = GRADE_BG[last.grade] || '#90a4ae';
   const label = last.grade === '-' ? 'Ongoing' : last.grade;
-  return <span className="text-[11px] font-extrabold" style={{ color }}>{label}</span>;
+  return <span className="text-[14px] font-extrabold" style={{ color }}>{label}</span>;
 }
 
 function SemLines({ grades }) {
-  if (!grades.length) return <span className="text-[12px] text-slate-300">—</span>;
+  if (!grades.length) return <span className="text-[13px] text-slate-300">—</span>;
   return (
     <div>
       {grades.map((g, i) => (
-        <div key={i} className="text-[11px] text-slate-500 leading-relaxed">{g.sem}</div>
+        <div key={i} className="text-[12px] text-slate-500 leading-relaxed">{g.sem}</div>
       ))}
     </div>
   );
@@ -376,34 +379,33 @@ function SemTable({ sec }) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all"
-      style={{ borderColor: isActive ? '#7dd3fc' : '#bfdbfe' }}
+      className="rounded-xl overflow-hidden mb-3 shadow-sm hover:shadow-md transition-all"
     >
       <div
-        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
-        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
+        className="flex justify-between items-center px-4 py-3 cursor-pointer select-none border-b border-sky-100"
+        style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
         onClick={() => setOpen((v) => !v)}
       >
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
-          <span className="text-[14px] font-bold text-white">{sec.label}</span>
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-400 shadow-sm' : 'bg-sky-200'}`} />
+          <span className="text-[16px] font-bold text-sky-900">{sec.label}</span>
           {isActive && (
-            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-sky-900">Current</span>
+            <span className="text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-200 text-amber-900">Current</span>
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[12px] text-white/80">{sec.rows.length} course{sec.rows.length !== 1 ? 's' : ''}</span>
-          <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+          <span className="text-[13px] font-semibold text-sky-700">{sec.rows.length} course{sec.rows.length !== 1 ? 's' : ''}</span>
+          <span className={`text-[11px] text-sky-600 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
         </div>
       </div>
       
       {open && (
         <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f8fbff 0%, #eff6ff 100%)' }}>
-          <table className="w-full border-collapse text-[13px]">
+          <table className="w-full border-collapse text-[14px]">
             <thead>
               <tr style={{ background: 'linear-gradient(to right, #e0f2fe, #dbeafe)' }}>
                 {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h, i) => (
-                  <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-sky-600 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
+                  <th key={h} className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-sky-600 text-left" style={{ width: [null,'auto','25%','23%','8%'][i] }}>
                     {h}
                   </th>
                 ))}
@@ -412,9 +414,9 @@ function SemTable({ sec }) {
             <tbody>
               {sec.rows.map((r, i) => (
                 <tr key={i} style={{ background: rowBg(r.state) }} className="hover:brightness-95 transition-all">
-                  <td className="px-3 py-2.5 font-mono text-[12px] font-semibold whitespace-nowrap" style={{ color: codeColor(r.state) }}>{r.code}</td>
+                  <td className="px-3 py-2.5 font-mono text-[13px] font-semibold whitespace-nowrap" style={{ color: codeColor(r.state) }}>{r.code}</td>
                   <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
-                  <td className="px-3 py-2.5 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
+                  <td className="px-3 py-2.5 text-[13px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
                   <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
                   <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
                 </tr>
@@ -430,13 +432,14 @@ function SemTable({ sec }) {
 function NotAttemptedSection({ semSections, electiveRows }) {
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAllUnlocked, setShowAllUnlocked] = useState(false);
 
   const tabs = [];
   semSections.forEach((sec, i) => {
-    const nd = sec.rows.filter((r) => r.state === 'nd');
-    if (nd.length) tabs.push({ label: sec.label || `Semester ${i + 1}`, rows: nd });
+    const incomplete = sec.rows.filter((r) => r.state === 'nd' || r.state === 'wdn' || r.state === 'fail');
+    if (incomplete.length) tabs.push({ label: sec.label || `Semester ${i + 1}`, rows: incomplete });
   });
-  const electiveNA = electiveRows.filter((r) => r.state === 'nd');
+  const electiveNA = electiveRows.filter((r) => r.state === 'nd' || r.state === 'wdn' || r.state === 'fail');
   if (electiveNA.length) tabs.push({ label: 'Elective', rows: electiveNA });
 
   // Search across all courses
@@ -466,6 +469,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
     if (row.state === 'done') return { label: 'Completed', color: '#10b981', bgColor: '#f0fdf4' };
     if (row.state === 'ong') return { label: 'Ongoing', color: '#2563eb', bgColor: '#eff6ff' };
     if (row.state === 'wdn') return { label: 'Withdrawn', color: '#dc2626', bgColor: '#fef2f2' };
+    if (row.state === 'fail') return { label: 'Failed', color: '#dc2626', bgColor: '#fef2f2' };
     if (row.locked) return { label: 'Locked', color: '#dc2626', bgColor: '#fef2f2' };
     return { label: 'Unlocked', color: '#10b981', bgColor: '#f0fdf4' };
   };
@@ -477,42 +481,93 @@ function NotAttemptedSection({ semSections, electiveRows }) {
         <span className="ml-auto bg-amber-600 text-white rounded-full text-[11px] font-extrabold px-3 py-1">{total}</span>
       </div>
 
-      {/* Search Input */}
-      <div className="mb-4" style={{ position: 'relative' }}>
-        <input
-          type="text"
-          placeholder="Search courses by code or name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2.5 text-[13px] rounded-lg border-2 outline-none transition-all"
-          style={{
-            borderColor: searchQuery ? '#d97706' : '#cbd5e1',
-            background: '#ffffff',
-            paddingRight: '2.5rem'
-          }}
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery('')}
-            className="cursor-pointer text-slate-400 font-bold"
+      {/* Search Input & Filter */}
+      <div className="mb-4 flex gap-3">
+        <div style={{ position: 'relative', flex: 1 }}>
+          <input
+            type="text"
+            placeholder="Search courses by code or name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-5 text-[13px] outline-none transition-all h-[42px]"
             style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '16px',
-              lineHeight: 1,
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
+              borderRadius: '21px',
+              border: '1px solid rgba(251, 191, 36, 0.4)',
+              background: '#ffffff',
+              paddingRight: '2.5rem',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
             }}
-            title="Clear search"
-            aria-label="Clear search"
-          >
-            ✕
-          </button>
-        )}
+            onFocus={(e) => { e.target.style.borderColor = '#f59e0b'; e.target.style.boxShadow = '0 2px 8px rgba(245, 158, 11, 0.15)'; }}
+            onBlur={(e) => { e.target.style.borderColor = 'rgba(251, 191, 36, 0.4)'; e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; }}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="cursor-pointer text-slate-400 font-bold"
+              style={{
+                position: 'absolute',
+                right: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                fontSize: '16px',
+                lineHeight: 1,
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+              }}
+              title="Clear search"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        
+        <button
+          onClick={() => setShowAllUnlocked(!showAllUnlocked)}
+          className="px-5 text-[13px] font-bold transition-all flex-shrink-0 flex items-center gap-2 h-[42px] outline-none cursor-pointer"
+          style={{
+            borderRadius: '21px',
+            border: showAllUnlocked ? '1px solid #f59e0b' : '1px solid rgba(251, 191, 36, 0.4)',
+            background: showAllUnlocked ? '#f59e0b' : '#ffffff',
+            color: showAllUnlocked ? '#ffffff' : '#475569',
+            boxShadow: showAllUnlocked ? '0 2px 8px rgba(245, 158, 11, 0.25)' : '0 2px 4px rgba(0,0,0,0.02)'
+          }}
+          onMouseEnter={(e) => { if(!showAllUnlocked) e.target.style.background = '#fef3c7'; }}
+          onMouseLeave={(e) => { if(!showAllUnlocked) e.target.style.background = '#ffffff'; }}
+        >
+          {showAllUnlocked ? (
+            <><span className="text-[14px]">✓</span> All Unlocked</>
+          ) : (
+            'All Unlocked'
+          )}
+        </button>
+
+        <button
+          onClick={() => {
+            setSearchQuery('');
+            setShowAllUnlocked(false);
+            setActiveTab(0);
+          }}
+          className="px-5 text-[13px] font-bold transition-all flex-shrink-0 flex items-center justify-center gap-2 h-[42px] outline-none cursor-pointer"
+          style={{
+            borderRadius: '21px',
+            border: '1px solid rgba(203, 213, 225, 0.6)',
+            background: '#ffffff',
+            color: '#64748b',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+          }}
+          onMouseEnter={(e) => { e.target.style.background = '#fef2f2'; e.target.style.color = '#dc2626'; e.target.style.borderColor = '#fca5a5'; }}
+          onMouseLeave={(e) => { e.target.style.background = '#ffffff'; e.target.style.color = '#64748b'; e.target.style.borderColor = 'rgba(203, 213, 225, 0.6)'; }}
+          title="Reset all filters"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-1px' }}>
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          Reset
+        </button>
       </div>
 
       {/* Search Results */}
@@ -531,16 +586,16 @@ function NotAttemptedSection({ semSections, electiveRows }) {
                 const statusBadge = getStatusBadge(r);
                 return (
                   <tr key={i} className="hover:bg-amber-50/60">
-                    <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-700">{r.code}</td>
-                    <td className="px-3 py-2 text-slate-700">{r.name}</td>
-                    <td className="px-3 py-2 text-[12px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
+                    <td className="px-3 py-2 font-mono text-[13px] font-semibold text-slate-700">{r.code}</td>
+                    <td className="px-3 py-2 text-[13px] text-slate-700">{r.name}</td>
+                    <td className="px-3 py-2 text-[13px] text-slate-500 leading-snug">{r.prerequisite || 'Nil'}</td>
                     <td className="px-3 py-2 text-center">
                       <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ background: statusBadge.color }}>
-                        {r.state === 'ong' ? '▶ Ongoing' : r.state === 'done' ? '✓ Completed' : r.state === 'wdn' ? '✕ Withdrawn' : ''}
+                        {r.state === 'ong' ? '▶ Ongoing' : r.state === 'done' ? '✓ Completed' : r.state === 'wdn' ? '✕ Withdrawn' : r.state === 'fail' ? '✕ Failed' : ''}
                       </span>
                     </td>
                     <td className="px-3 py-2 text-center">
-                      {r.state === 'nd' ? (
+                      {(r.state === 'nd' || r.state === 'wdn' || r.state === 'fail') ? (
                         <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ background: r.locked ? '#dc2626' : '#10b981' }}>
                           {r.locked ? '🔒 Locked' : '✓ Unlocked'}
                         </span>
@@ -549,7 +604,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
                       )}
                     </td>
                     <td className="px-3 py-2 text-[12px] text-slate-600">
-                      {r.state === 'nd' && r.locked ? (
+                      {(r.state === 'nd' || r.state === 'wdn' || r.state === 'fail') && r.locked ? (
                         <span className="text-red-600 font-semibold">{r.needToComplete || 'Check prerequisites'}</span>
                       ) : (
                         <span className="text-slate-400">—</span>
@@ -563,15 +618,59 @@ function NotAttemptedSection({ semSections, electiveRows }) {
         </div>
       )}
 
+      {/* All Unlocked View */}
+      {showAllUnlocked && !searchResults.length && (
+        <div className="flex flex-col gap-5 mb-2">
+          {tabs.map((t, i) => {
+            const unlockedRows = t.rows.filter((r) => !r.locked && !r.code.includes('****') && !r.code.includes('####'));
+            if (!unlockedRows.length) return null;
+            return (
+              <div key={i} className="border border-slate-200 rounded-lg overflow-hidden bg-white/50">
+                <div className="px-4 py-2.5 border-b border-slate-100 flex items-center gap-2" style={{ background: '#fefce8' }}>
+                  <span className="text-[14px] font-bold text-amber-900">{t.label}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md">
+                    {unlockedRows.length} Course{unlockedRows.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <table className="w-full border-collapse text-[13px]">
+                  <thead>
+                    <tr style={{ background: '#fffdf7' }}>
+                      {['Code', 'Course Name', 'Prerequisite', 'Status'].map((h, idx) => (
+                        <th key={h} className="px-3 py-2.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-800/70 border-b border-slate-100 text-left" style={{ width: ['15%', 'auto', '30%', '15%'][idx] }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {unlockedRows.map((r, j) => (
+                      <tr key={j} className="hover:bg-amber-50/60 border-b border-slate-50 last:border-none">
+                        <td className="px-3 py-2.5 font-mono text-[13px] font-semibold text-slate-600">{r.code}</td>
+                        <td className="px-3 py-2.5 text-[13px] text-slate-600">{r.name}</td>
+                        <td className="px-3 py-2.5 text-[13px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
+                        <td className="px-3 py-2.5 text-center"><LockBadge status={r.prereqStatus || 'Unlocked'} /></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+          {tabs.every(t => t.rows.filter(r => !r.locked && !r.code.includes('****') && !r.code.includes('####')).length === 0) && (
+            <div className="text-center py-6 text-slate-500 font-medium bg-white/50 rounded-lg border border-slate-200">
+              No unlocked courses available at this time.
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Tabs */}
-      {!searchResults.length && (
+      {!searchResults.length && !showAllUnlocked && (
         <>
           <div className="flex flex-wrap gap-2 mb-4">
             {tabs.map((t, i) => (
               <button
                 key={i}
                 onClick={() => setActiveTab(i)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[12px] font-semibold cursor-pointer transition-all outline-none border ${
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer transition-all outline-none border ${
                   i === activeTab
                     ? 'text-amber-900 border-yellow-200 shadow-sm'
                     : 'text-slate-700 border-slate-300 hover:bg-amber-50/60'
@@ -580,7 +679,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
               >
                 {t.label}
                 <span
-                  className={`rounded-full text-[10px] font-bold px-2.5 py-0.5 ${i === activeTab ? 'text-amber-900' : 'text-slate-700'}`}
+                  className={`rounded-full text-[11px] font-bold px-2.5 py-0.5 ${i === activeTab ? 'text-amber-900' : 'text-slate-700'}`}
                   style={i === activeTab ? { background: '#fde68a' } : { background: '#f1f5f9' }}
                 >
                   {t.rows.length}
@@ -591,7 +690,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
 
           {cur && (
             <div className="border border-slate-200 rounded-lg overflow-hidden">
-              <table className="w-full border-collapse text-[13px]">
+              <table className="w-full border-collapse text-[14px]">
                 <thead>
                   <tr style={{ background: '#fef3c7' }}>
                     {['Code', 'Course Name', 'Prerequisite', 'Status', 'Need To Complete'].map((h) => (
@@ -602,11 +701,11 @@ function NotAttemptedSection({ semSections, electiveRows }) {
                 <tbody>
                   {cur.rows.map((r, i) => (
                     <tr key={i} className="hover:bg-amber-50/60">
-                      <td className="px-3 py-2 font-mono text-[12px] font-semibold text-slate-300">{r.code}</td>
-                      <td className="px-3 py-2 text-slate-500">{r.name}</td>
-                      <td className="px-3 py-2 text-[12px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
-                      <td className="px-3 py-2 text-center"><LockBadge status={r.prereqStatus || 'Unlocked'} /></td>
-                      <td className="px-3 py-2 text-[12px] text-slate-400">{r.needToComplete || '-'}</td>
+                      <td className="px-3 py-2.5 font-mono text-[13px] font-semibold text-slate-600">{r.code}</td>
+                      <td className="px-3 py-2.5 text-[13px] text-slate-600">{r.name}</td>
+                      <td className="px-3 py-2.5 text-[13px] text-slate-400 leading-snug">{r.prerequisite || 'Nil'}</td>
+                      <td className="px-3 py-2.5 text-center"><LockBadge status={r.prereqStatus || 'Unlocked'} /></td>
+                      <td className="px-3 py-2.5 text-[12px] text-slate-400">{r.needToComplete || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -631,7 +730,7 @@ function InfoGrid({ items }) {
       {items.map(({ k, v }) => {
         const s = getCardStyle(k);
         return (
-          <div key={k} className="px-4 py-4 rounded-xl border hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg, borderColor: s.border, borderWidth: '1.5px' }}>
+          <div key={k} className="px-4 py-4 rounded-xl hover:shadow-md transition-all cursor-default shadow-sm" style={{ background: s.bg }}>
             <div className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: s.label }}>{k}</div>
             {isCgpa(k) ? (
               <div className="text-[32px] font-extrabold leading-tight" style={{ color: '#059669' }}>{v || '—'}</div>
@@ -651,8 +750,7 @@ function ElectiveSection({ electiveRows }) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden mb-3 border shadow-sm hover:shadow-md transition-all mt-6"
-      style={{ borderColor: isActive ? '#6ee7b7' : '#a7f3d0' }}
+      className="rounded-xl overflow-hidden mb-3 shadow-sm hover:shadow-md transition-all mt-6"
     >
       <div
         className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
@@ -661,24 +759,24 @@ function ElectiveSection({ electiveRows }) {
       >
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-amber-300' : 'bg-white/40'}`} />
-          <span className="text-[14px] font-bold text-white">Elective Curriculum</span>
+          <span className="text-[16px] font-bold text-white">Elective Curriculum</span>
           {isActive && (
-            <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-emerald-900">Current</span>
+            <span className="text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md bg-amber-300 text-emerald-900">Current</span>
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[12px] text-white/80">{electiveRows.length} course{electiveRows.length !== 1 ? 's' : ''}</span>
-          <span className={`text-[10px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+          <span className="text-[13px] text-white/80">{electiveRows.length} course{electiveRows.length !== 1 ? 's' : ''}</span>
+          <span className={`text-[11px] text-white/70 transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
         </div>
       </div>
       
       {open && (
         <div className="overflow-x-auto" style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)' }}>
-          <table className="w-full border-collapse text-[13px]">
+          <table className="w-full border-collapse text-[14px]">
             <thead>
               <tr style={{ background: 'linear-gradient(to right, #d1fae5, #a7f3d0)' }}>
                 {['Code', 'Course', 'Prerequisite', 'Semester Taken', 'Grade'].map((h) => (
-                  <th key={h} className="px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 text-left">{h}</th>
+                  <th key={h} className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-emerald-700 text-left">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -691,9 +789,9 @@ function ElectiveSection({ electiveRows }) {
                   'linear-gradient(135deg, #f0fdf4, #dcfce7)';
                 return (
                   <tr key={i} style={{ background: rowBg }} className="hover:brightness-95 transition-all">
-                    <td className="px-3 py-2.5 font-mono text-[12px] font-semibold text-emerald-700">{r.code}</td>
+                    <td className="px-3 py-2.5 font-mono text-[13px] font-semibold text-emerald-700">{r.code}</td>
                     <td className={`px-3 py-2.5 ${r.state === 'nd' ? 'text-slate-400' : 'text-slate-700'}`}>{r.name}</td>
-                    <td className="px-3 py-2.5 text-[12px] text-slate-500">{r.prerequisite || 'Nil'}</td>
+                    <td className="px-3 py-2.5 text-[13px] text-slate-500">{r.prerequisite || 'Nil'}</td>
                     <td className="px-3 py-2.5"><SemLines grades={r.grades} /></td>
                     <td className="px-3 py-2.5 text-center"><GradePill grades={r.grades} /></td>
                   </tr>
@@ -732,7 +830,7 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       <NotAttemptedSection semSections={semSections} electiveRows={electiveRows} />
 
       {/* Core curriculum */}
-      <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-white rounded-lg px-4 py-2.5 mb-3 mt-6 shadow-sm" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' }}>
+      <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-sky-900 rounded-lg px-4 py-2.5 mb-3 mt-6 shadow-sm border border-sky-100" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
         📚 Core Curriculum
       </div>
       {semSections.map((sec, i) => <SemTable key={i} sec={sec} />)}
