@@ -150,50 +150,50 @@ function SelectedCard({ sec, onRemove }) {
   const col = courseColor(sec.title);
   const avail = sec.capacity - sec.count;
   return (
-    <div className="relative rounded-2xl border shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
-      style={{ background: '#fff', borderColor: '#e0e7ff', borderLeftColor: col.border, borderLeftWidth: '5px', padding: '16px 40px 16px 16px', minWidth: '220px', flex: '1 1 220px', maxWidth: '380px' }}>
+    <div className="relative rounded-2xl border transition-all duration-200 hover:-translate-y-1"
+      style={{ background: '#fff', borderColor: '#e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.03)', padding: '20px', minWidth: '280px', flex: '1 1 280px', maxWidth: '400px' }}>
 
-      {/* Header with course title and color accent */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '12px' }}>
-        <div style={{ width: '3px', height: '20px', borderRadius: '2px', background: col.border, flexShrink: 0, marginTop: '2px' }} />
-        <div className="text-[14px] font-bold text-slate-900 leading-snug flex-1">{sec.fullTitle}</div>
+      {/* Header with course title */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '16px', paddingRight: '28px' }}>
+        <div style={{ width: '4px', height: '20px', borderRadius: '4px', background: col.border, flexShrink: 0, marginTop: '2px' }} />
+        <div className="text-[14px] font-bold text-slate-800 leading-snug flex-1">{sec.fullTitle}</div>
       </div>
 
-      {/* Time slots - improved styling */}
-      <div className="flex flex-col gap-1.5 mb-4">
+      {/* Time slots */}
+      <div className="flex flex-col gap-2 mb-5">
         {sec.timeSlots.map((ts, i) => (
           <div key={i} className="flex items-center gap-2 text-[11px]"
-            style={{ padding: '8px 10px', borderRadius: '8px', background: `${col.border}08`, border: `1px solid ${col.border}30` }}>
-            <span style={{ fontWeight: 700, color: col.border }}>{ts.day.slice(0, 3)}</span>
-            <span style={{ color: '#475569', fontWeight: 500 }}>{ts.startTime}–{ts.endTime}</span>
+            style={{ padding: '8px 12px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
+            <span className="font-bold text-slate-700">{ts.day.slice(0, 3)}</span>
+            <span className="text-slate-600 font-medium">{ts.startTime}–{ts.endTime}</span>
             {ts.room && (
-              <span style={{ marginLeft: 'auto', fontFamily: 'ui-monospace', fontSize: '10px', fontWeight: 600, color: col.border, background: `${col.border}12`, padding: '2px 6px', borderRadius: '5px' }}>
+              <span style={{ marginLeft: 'auto', fontFamily: 'ui-monospace', fontSize: '10px', fontWeight: 600, color: '#475569', background: '#fff', padding: '2px 6px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                 {ts.room}
               </span>
             )}
-            <span style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{ts.classType}</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{ts.classType}</span>
           </div>
         ))}
       </div>
 
       {/* Status and seats badges */}
-      <div className="flex items-center gap-2 flex-wrap mb-3 pb-3" style={{ borderBottom: '1px solid #e5e7eb' }}>
+      <div className="flex items-center gap-2 flex-wrap mb-4 pb-4" style={{ borderBottom: '1px dashed #e2e8f0' }}>
         <span className="text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide"
-          style={{ background: 'linear-gradient(135deg,#dbeafe,#bfdbfe)', color: '#1e40af' }}>{sec.status}</span>
+          style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>{sec.status}</span>
         <span className="text-[10px] font-bold px-3 py-1 rounded-full"
-          style={{ background: avail <= 0 ? 'linear-gradient(135deg,#fee2e2,#fecdd3)' : 'linear-gradient(135deg,#dcfce7,#bbf7d0)', color: avail <= 0 ? '#dc2626' : '#059669' }}>
+          style={{ background: avail <= 0 ? '#fef2f2' : '#f0fdf4', color: avail <= 0 ? '#dc2626' : '#16a34a', border: `1px solid ${avail <= 0 ? '#fecdd3' : '#bbf7d0'}` }}>
           {avail <= 0 ? 'FULL' : `${avail} seats`}
         </span>
       </div>
 
       {/* Linked sections section */}
       {sec._linked?.length > 0 && (
-        <div style={{ borderRadius: '10px', overflow: 'hidden', background: '#f9fafb', border: `1px solid #e5e7eb` }}>
-          <div className="text-[10px] font-bold text-slate-700 uppercase tracking-wider px-3 py-2.5"
-            style={{ background: 'linear-gradient(to right,#f3f4f6,#e5e7eb)', borderBottom: '1px solid #d1d5db' }}>
+        <div style={{ borderRadius: '12px', overflow: 'hidden', background: '#f8fafc', border: `1px solid #e2e8f0` }}>
+          <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wider px-3 py-2.5"
+            style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
             ↔️ All {sec._linked.length + 1} sections
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 text-[11px] border-b border-slate-100"
+          <div className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-200"
             style={{ background: '#fff' }}>
             <span className="font-bold text-emerald-600 w-10 flex-shrink-0 text-center">{sec.section || sec.classId}</span>
             <span className="flex-1 text-slate-600 text-[10px] font-medium">{sec.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}`).join(' · ')}</span>
@@ -202,11 +202,11 @@ function SelectedCard({ sec, onRemove }) {
           {sec._linked.map((ls, i) => {
             const a = ls.capacity - ls.count;
             return (
-              <div key={i} className="flex items-center gap-2 px-3 py-2 text-[11px] border-b border-slate-100 last:border-0"
-                style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
+              <div key={i} className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-100 last:border-0"
+                style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
                 <span className="font-bold text-slate-700 w-10 flex-shrink-0 text-center text-[10px]">{ls.section || ls.classId}</span>
                 <span className="flex-1 text-slate-600 text-[10px] font-medium">{ls.timeSlots.length ? ls.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}`).join(' · ') : '—'}</span>
-                <span className={`font-bold text-[10px] flex-shrink-0 text-right ${a <= 0 ? 'text-red-600' : 'text-emerald-600'}`} style={{ minWidth: '50px' }}>
+                <span className={`font-bold text-[10px] flex-shrink-0 text-right ${a <= 0 ? 'text-red-500' : 'text-emerald-600'}`} style={{ minWidth: '50px' }}>
                   {a <= 0 ? 'FULL' : `${a} seats`}
                 </span>
               </div>
@@ -217,10 +217,10 @@ function SelectedCard({ sec, onRemove }) {
 
       {/* Remove button */}
       <button onClick={() => onRemove(sec.classId)}
-        className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-lg text-[12px] font-bold transition-all duration-150 hover:shadow-lg"
-        style={{ background: '#fef2f2', border: '1.5px solid #fecdd3', color: '#dc2626' }}
-        onMouseEnter={e => Object.assign(e.currentTarget.style, { background: col.border, color: '#fff', borderColor: col.border, transform: 'scale(1.08)' })}
-        onMouseLeave={e => Object.assign(e.currentTarget.style, { background: '#fef2f2', color: '#dc2626', borderColor: '#fecdd3', transform: 'scale(1)' })}
+        className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full text-[12px] font-bold transition-all duration-150 hover:shadow-md"
+        style={{ background: '#fef2f2', border: '1px solid #fecdd3', color: '#dc2626' }}
+        onMouseEnter={e => Object.assign(e.currentTarget.style, { background: '#ef4444', color: '#fff', borderColor: '#ef4444' })}
+        onMouseLeave={e => Object.assign(e.currentTarget.style, { background: '#fef2f2', color: '#dc2626', borderColor: '#fecdd3' })}
         title="Remove course"
       >✕</button>
     </div>
@@ -337,43 +337,43 @@ function RoutineModal({ selected, onClose }) {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15,23,42,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div style={{ background: '#fff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.4)', width: '100%', maxWidth: '1000px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }} ref={routineRef}>
+      <div style={{ background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.12)', width: '100%', maxWidth: '1050px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", border: '1px solid #e2e8f0' }} ref={routineRef}>
 
         {/* Header */}
-        <div style={{ background: GRAD.blue, padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ color: '#fff', fontWeight: 900, fontSize: '16px', letterSpacing: '-0.5px' }}>📅 Weekly Schedule</span>
-            <span style={{ fontSize: '10px', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)' }}>
+        <div style={{ background: '#fff', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ color: '#1e3a8a', fontWeight: 800, fontSize: '18px', letterSpacing: '-0.3px' }}>📅 Weekly Schedule</span>
+            <span style={{ fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}>
               {selected.length} course{selected.length !== 1 ? 's' : ''}
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={() => downloadAsImage()}
-              className="hover:shadow-lg transition-all duration-150"
-              style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff', borderRadius: '8px', padding: '5px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-              ⬇️ Download
+              className="hover:opacity-80 transition-all duration-150"
+              style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)', color: '#fff', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
+              ⬇️ Download Image
             </button>
             <button onClick={onClose}
-              className="hover:shadow-lg transition-all duration-150"
-              style={{ background: 'rgba(255,255,255,0.12)', border: '1.5px solid rgba(255,255,255,0.3)', color: '#fff', borderRadius: '8px', padding: '5px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
+              className="hover:opacity-80 transition-all duration-150"
+              style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
               ✕ Close
             </button>
           </div>
         </div>
 
         {/* Table */}
-        <div style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, background: '#f9fafb' }}>
+        <div style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, background: '#f8fafc' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: `${90 + activeDays.length * 140}px` }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-              <tr style={{ background: 'linear-gradient(to right,#e0f2fe,#f0f9ff)' }}>
-                <th style={{ width: '80px', padding: '10px 8px', fontSize: '9px', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '2px solid #bfdbfe', borderRight: '1px solid #bfdbfe', textAlign: 'center' }}>
+              <tr style={{ background: '#eef2f9' }}>
+                <th style={{ width: '80px', padding: '12px 8px', fontSize: '11px', fontWeight: 800, color: '#334669', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
                   Time
                 </th>
                 {activeDays.map(day => (
-                  <th key={day} style={{ padding: '10px 8px', fontSize: '11px', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '2px solid #bfdbfe', borderRight: '1px solid #bfdbfe', textAlign: 'center', background: 'linear-gradient(to bottom,#e0f2fe,#f0f9ff)' }}>
+                  <th key={day} style={{ padding: '12px 8px', fontSize: '12px', fontWeight: 800, color: '#334669', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
                     {day}
                   </th>
                 ))}
@@ -381,10 +381,10 @@ function RoutineModal({ selected, onClose }) {
             </thead>
             <tbody>
               {timeSlots.map((t, ti) => (
-                <tr key={t} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                <tr key={t} style={{ borderBottom: '1px solid #e2e8f0' }}>
                   {/* Time label */}
-                  <td style={{ padding: '6px 8px', fontSize: '10px', fontWeight: 700, color: '#0284c7', background: 'linear-gradient(to right,#f0f9ff,#e0f2fe)', borderRight: '1px solid #bfdbfe', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', height: `${ROW_H}px` }}>
-                    <div style={{ fontWeight: 800, fontSize: '13px' }}>{fmtTime(t)}</div>
+                  <td style={{ padding: '8px', fontSize: '10px', fontWeight: 700, color: '#475569', background: '#f8fafc', borderRight: '1px solid #e2e8f0', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', height: `${ROW_H}px` }}>
+                    <div style={{ fontWeight: 800, fontSize: '12px' }}>{fmtTime(t)}</div>
                   </td>
 
                   {/* Day cells */}
@@ -392,29 +392,29 @@ function RoutineModal({ selected, onClose }) {
                     const cell = plan[day][t];
                     if (cell === 'skip') return null;
                     if (!cell) return (
-                      <td key={day} style={{ height: `${ROW_H}px`, borderRight: '1px solid #e5e7eb', background: ti % 2 === 0 ? '#fff' : '#f9fafb' }} />
+                      <td key={day} style={{ height: `${ROW_H}px`, borderRight: '1px solid #e2e8f0', background: ti % 2 === 0 ? '#ffffff' : '#f8fafc' }} />
                     );
                     const col = courseColor(cell.course.title);
-                    const innerH = cell.span * ROW_H - 6;
+                    const innerH = cell.span * ROW_H - 8;
                     const linkedSecs = linkedSections(cell.course, selected);
                     return (
                       <td key={day} rowSpan={cell.span}
-                        style={{ padding: '4px', borderRight: '1px solid #e5e7eb', verticalAlign: 'top' }}>
-                        <div style={{ background: `linear-gradient(135deg, ${hexToRgba(col.border, 0.22)}, ${hexToRgba(col.border, 0.06)})`, borderLeft: `4px solid ${col.border}`, borderRadius: '8px', padding: '6px 8px', minHeight: `${innerH}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: '2px', boxShadow: '0 2px 6px rgba(0,0,0,0.08)', transition: 'all 0.2s', overflow: 'auto' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.1 }}>{cell.course.title}</div>
-                          <div style={{ fontSize: '8px', fontWeight: 700, color: '#fff', background: col.border, borderRadius: '4px', padding: '1px 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{cell.course.section || cell.course.classId}</div>
-                          <div style={{ fontSize: '8px', fontWeight: 600, color: col.border, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{cell.slot.classType}</div>
-                          <div style={{ fontSize: '8px', color: '#64748b', fontWeight: 500, lineHeight: 1.1 }}>{cell.slot.startTime}–{cell.slot.endTime}</div>
+                        style={{ padding: '4px', borderRight: '1px solid #e2e8f0', verticalAlign: 'top', background: '#ffffff' }}>
+                        <div style={{ background: hexToRgba(col.border, 0.08), border: `1px solid ${hexToRgba(col.border, 0.3)}`, borderLeft: `4px solid ${col.border}`, borderRadius: '6px', padding: '6px 8px', minHeight: `${innerH}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: '3px', transition: 'all 0.2s', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.2 }}>{cell.course.title}</div>
+                          <div style={{ fontSize: '9px', fontWeight: 700, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.02em' }}>{cell.course.section || cell.course.classId}</div>
+                          <div style={{ fontSize: '9px', fontWeight: 700, color: col.border, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{cell.slot.classType}</div>
+                          <div style={{ fontSize: '9px', color: '#475569', fontWeight: 600, lineHeight: 1.1 }}>{cell.slot.startTime}–{cell.slot.endTime}</div>
                           {cell.slot.room && (
-                            <div style={{ fontSize: '8px', fontFamily: 'ui-monospace,monospace', fontWeight: 700, color: '#fff', background: col.border, borderRadius: '4px', padding: '1px 4px', alignSelf: 'center' }}>
+                            <div style={{ fontSize: '9px', fontFamily: 'ui-monospace,monospace', fontWeight: 700, color: '#475569', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '2px 5px', alignSelf: 'center' }}>
                               {cell.slot.room}
                             </div>
                           )}
                           {linkedSecs.length > 0 && (
-                            <div style={{ fontSize: '7px', color: '#64748b', borderTop: `1px solid ${col.border}20`, paddingTop: '2px', marginTop: '2px', width: '100%' }}>
-                              <div style={{ fontWeight: 600, marginBottom: '1px' }}>Alt:</div>
+                            <div style={{ fontSize: '8px', color: '#64748b', borderTop: `1px solid ${hexToRgba(col.border, 0.2)}`, paddingTop: '4px', marginTop: '4px', width: '100%' }}>
+                              <div style={{ fontWeight: 600, marginBottom: '2px' }}>Alt Sections:</div>
                               {linkedSecs.slice(0, 2).map((ls, i) => (
-                                <div key={i} style={{ fontSize: '7px', fontWeight: 500 }}>{ls.section || ls.classId}</div>
+                                <div key={i} style={{ fontSize: '8px', fontWeight: 500 }}>{ls.section || ls.classId}</div>
                               ))}
                             </div>
                           )}
@@ -429,14 +429,14 @@ function RoutineModal({ selected, onClose }) {
         </div>
 
         {/* Legend */}
-        <div style={{ padding: '12px 20px', background: '#fff', borderTop: '1px solid #e5e7eb', display: 'flex', flexWrap: 'wrap', gap: '12px', flexShrink: 0 }}>
-          <span style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', alignSelf: 'center' }}>Legend</span>
+        <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid #e2e8f0', display: 'flex', flexWrap: 'wrap', gap: '16px', flexShrink: 0, alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Legend</span>
           {selected.map(sec => {
             const col = courseColor(sec.title);
             return (
-              <div key={sec.classId} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: col.border, flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }} />
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#334155' }}>{sec.title}</span>
+              <div key={sec.classId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: col.border, flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>{sec.title}</span>
               </div>
             );
           })}
@@ -448,9 +448,9 @@ function RoutineModal({ selected, onClose }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function OfferedCoursesFilter({ allCourses, statuses, originalPanel }) {
+export default function OfferedCoursesFilter({ allCourses = [], statuses = [], originalPanel, isLoading = false }) {
   const [search,         setSearch]         = useState('');
-  const [activeStatuses, setActiveStatuses] = useState(() => statuses.filter(s => s.toLowerCase().includes('open')));
+  const [activeStatuses, setActiveStatuses] = useState([]);
   const [activeDays,     setActiveDays]     = useState([]);
   const [fromH, setFromH] = useState('8');
   const [fromM, setFromM] = useState('0');
@@ -460,6 +460,13 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
   const [perPage, setPerPage] = useState(25);
   const [selected, setSelected] = useState(() => loadSaved(allCourses));
   const [showRoutine, setShowRoutine] = useState(false);
+
+  // Initialize statuses when data loads
+  useEffect(() => {
+    if (statuses.length > 0 && activeStatuses.length === 0) {
+      setActiveStatuses(statuses.filter(s => s.toLowerCase().includes('open')));
+    }
+  }, [statuses]);
 
   // Restore linked sections on mount
   useEffect(() => {
@@ -604,7 +611,7 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
            <div className="flex items-center gap-3">
                <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px' }}>⚡ Advanced Filters</span>
                <span style={{ background: '#f8fafc', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
-                 {allCourses.length} courses loaded
+                 {isLoading ? '⏳ Loading courses...' : `${allCourses.length} courses loaded`}
                </span>
            </div>
            <button onClick={handleReset} className="hover:opacity-80 transition-opacity" style={{ background: '#eff6ff', color: '#2563eb', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none' }}>
@@ -688,34 +695,25 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
            </div>
         </div>
 
-        {/* Footer info (Results count) */}
-        {filtered.length > 0 && (
-          <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #f1f5f9' }}>
-             <div className="flex items-center gap-2">
-                <span style={{ display: 'inline-flex', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#10b981' }}>{filtered.length} matching results found</span>
-             </div>
-          </div>
-        )}
       </div>
 
       {/* ══ Selected Courses Panel ════════════════════════════════════════════ */}
       {selected.length > 0 && (
-        <div className="rounded-2xl overflow-hidden shadow-lg mb-4">
-          <PanelHeader
-            title="📋 Selected Courses"
-            badge={`${selected.length} course${selected.length !== 1 ? 's' : ''}`}
-            action={
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <GhostBtn onClick={() => setShowRoutine(true)}>📅 Show Routine</GhostBtn>
-                <GhostBtn onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); }}>✕ Clear All</GhostBtn>
-              </div>
-            }
-          />
-          <div className="p-4" style={{ background: GRAD.bodyBg }}>
-            <div className="flex flex-wrap gap-3">
-              {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} onRemove={handleRemove} />)}
-            </div>
+        <div className="mb-6 p-6 transition-all" style={{ background: '#ffffff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0' }}>
+          <div className="flex items-center justify-between mb-5 pb-4" style={{ borderBottom: '1px solid #f1f5f9' }}>
+             <div className="flex items-center gap-3">
+                 <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px' }}>📋 Selected Courses</span>
+                 <span style={{ background: '#f8fafc', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
+                   {selected.length} course{selected.length !== 1 ? 's' : ''}
+                 </span>
+             </div>
+             <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => setShowRoutine(true)} className="hover:opacity-80 transition-opacity" style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }}>📅 Show Routine</button>
+                <button onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); }} className="hover:opacity-80 transition-opacity" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #fecdd3' }}>✕ Clear All</button>
+             </div>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} onRemove={handleRemove} />)}
           </div>
         </div>
       )}
@@ -752,7 +750,17 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
                 </tr>
               </thead>
               <tbody>
-                {pageData.length === 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#fff' }}>
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-[18px]">⏳</span>
+                        <span className="font-bold">Fetching course data...</span>
+                        <span className="text-[11px] opacity-70">This may take a few seconds as we parse the schedule.</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : pageData.length === 0 ? (
                   <tr>
                     <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#fff' }}>
                       No courses match your filters.

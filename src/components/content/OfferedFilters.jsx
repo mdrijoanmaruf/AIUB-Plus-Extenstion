@@ -3,7 +3,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import OfferedCoursesFilter from '../content/OfferedCoursesFilter';
 
-// ── Guard ──────────────────────────────────────────────────────────────────────
 if (window.__aiubFilterInjected || localStorage.getItem('__aiubPortalEnabled') === '0') {
   // already running or disabled — do nothing
 } else {
@@ -11,7 +10,6 @@ if (window.__aiubFilterInjected || localStorage.getItem('__aiubPortalEnabled') =
   init();
 }
 
-// ── FooTable helpers ───────────────────────────────────────────────────────────
 
 function waitForTable() {
   return new Promise((resolve, reject) => {
@@ -109,13 +107,45 @@ async function getAllCourses() {
   return courses;
 }
 
-// ── Mount ──────────────────────────────────────────────────────────────────────
+// ── Wrapper Component 
+function FilterWrapper({ originalPanel }) {
+  const [courses, setCourses] = React.useState([]);
+  const [statuses, setStatuses] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
+  React.useEffect(() => {
+    let isMounted = true;
+    // Yield the main thread to allow the Sidebar and Filter UI to paint first
+    setTimeout(() => {
+      getAllCourses().then(data => {
+        if (!isMounted) return;
+        setCourses(data);
+        setStatuses([...new Set(data.map(c => c.status))].filter(Boolean).sort());
+        setIsLoading(false);
+        console.log('[AIUB Filter] Parsed', data.length, 'courses');
+      }).catch(err => {
+        console.error('[AIUB Filter] Failed to fetch courses:', err);
+        if (isMounted) setIsLoading(false);
+      });
+    }, 150);
+    return () => { isMounted = false; };
+  }, []);
+
+  return (
+    <OfferedCoursesFilter
+      allCourses={courses}
+      statuses={statuses}
+      originalPanel={originalPanel}
+      isLoading={isLoading}
+    />
+  );
+}
+
+// ── Mount 
 async function init() {
   try {
     await waitForTable();
 
-    // Show a loading indicator while parsing
     const mainContent = document.getElementById('main-content') || document.body;
     const mountPoint  = document.createElement('div');
     mountPoint.id     = 'aiub-filter-root';
@@ -133,41 +163,14 @@ async function init() {
       mainContent.insertBefore(mountPoint, mainContent.firstChild);
     }
 
-    // Temporary loading banner
-    mountPoint.innerHTML = `
-      <div style="border-radius:12px;overflow:hidden;box-shadow:0 2px 18px rgba(0,0,0,0.12);">
-        <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:12px 20px;font-weight:700;">
-          ⏳ Loading course data…
-        </div>
-        <div style="padding:14px 20px;color:#64748b;font-size:13px;background:linear-gradient(135deg,#f8fbff,#eff6ff);">
-          Fetching all available courses. This may take a few seconds.
-        </div>
-      </div>`;
-
-    const allCourses = await getAllCourses();
-    console.log('[AIUB Filter] Parsed', allCourses.length, 'courses');
-
-    if (allCourses.length === 0) {
-      mountPoint.innerHTML = '<div style="padding:14px 20px;color:#ef4444;">No courses found.</div>';
-      return;
-    }
-
-    const statuses = [...new Set(allCourses.map(c => c.status))].filter(Boolean).sort();
-
-    // Clear loading banner and mount React component
-    mountPoint.innerHTML = '';
     const root = createRoot(mountPoint);
     root.render(
       <React.StrictMode>
-        <OfferedCoursesFilter
-          allCourses={allCourses}
-          statuses={statuses}
-          originalPanel={originalPanel}
-        />
+        <FilterWrapper originalPanel={originalPanel} />
       </React.StrictMode>
     );
 
-    console.log('[AIUB Filter] React component mounted');
+    console.log('[AIUB Filter] React component mounted instantly');
   } catch (err) {
     console.error('[AIUB Filter] Init failed:', err);
   }
