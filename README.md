@@ -1,4 +1,4 @@
-﻿# AIUB Portal+ ðŸš€
+# AIUB Portal+ 🚀
 
 > A comprehensive Chrome extension that supercharges the official AIUB Student Portal with a modern UI, intelligent scheduling, grade analytics, and financial insights.
 
@@ -9,11 +9,14 @@
 [![Version](https://img.shields.io/badge/Version-3.1.0-orange?style=flat-square)](https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Install_Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel)
+
+**Chrome Web Store:** [Install AIUB Portal+](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel)  
 **Repository:** [github.com/mdrijoanmaruf/AIUB-Plus-Extenstion](https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion)
 
 ---
 
-## ðŸ“‹ Table of Contents
+## 📋 Table of Contents
 
 - [What This Extension Does](#-what-this-extension-does)
 - [What's New in v3.1.0](#-whats-new-in-v310)
@@ -21,16 +24,17 @@
 - [How It Works](#-how-it-works)
 - [Features by Portal Page](#-features-by-portal-page)
 - [Project Structure](#-project-structure)
-- [Setup and Installation](#-setup-and-installation)
+- [Installation & Setup](#-installation--setup)
 - [NPM Scripts](#-npm-scripts)
 - [Configuration and Data Files](#-configuration-and-data-files)
 - [Permissions and Privacy](#-permissions-and-privacy)
 - [Troubleshooting](#-troubleshooting)
 - [Known Limitations](#-known-limitations)
+- [Changelog](#-changelog)
 
 ---
 
-## ðŸŒŸ What This Extension Does
+## 🌟 What This Extension Does
 
 AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https://portal.aiub.edu) for:
 
@@ -49,54 +53,56 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 | **Exam Routine** | Countdown timers and "Completed" status badges |
 | **Shared UI** | Sidebar, navbar, profile widget, and live Notices bell from aiub.edu |
 
-> Pure client-side â€” no backend API calls. All data is parsed from the existing portal DOM in-browser.
+> Pure client-side — no backend API calls. All data is parsed from the existing portal DOM in-browser.
 
 ---
 
-## ðŸ†• What's New in v3.1.0
+## 🆕 What's New in v3.1.0
 
-### ðŸ”” Navbar â€” Live Notice Bell
-- New custom bell icon (`FiBell`) injected into the top navbar
+### 🔔 Navbar — Live Notice Bell
+- New bell icon (`FiBell`) injected into the top navbar
 - Fetches and displays **Latest Notices from aiub.edu** in a glassmorphism dropdown (380px wide)
 - Badge counter shows unread notice count
 - Auto-closes when native notification dropdown is opened (and vice versa)
 - Close button in dropdown header
-- Styled scrollbar matching the notification popup design
 
-### ðŸ” Change Password â€” Premium Redesign
+### 🔐 Change Password — Premium Redesign
 - Fully redesigned Change Password page (`/Student/Credential/ChangePassword`)
 - Eye toggle buttons (`FiEye` / `FiEyeOff`) for all three password fields using `react-icons`
 - Input placeholders: *Enter current password*, *Enter new password*, *Confirm new password*
-- Eye button is correctly centered vertically within each input using an isolated wrapper
+- Eye button correctly centered vertically within each input
 - Respects extension ON/OFF toggle
 
-### ðŸ§¾ Registration Print â€” New Page
+### 🧾 Registration Print — New Page
 - Brand new redesign for `/Student/Registration/Print`
 - **Info card** showing Student ID, Printout For, Payment Option, and Credit badges
 - **Alert banner** with payment bank instructions
 - **Bank selector** dropdown with styled chevron
 - **Payment cards** (Third Instalment & Full) with gradient icons, amount, and action buttons
-- **Trust footer** â€” Secure Payment, Trusted by Thousands, Contact Support
-- Print and Pay Online buttons wired to original portal functions
+- **Trust footer** — Secure Payment, Trusted by Thousands, Contact Support
 - Respects extension ON/OFF toggle
 
-### ðŸ’³ Online Payment History â€” New Page
+### 💳 Online Payment History — New Page
 - Brand new redesign for `/Student/Payment/List`
 - Styled table with rounded card container and subtle shadow
 - Monospace transaction ID column
-- Amount column with à§³ symbol and 2 decimal formatting
+- Amount column with ৳ symbol and 2 decimal formatting
 - **Color-coded status badges** using `react-icons`:
-  - ðŸŸ¢ Success Â· ðŸ”´ Failed Â· ðŸŸ¡ Cancelled Â· ðŸ”µ Pending
+  - 🟢 Success · 🔴 Failed · 🟡 Cancelled · 🔵 Pending
 - "Check Status" button with gradient blue style and arrow icon
-- "Not Applicable" replaced with clean muted text
 - Row hover highlight effect
 - Respects extension ON/OFF toggle
 
-### ðŸŽ¨ React Icons Migration
-All inline SVG icons across the following components have been replaced with `react-icons/fi`:
+### 🔒 Security Fix — localStorage Removed
+- Removed all `localStorage` usage for extension state storage
+- `contentBridge.jsx` now uses `chrome.storage.sync` (extension-only, inaccessible to page JS) and broadcasts state to MAIN world scripts via a secure DOM `CustomEvent` + `data-aiub-ext` attribute fallback
+- `OfferedFilters.jsx` updated to read state from the attribute or wait for the event — fixes timing race between `document_start` and `document_idle`
 
-| Component | Icons Replaced |
-|-----------|---------------|
+### 🎨 React Icons Migration
+All inline SVG icons replaced with `react-icons/fi` across 10 components:
+
+| Component | Icons |
+|-----------|-------|
 | `Navbar.jsx` | `FiBell` |
 | `HomeRegistration.jsx` | `FiBook`, `FiChevronDown` |
 | `ClassSchedule.jsx` | `FiClock`, `FiMapPin`, `FiCalendar` |
@@ -105,57 +111,57 @@ All inline SVG icons across the following components have been replaced with `re
 | `ExamRoutine.jsx` | `FiCheckCircle` |
 | `AcademicRegistration.jsx` | `FiPrinter` |
 | `ChangePassword.jsx` | `FiEye`, `FiEyeOff`, `FiInfo` |
-| `RegistrationPrint.jsx` | `FiPrinter`, `FiCreditCard`, `FiShield`, `FiLock`, `FiChevronDown`, `FiClock`, `FiMoreVertical` |
-| `OnlinePaymentHistory.jsx` | `FiCheckCircle`, `FiXCircle`, `FiClock`, `FiRefreshCw`, `FiCreditCard`, `FiAlertCircle`, `FiArrowUpRight` |
+| `RegistrationPrint.jsx` | `FiPrinter`, `FiCreditCard`, `FiShield`, `FiLock`, `FiChevronDown` |
+| `OnlinePaymentHistory.jsx` | `FiCheckCircle`, `FiXCircle`, `FiClock`, `FiAlertCircle`, `FiArrowUpRight` |
 
 ---
 
-## ðŸ›  Tech Stack
+## 🛠 Tech Stack
 
 | Tool | Version | Purpose |
-|------|---------|---------| 
+|------|---------|---------|
 | **React** | 19 | UI rendering |
 | **React DOM** | 19 | DOM management |
-| **react-icons** | â€” | Feather icon set (replacing inline SVGs) |
+| **react-icons** | — | Feather icon set (replacing inline SVGs) |
 | **Vite** | 8 | Build tooling |
-| **CRXJS Vite Plugin** | â€” | Chrome Extension MV3 build flow |
+| **CRXJS Vite Plugin** | — | Chrome Extension MV3 build flow |
 | **Tailwind CSS** | 3 | Styling |
-| **PostCSS + Autoprefixer** | â€” | CSS processing |
-| **Recharts** | â€” | Grade visualizations |
-| **html2canvas** | â€” | Routine PNG export |
+| **PostCSS + Autoprefixer** | — | CSS processing |
+| **Recharts** | — | Grade visualizations |
+| **html2canvas** | — | Routine PNG export |
 | **ESLint** | 9 | Code linting |
 
-**Primary config files:** `manifest.json` Â· `vite.config.js` Â· `tailwind.config.js` Â· `postcss.config.js` Â· `eslint.config.js`
+**Primary config files:** `manifest.json` · `vite.config.js` · `tailwind.config.js` · `postcss.config.js` · `eslint.config.js`
 
 ---
 
-## âš™ï¸ How It Works
+## ⚙️ How It Works
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  Popup UI   â”‚â”€â”€â”€â”€â–¶â”‚  contentBridge   â”‚â”€â”€â”€â”€â–¶â”‚  Content Scripts      â”‚
-â”‚ (App.jsx)   â”‚     â”‚  (localStorage)  â”‚     â”‚  (self-guarded)       â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-chrome.storage.sync   mirrors enabled state      parse & enhance DOM
+┌─────────────┐     ┌──────────────────┐     ┌───────────────────────┐
+│  Popup UI   │────▶│  contentBridge   │────▶│  Content Scripts      │
+│ (App.jsx)   │     │  (CustomEvent)   │     │  (self-guarded)       │
+└─────────────┘     └──────────────────┘     └───────────────────────┘
+chrome.storage.sync   broadcasts to MAIN       parse & enhance DOM
 ```
 
-**Step 1 â€” Popup controls state**
+**Step 1 — Popup controls state**
 Popup UI (`src/App.jsx`) reads and writes `extensionEnabled` via `chrome.storage.sync`.
 
-**Step 2 â€” Shared bridge mirrors state**
-`src/components/shared/contentBridge.jsx` listens for storage changes and mirrors enabled state into `localStorage.__aiubPortalEnabled`.
+**Step 2 — contentBridge broadcasts securely**
+`contentBridge.jsx` (ISOLATED world, `document_start`) reads `chrome.storage.sync` and dispatches a `CustomEvent` + sets `data-aiub-ext` on `<html>` so MAIN world scripts can read it without using `localStorage`.
 
-**Step 3 â€” Content scripts self-guard**
-Each content entry uses mount guards (`window.__aiub*Mounted`) and `chrome.storage.sync.get({ extensionEnabled })` checks to avoid duplicate injections and to skip work when disabled.
+**Step 3 — Content scripts self-guard**
+Each script uses `window.__aiub*Mounted` guards and checks `chrome.storage.sync` (or the `CustomEvent` for MAIN world) to skip when disabled.
 
-**Step 4 â€” Page-specific modules parse the DOM**
+**Step 4 — Page-specific modules parse the DOM**
 Feature modules parse portal HTML tables/panels, then replace or augment them with React-rendered views and styled cards.
 
 ---
 
-## ðŸ“„ Features by Portal Page
+## 📄 Features by Portal Page
 
-### ðŸ“… Offered Courses
+### 📅 Offered Courses
 **Component:** `src/components/content/OfferedFilters.jsx`
 
 - Parses FooTable courses and nested time slots
@@ -169,7 +175,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ“ Registration
+### 📝 Registration
 **Component:** `src/components/academic/AcademicRegistration.jsx`
 
 - Parses course cards from `StudentCourseList`
@@ -179,18 +185,18 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ§¾ Registration Print *(New in v3.1.0)*
+### 🧾 Registration Print *(New in v3.1.0)*
 **Component:** `src/components/academic/RegistrationPrint.jsx`
 
 - Triggered on `/Student/Registration/Print*`
-- Parses all student info, payment panels, bank options, and alert messages from the portal DOM
-- Renders modern info card, alert banner, bank select, payment cards, and trust footer
+- Parses student info, payment panels, bank options, and alert messages
+- Renders info card, alert banner, bank selector, payment cards, and trust footer
 - Print button calls native `Confirmation3()` function
 - Respects the extension ON/OFF toggle
 
 ---
 
-### ðŸ“Š Course and Results
+### 📊 Course and Results
 **Component:** `src/components/academic/CourseAndResults.jsx`
 
 - Parses active course and term breakdown
@@ -199,7 +205,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸŽ“ Grade Report â€” By Curriculum
+### 🎓 Grade Report — By Curriculum
 **Component:** `src/components/grade/by_carriculum.jsx`
 
 - Parses curriculum report rows and summary info
@@ -209,7 +215,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ“† Grade Report â€” By Semester
+### 📆 Grade Report — By Semester
 **Component:** `src/components/grade/by_semester.jsx`
 
 - Parses semester groups and course rows
@@ -218,21 +224,21 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ’° Financials
+### 💰 Financials
 **Component:** `src/components/academic/Financials.jsx`
 
 - Parses transaction table and total rows
-- Computes total charged (`FiDollarSign`), paid (`FiCheckCircle`), and current balance (`FiAlertCircle`)
+- Computes total charged, paid, and current balance
 - Styles rows by transaction type and amount semantics
 
 ---
 
-### ðŸ’³ Online Payment History *(New in v3.1.0)*
+### 💳 Online Payment History *(New in v3.1.0)*
 **Component:** `src/components/academic/OnlinePaymentHistory.jsx`
 
 - Triggered on `/Student/Payment/List*`
 - Parses all transaction rows from the portal table
-- Formats amounts with à§³ symbol and 2-decimal precision
+- Formats amounts with ৳ symbol and 2-decimal precision
 - Color-coded status badges: Success (green), Failed (red), Cancelled (amber), Pending (blue)
 - "Check Status" links styled as gradient blue buttons with `FiArrowUpRight`
 - Row hover highlight, monospace ID column, clean "Not Applicable" text
@@ -240,7 +246,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ—‚ï¸ Curriculum
+### 🗂️ Curriculum
 **Component:** `src/components/academic/MkCurriculumn.jsx`
 
 - Loads bundled `public/Academic/CSE.json`
@@ -249,7 +255,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### âŒ Drop Application
+### ❌ Drop Application
 **Component:** `src/components/academic/DropApplication.jsx`
 
 - Preserves Angular-rendered content while wrapping in improved React layout
@@ -258,7 +264,7 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ“… Exam Routine
+### 📅 Exam Routine
 **Component:** `src/components/academic/ExamRoutine.jsx`
 
 - Countdown timers per exam
@@ -266,97 +272,95 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-### ðŸ” Change Password *(Redesigned in v3.1.0)*
+### 🔐 Change Password *(Redesigned in v3.1.0)*
 **Component:** `src/components/credential/ChangePassword.jsx`
 
 - Triggered on `/Student/Credential/ChangePassword*`
 - Full premium redesign with rounded card, gradient header
 - Eye toggle buttons using `FiEye` / `FiEyeOff`
 - Per-field placeholders (Current / New / Confirm)
-- Eye button is correctly centered using an input wrapper div
 - Respects the extension ON/OFF toggle
 
 ---
 
-### ðŸŽ¨ Shared UI Enhancements
+### 🎨 Shared UI Enhancements
 
 | Component | Path | Notes |
 |-----------|------|-------|
-| Sidebar | `src/components/shared/Sidebar.jsx` | â€” |
+| Sidebar | `src/components/shared/Sidebar.jsx` | — |
 | Navbar | `src/components/shared/Navbar.jsx` | Live notice bell (`FiBell`), native notification styling |
-| Profile page | `src/components/content/ProfileContent.jsx` | â€” |
-| Intro widget | `src/components/home/Intro.jsx` | â€” |
+| Profile page | `src/components/content/ProfileContent.jsx` | — |
+| Intro widget | `src/components/home/Intro.jsx` | — |
 | Class Schedule | `src/components/home/ClassSchedule.jsx` | `FiClock`, `FiMapPin`, `FiCalendar` |
 | Registration widget | `src/components/home/HomeRegistration.jsx` | `FiBook`, `FiChevronDown` |
 
 ---
 
-## ðŸ“ Project Structure
+## 📁 Project Structure
 
 ```
 .
-â”œâ”€â”€ manifest.json
-â”œâ”€â”€ vite.config.js
-â”œâ”€â”€ package.json
-â”œâ”€â”€ public/
-â”‚   â””â”€â”€ Academic/
-â”‚       â””â”€â”€ CSE.json                  # Prerequisite & curriculum data
-â””â”€â”€ src/
-    â”œâ”€â”€ App.jsx
-    â”œâ”€â”€ main.jsx
-    â”œâ”€â”€ content.css
-    â””â”€â”€ components/
-        â”œâ”€â”€ content/                  # Offered course filter + routine, profile
-        â”œâ”€â”€ academic/                 # Registration, RegistrationPrint, Financials,
-        â”‚                             # OnlinePaymentHistory, Curriculum, Drop,
-        â”‚                             # ExamRoutine, CourseAndResults
-        â”œâ”€â”€ credential/               # ChangePassword
-        â”œâ”€â”€ grade/                    # by_carriculum, by_semester
-        â”œâ”€â”€ home/                     # ClassSchedule, HomeRegistration, Intro
-        â””â”€â”€ shared/                   # Sidebar, Navbar, contentBridge
+├── manifest.json
+├── vite.config.js
+├── package.json
+├── public/
+│   └── Academic/
+│       └── CSE.json                  # Prerequisite & curriculum data
+└── src/
+    ├── App.jsx
+    ├── main.jsx
+    ├── content.css
+    └── components/
+        ├── content/                  # Offered course filter + routine, profile
+        ├── academic/                 # Registration, RegistrationPrint, Financials,
+        │                             # OnlinePaymentHistory, Curriculum, Drop,
+        │                             # ExamRoutine, CourseAndResults
+        ├── credential/               # ChangePassword
+        ├── grade/                    # by_carriculum, by_semester
+        ├── home/                     # ClassSchedule, HomeRegistration, Intro
+        └── shared/                   # Sidebar, Navbar, contentBridge
 ```
 
 ---
 
-## ðŸš€ Setup and Installation
+## 🚀 Installation & Setup
 
-### Prerequisites
+### 1 — Install from Chrome Web Store
 
-- **Node.js** 18+
-- **npm**
-- **Google Chrome** (or Chromium-based browser)
+1. Visit the [AIUB Portal+ Chrome Web Store Page](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel).
+2. Click **Add to Chrome**.
+3. Confirm the permissions prompt.
 
-### 1 â€” Clone and install
+### 2 — Usage on AIUB Portal
+
+1. Open [https://portal.aiub.edu](https://portal.aiub.edu).
+2. Open the extension popup from your browser toolbar.
+3. Ensure the extension toggle is **ON**.
+4. Navigate to any supported page (Offered Courses, Registration, Course Results, Financials, Payment List, etc.).
+
+---
+
+### 💻 Developer Setup (Optional)
+
+If you wish to contribute or build the extension from source:
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion.git
 cd AIUB-Plus-Extenstion
+
+# 2. Install dependencies
 npm install
-```
 
-### 2 â€” Build the extension
-
-```bash
+# 3. Build production bundle
 npm run build
 ```
 
-### 3 â€” Load into Chrome
-
-1. Open `chrome://extensions`
-2. Enable **Developer mode** (top-right toggle)
-3. Click **Load unpacked**
-4. Select the `dist/` folder generated by the build
-
-### 4 â€” Use on the portal
-
-1. Go to [https://portal.aiub.edu](https://portal.aiub.edu)
-2. Open the extension popup
-3. Toggle extension **ON**
-4. Navigate to any supported `/Student` page
+Then load the generated `dist/` directory into Chrome via `chrome://extensions` (Developer Mode > Load Unpacked).
 
 ---
 
-## ðŸ“¦ NPM Scripts
+## 📦 NPM Scripts
 
 | Script | Command | Description |
 |--------|---------|-------------|
@@ -367,13 +371,13 @@ npm run build
 
 ---
 
-## ðŸ”§ Configuration and Data Files
+## 🔧 Configuration and Data Files
 
 ### `manifest.json`
 - Manifest Version 3
 - Host permissions: `https://portal.aiub.edu/*`
 - Permissions: `activeTab`, `storage`, `tabs`
-- Content scripts mapped per portal route (16 total entries in v3.1.0)
+- Content scripts mapped per portal route (18 total entries in v3.1.0)
 - `web_accessible_resources` includes icons and `Academic/CSE.json`
 
 ### `tailwind.config.js`
@@ -384,7 +388,7 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 
 ---
 
-## ðŸ”’ Permissions and Privacy
+## 🔒 Permissions and Privacy
 
 ### Permissions used
 
@@ -397,15 +401,15 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 
 ### Data handling
 
-- âœ… No backend API calls for student data
-- âœ… All data parsed from portal DOM in-browser only
-- âœ… Extension state stored in `chrome.storage.sync`
-- âœ… Selected course sections stored in browser `localStorage`
-- âœ… Nothing leaves your browser
+- ✅ No backend API calls for student data
+- ✅ All data parsed from portal DOM in-browser only
+- ✅ Extension state stored in `chrome.storage.sync` only (never `localStorage`)
+- ✅ Selected course sections stored in browser `localStorage` (non-sensitive)
+- ✅ Nothing leaves your browser
 
 ---
 
-## ðŸ› Troubleshooting
+## 🐛 Troubleshooting
 
 **Extension not working on page**
 - Confirm popup toggle is **ON**
@@ -421,71 +425,43 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 - Browser popup blockers can sometimes interfere with automatic downloads
 
 **Notice bell not showing in navbar**
-- The bell uses `createRoot` from React â€” ensure the extension is toggled ON and the page has fully loaded
+- Ensure the extension is toggled ON and the page has fully loaded
 - Hard-refresh (Ctrl+Shift+R) the portal page
 
 **Build warnings from CRXJS plugin**
-- `MAIN` world content script entries may show HMR warnings during build
-- Both `rollupOptions`/`rolldownOptions` conflict warnings are harmless â€” the production build still completes successfully
+- `MAIN` world content script entries may show HMR warnings during build — harmless
 
 ---
 
-## âš ï¸ Known Limitations
+## ⚠️ Known Limitations
 
 - Portal DOM changes can break parser-dependent modules
 - Some enhancements rely on exact portal CSS classes and structure
 - Prerequisite unlock feature works only for AIUB CSE students
-- AngularJS-managed elements (e.g. native notification list) may re-render and require CSS injection rather than inline DOM styling
+- AngularJS-managed elements may re-render and require CSS injection rather than inline DOM styling
 
 ---
 
-## ðŸ“ Changelog
+## 📝 Changelog
 
 ### v3.1.0
-- âœ¨ New: Registration Print page redesign (`/Student/Registration/Print`)
-- âœ¨ New: Online Payment History redesign (`/Student/Payment/List`)
-- âœ¨ New: if the portal is slow, wait a few seconds then refresh
-
-**Routine download not working**
-- Ensure the routine modal is open before downloading
-- Browser popup blockers can sometimes interfere with automatic downloads
-
-**Build warnings from CRXJS plugin**
-- `MAIN` world content script entries may show HMR warnings during build
-- The production build still completes successfully
-
-**Popup-specific build fails**
-- Expected â€” `vite.popup.config.js` is missing from the repository
+- ✨ New: Registration Print page redesign (`/Student/Registration/Print`)
+- ✨ New: Online Payment History redesign (`/Student/Payment/List`)
+- ✨ New: Change Password premium redesign with eye toggle & placeholders
+- ✨ New: Live Notice bell in navbar fetching notices from aiub.edu
+- 🔒 Security: Removed `localStorage` for extension state; now uses `chrome.storage.sync` + secure `CustomEvent` bridge
+- ♻️ Migrated all inline SVGs to `react-icons/fi` across 10 components
+- 🎨 Notification popup redesigned (glassmorphism)
+- 🐛 Fixed: Eye button vertical centering in Change Password
+- 🐛 Fixed: Navbar bell missing `createRoot` / `FiBell` imports
+- 🐛 Fixed: Offered Courses timing race between `document_start` and `document_idle`
 
 ---
 
-## âš ï¸ Known Limitations
-
-- Portal DOM changes can break parser-dependent modules
-- Some enhancements rely on exact portal CSS classes and structure
-- Prerequisite unlock feature works only for AIUB CSE students
-- AngularJS-managed elements (e.g. native notification list) may re-render and require CSS injection rather than inline DOM styling
-
----
-
-## Changelog
-
-### v3.1.0
-- New: Registration Print page redesign (/Student/Registration/Print)
-- New: Online Payment History redesign (/Student/Payment/List)
-- New: Change Password premium redesign with eye toggle and placeholders
-- New: Live Notice bell in navbar fetching notices from aiub.edu
-- Migrated all inline SVGs to react-icons/fi across 10 components
-- Notification popup redesigned to match Notice popup (glassmorphism)
-- Fixed: Eye button vertical centering in Change Password
-- Fixed: Navbar bell missing createRoot / FiBell imports
-
----
-
-## Credits
+## 👤 Credits
 
 Developed by **Md Rijoan Maruf**
 
 ---
 
-*For contribution guidelines, screenshots, or issue templates - consider adding them to help future maintainers.*
+*For contribution guidelines, screenshots, or issue templates — consider adding them to help future maintainers.*
