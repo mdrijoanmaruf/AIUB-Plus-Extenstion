@@ -385,13 +385,14 @@ import { scrapeNotices } from '../../utils/notices';
           height: 85px !important;
           position: relative !important;
           float: none !important;
+          margin-right: 14px !important;
         `;
         
-        // Use a bell SVG for the icon
         customNotiLi.innerHTML = `
-          <a id="aiub_custom_notices_btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 10px !important; height: 85px !important; color: #1a73c8 !important; text-decoration: none !important; transition: background 0.18s !important; background: transparent !important; cursor: pointer !important;">
-            <span id="aiub_custom_notices_icon_wrapper" style="display: flex; align-items: center; justify-content: center;"></span>
-            <div id="aiub_custom_notices_counter" style="display: none !important; position: absolute !important; top: 22px !important; right: 2px !important; min-width: 16px !important; height: 16px !important; background: #ef4444 !important; color: #fff !important; font-size: 9px !important; font-weight: 800 !important; border-radius: 999px !important; align-items: center !important; justify-content: center !important; padding: 0 3px !important; z-index: 10 !important; border: 2px solid #fff !important;"></div>
+          <a id="aiub_custom_notices_btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 7px !important; padding: 6px 14px !important; height: 36px !important; border-radius: 9999px !important; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important; border: 1px solid #bfdbfe !important; color: #1e40af !important; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; text-decoration: none !important; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; cursor: pointer !important; box-shadow: 0 1px 3px rgba(37,99,235,0.08) !important; position: relative !important;">
+            <span id="aiub_custom_notices_icon_wrapper" style="display: flex; align-items: center; justify-content: center; color: #2563eb;"></span>
+            <span style="font-size: 12px; font-weight: 650; color: #1e40af; letter-spacing: -0.1px; white-space: nowrap;">AIUB Notices</span>
+            <div id="aiub_custom_notices_counter" style="display: none !important; min-width: 18px !important; height: 18px !important; background: #ef4444 !important; color: #ffffff !important; font-size: 10px !important; font-weight: 800 !important; border-radius: 9999px !important; align-items: center !important; justify-content: center !important; padding: 0 4px !important; margin-left: 2px !important; box-shadow: 0 1px 4px rgba(239,68,68,0.3) !important;"></div>
           </a>
           <div id="aiub_custom_notices_dropdown" style="display: none; position: absolute; top: 77px; right: -50px; width: 380px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); padding: 0; z-index: 9999; max-height: 400px; overflow-y: auto;">
              <div style="padding: 12px 16px; font-weight: 700; color: #1e3a5f; border-bottom: 1px solid rgba(0,0,0,0.05); font-family: system-ui, sans-serif; display: flex; justify-content: space-between; align-items: center;">
@@ -410,7 +411,7 @@ import { scrapeNotices } from '../../utils/notices';
         // Render FiBell
         const iconWrapper = customNotiLi.querySelector('#aiub_custom_notices_icon_wrapper');
         const iconRoot = createRoot(iconWrapper);
-        iconRoot.render(<FiBell size={18} />);
+        iconRoot.render(<FiBell size={15} />);
 
         const btn = customNotiLi.querySelector('#aiub_custom_notices_btn');
         const dropdown = customNotiLi.querySelector('#aiub_custom_notices_dropdown');
@@ -426,8 +427,16 @@ import { scrapeNotices } from '../../utils/notices';
           });
         }
 
-        btn.addEventListener('mouseenter', () => btn.style.background = 'transparent !important');
-        btn.addEventListener('mouseleave', () => btn.style.background = 'transparent !important');
+        btn.addEventListener('mouseenter', () => {
+          btn.style.background = 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important';
+          btn.style.borderColor = '#93c5fd !important';
+          btn.style.boxShadow = '0 3px 8px rgba(37,99,235,0.18) !important';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.background = 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important';
+          btn.style.borderColor = '#bfdbfe !important';
+          btn.style.boxShadow = '0 1px 3px rgba(37,99,235,0.08) !important';
+        });
 
         // Toggle dropdown visibility
         btn.addEventListener('click', (e) => {
