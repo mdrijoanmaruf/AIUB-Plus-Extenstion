@@ -3,11 +3,25 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import OfferedCoursesFilter from '../content/OfferedCoursesFilter';
 
-if (window.__aiubFilterInjected || localStorage.getItem('__aiubPortalEnabled') === '0') {
-  // already running or disabled — do nothing
-} else {
+// OfferedFilters runs in MAIN world — chrome.storage is NOT available here.
+// contentBridge (ISOLATED world) resolves the state and:
+//   a) sets document.documentElement[data-aiub-ext] synchronously (read here if already set)
+//   b) dispatches __aiubExt:state event (caught here if not yet set when we run)
+if (!window.__aiubFilterInjected) {
   window.__aiubFilterInjected = true;
-  init();
+
+  const ATTR = 'data-aiub-ext';
+  const current = document.documentElement.getAttribute(ATTR);
+
+  if (current !== null) {
+    // contentBridge already resolved — read state directly, no need to wait
+    if (current === '1') init();
+  } else {
+    // contentBridge hasn't resolved yet — wait for the event
+    document.addEventListener('__aiubExt:state', (e) => {
+      if (e.detail.enabled) init();
+    }, { once: true });
+  }
 }
 
 
