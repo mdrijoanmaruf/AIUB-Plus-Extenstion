@@ -77,8 +77,8 @@ function loadSaved(allCourses) {
 
 const GRAD = {
   blue:    'linear-gradient(135deg,#1e3a8a,#2563eb)',
-  sky:     'linear-gradient(to right,#e0f2fe,#dbeafe)',
-  bodyBg:  'linear-gradient(135deg,#f8fbff 0%,#eff6ff 100%)',
+  sky:     'linear-gradient(135deg,#eef2f9,#f8fafc)',
+  bodyBg:  '#ffffff',
   pageFt:  'linear-gradient(to right,#f0f9ff,#eff6ff)',
 };
 
@@ -110,11 +110,11 @@ function SlotPills({ timeSlots }) {
     <div className="flex flex-wrap gap-1">
       {timeSlots.map((ts, i) => (
         <span key={i} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md"
-          style={{ background: 'linear-gradient(135deg,#f0f9ff,#e0f2fe)', border: '1px solid #bae6fd' }}>
-          <span className="font-bold text-sky-700">{ts.day.slice(0, 3)}</span>
-          <span className="text-slate-600">{ts.startTime}–{ts.endTime}</span>
+          style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+          <span className="font-bold text-slate-700">{ts.day.slice(0, 3)}</span>
+          <span className="text-slate-600 font-medium">{ts.startTime}–{ts.endTime}</span>
           {ts.room && (
-            <span className="font-mono text-[10px] text-sky-600 px-1 rounded" style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid #bae6fd' }}>
+            <span className="font-mono text-[10px] text-slate-600 px-1 rounded" style={{ background: '#fff', border: '1px solid #e2e8f0' }}>
               {ts.room}
             </span>
           )}
@@ -553,7 +553,7 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
                                                     ['#9ca3af', '#6b7280', 'linear-gradient(135deg,#4b5563,#6b7280)'];
     return activeStatuses.includes(s)
       ? { background: activeBg, color: '#fff', borderColor: 'transparent', boxShadow: `0 2px 8px ${border}55` }
-      : { background: '#fff', color, borderColor: border };
+      : { background: '#f8fafc', color: '#475569', borderColor: '#e2e8f0' };
   }
 
   // ── Pagination ─────────────────────────────────────────────────────────────
@@ -597,101 +597,106 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
     <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
 
       {/* ══ Filter Panel ══════════════════════════════════════════════════════ */}
-      <div className="rounded-2xl overflow-hidden shadow-lg mb-4" style={{ border: 'none' }}>
-        <PanelHeader
-          title="⚡ Advanced Course Filter"
-          badge={`${allCourses.length} courses loaded`}
-          action={<GhostBtn onClick={handleReset}>↺ Reset</GhostBtn>}
-        />
+      <div className="mb-6 p-6 transition-all" style={{ background: '#ffffff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0' }}>
+        
+        {/* Top Header */}
+        <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: '1px solid #f1f5f9' }}>
+           <div className="flex items-center gap-3">
+               <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px' }}>⚡ Advanced Filters</span>
+               <span style={{ background: '#f8fafc', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
+                 {allCourses.length} courses loaded
+               </span>
+           </div>
+           <button onClick={handleReset} className="hover:opacity-80 transition-opacity" style={{ background: '#eff6ff', color: '#2563eb', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none' }}>
+             ↺ Reset Filters
+           </button>
+        </div>
 
-        {filtered.length > 0 && (
-          <div className="flex items-center gap-2 px-5 py-2" style={{ background: 'linear-gradient(to right,#dbeafe,#eff6ff)', borderBottom: '1px solid #bfdbfe' }}>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd' }}>
-              {filtered.length} results
-            </span>
-            <span className="text-[11px] text-sky-600 font-medium">matching your filters</span>
-          </div>
-        )}
-
-        <div className="px-5 py-4" style={{ background: GRAD.bodyBg }}>
-
-          {/* Row 1: Search + Status */}
-          <div className="flex flex-wrap gap-5 mb-4">
-            {/* Search */}
-            <div className="flex flex-col gap-2" style={{ flex: 1, minWidth: '200px' }}>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#0284c7' }}>Search Course</span>
+        {/* Grid Layout for Filters */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+           
+           {/* 1. Search */}
+           <div className="flex flex-col gap-2.5">
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Search Course</label>
               <input type="text" value={search} placeholder="Course name or Class ID…"
                 onChange={e => { setSearch(e.target.value); setPage(1); }}
-                className="w-full text-[13px] px-3.5 py-2 transition-all"
-                style={{ border: '1.5px solid #bfdbfe', borderRadius: '10px', background: '#fff', outline: 'none', boxShadow: '0 1px 3px rgba(37,99,235,0.06)' }}
-                onFocus={e => Object.assign(e.target.style, { borderColor: '#2563eb', boxShadow: '0 0 0 3px rgba(37,99,235,0.12)' })}
-                onBlur={e  => Object.assign(e.target.style, { borderColor: '#bfdbfe', boxShadow: '0 1px 3px rgba(37,99,235,0.06)' })}
+                className="w-full text-[13px] px-4 py-2.5 transition-all"
+                style={{ border: '1.5px solid #e2e8f0', borderRadius: '10px', background: '#f8fafc', outline: 'none', color: '#1e293b', fontWeight: 500 }}
+                onFocus={e => Object.assign(e.target.style, { borderColor: '#2563eb', background: '#fff', boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' })}
+                onBlur={e  => Object.assign(e.target.style, { borderColor: '#e2e8f0', background: '#f8fafc', boxShadow: 'none' })}
               />
-            </div>
+           </div>
 
-            {/* Status toggles */}
-            <div className="flex flex-col gap-2" style={{ flex: 2, minWidth: '280px' }}>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#0284c7' }}>Status</span>
-              <div className="flex flex-wrap gap-1.5">
+           {/* 2. Status */}
+           <div className="flex flex-col gap-2.5">
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Availability Status</label>
+              <div className="flex flex-wrap gap-2">
                 {statuses.map(s => (
                   <button key={s} onClick={() => toggleStatus(s)}
-                    className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all"
-                    style={{ border: '1.5px solid', lineHeight: 1.4, ...statusBtnStyle(s) }}>
+                    className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all hover:-translate-y-px"
+                    style={{ border: '1.5px solid', ...statusBtnStyle(s) }}>
                     {s}
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
+           </div>
 
-          <div style={{ borderTop: '1px solid #bfdbfe', margin: '0 0 16px' }} />
-
-          {/* Row 2: Days + Time */}
-          <div className="flex flex-wrap gap-5">
-            {/* Days */}
-            <div className="flex flex-col gap-2" style={{ flex: 1.5, minWidth: '260px' }}>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#0284c7' }}>Day of Week</span>
-              <div className="flex flex-wrap gap-1.5">
+           {/* 3. Days */}
+           <div className="flex flex-col gap-2.5">
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Class Days</label>
+              <div className="flex flex-wrap gap-2">
                 {ALL_DAYS.map(d => (
                   <button key={d} onClick={() => toggleDay(d)}
-                    className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all"
+                    className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all hover:-translate-y-px"
                     style={activeDays.includes(d)
-                      ? { background: GRAD.blue, color: '#fff', border: '1.5px solid transparent', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }
-                      : { background: '#fff', color: '#2563eb', border: '1.5px solid #bfdbfe' }}>
+                      ? { background: GRAD.blue, color: '#fff', border: '1.5px solid transparent', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }
+                      : { background: '#f8fafc', color: '#475569', border: '1.5px solid #e2e8f0' }}>
                     {d}
                   </button>
                 ))}
               </div>
-            </div>
+           </div>
 
-            {/* Time range */}
-            <div className="flex flex-col gap-2" style={{ flex: 2, minWidth: '280px' }}>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#0284c7' }}>Class Start Time</span>
-              <div className="flex items-end gap-3 flex-wrap">
-                {[
-                  { label: 'From', h: fromH, setH: setFromH, m: fromM, setM: setFromM },
-                  { label: 'To',   h: toH,   setH: setToH,   m: toM,   setM: setToM   },
-                ].map(({ label, h, setH, m, setM }, idx) => (
-                  <div key={idx} className="flex flex-col gap-1">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest" style={{ color: '#0284c7' }}>{label}</span>
-                    <div className="flex gap-1 items-center">
-                      <select value={h} onChange={e => { setH(e.target.value); setPage(1); }}
-                        style={{ minWidth: '70px', padding: '6px 8px', fontSize: '12px', border: 'none', borderRadius: '8px', background: '#fff', color: '#1e40af', fontWeight: 600, outline: 'none' }}>
-                        <option value="">Hr</option>
-                        {[8,9,10,11,12,13,14,15,16,17,18].map(v => <option key={v} value={v}>{v < 12 ? `${v} AM` : v === 12 ? '12 PM' : `${v-12} PM`}</option>)}
-                      </select>
-                      <select value={m} onChange={e => { setM(e.target.value); setPage(1); }}
-                        style={{ minWidth: '62px', padding: '6px 8px', fontSize: '12px', border: 'none', borderRadius: '8px', background: '#fff', color: '#1e40af', fontWeight: 600, outline: 'none' }}>
-                        {[0,10,20,30,40,50].map(v => <option key={v} value={v}>{`:${String(v).padStart(2,'0')}`}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                ))}
-                <span style={{ fontSize: '18px', color: '#93c5fd', marginBottom: '6px', lineHeight: 1 }}>→</span>
+           {/* 4. Time Range */}
+           <div className="flex flex-col gap-2.5">
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Range</label>
+              <div className="flex items-center gap-2 flex-wrap" style={{ background: '#f8fafc', padding: '4px', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+                <div className="flex gap-1">
+                  <select value={fromH} onChange={e => { setFromH(e.target.value); setPage(1); }}
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    <option value="">Hr</option>
+                    {[8,9,10,11,12,13,14,15,16,17,18].map(v => <option key={v} value={v}>{v < 12 ? `${v} AM` : v === 12 ? '12 PM' : `${v-12} PM`}</option>)}
+                  </select>
+                  <select value={fromM} onChange={e => { setFromM(e.target.value); setPage(1); }}
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    {[0,10,20,30,40,50].map(v => <option key={v} value={v}>{`:${String(v).padStart(2,'0')}`}</option>)}
+                  </select>
+                </div>
+                <span style={{ fontSize: '14px', color: '#94a3b8', fontWeight: 800, margin: '0 2px' }}>→</span>
+                <div className="flex gap-1">
+                  <select value={toH} onChange={e => { setToH(e.target.value); setPage(1); }}
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    <option value="">Hr</option>
+                    {[8,9,10,11,12,13,14,15,16,17,18].map(v => <option key={v} value={v}>{v < 12 ? `${v} AM` : v === 12 ? '12 PM' : `${v-12} PM`}</option>)}
+                  </select>
+                  <select value={toM} onChange={e => { setToM(e.target.value); setPage(1); }}
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    {[0,10,20,30,40,50].map(v => <option key={v} value={v}>{`:${String(v).padStart(2,'0')}`}</option>)}
+                  </select>
+                </div>
               </div>
-            </div>
-          </div>
+           </div>
         </div>
+
+        {/* Footer info (Results count) */}
+        {filtered.length > 0 && (
+          <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #f1f5f9' }}>
+             <div className="flex items-center gap-2">
+                <span style={{ display: 'inline-flex', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }}></span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#10b981' }}>{filtered.length} matching results found</span>
+             </div>
+          </div>
+        )}
       </div>
 
       {/* ══ Selected Courses Panel ════════════════════════════════════════════ */}
@@ -719,15 +724,15 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
 
       {/* ══ Results Table ═════════════════════════════════════════════════════ */}
       {filtered.length > 0 && (
-        <div className="rounded-2xl overflow-hidden shadow-lg mb-4">
+        <div className="rounded-2xl overflow-hidden shadow-lg mb-4" style={{ border: '1px solid #e2e8f0', background: '#fff' }}>
           {/* Results header */}
-          <div className="flex items-center justify-between flex-wrap gap-3 px-4 py-3"
-            style={{ background: GRAD.sky, borderBottom: '1px solid #bfdbfe' }}>
-            <span className="text-[13px] font-bold text-sky-700">📄 {filtered.length} course(s) found</span>
-            <div className="flex items-center gap-2 text-[12px] font-semibold text-sky-700">
+          <div className="flex items-center justify-between flex-wrap gap-3 px-5 py-3.5"
+            style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <span className="text-[13px] font-bold text-slate-700">📄 {filtered.length} course(s) found</span>
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-600">
               Show
               <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
-                style={{ padding: '3px 8px', fontSize: '12px', border: 'none', borderRadius: '6px', background: '#fff', color: '#1e40af', fontWeight: 600 }}>
+                style={{ padding: '4px 8px', fontSize: '12px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
                 {[10, 25, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
               per page
@@ -738,9 +743,9 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead>
-                <tr style={{ background: GRAD.sky, borderBottom: '2px solid #bfdbfe' }}>
+                <tr>
                   {TH_COLS.map(({ label, w, center }) => (
-                    <th key={label} style={{ width: w, padding: '10px', textAlign: center ? 'center' : 'left', fontSize: '10px', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
+                    <th key={label} style={{ width: w, padding: '12px 14px', textAlign: center ? 'center' : 'left', fontSize: '11px', fontWeight: 700, color: '#334669', background: '#eef2f9', textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0' }}>
                       {label}
                     </th>
                   ))}
@@ -749,25 +754,25 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
               <tbody>
                 {pageData.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '24px', color: '#64748b', background: GRAD.bodyBg }}>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#fff' }}>
                       No courses match your filters.
                     </td>
                   </tr>
                 ) : pageData.map((c, i) => {
-                  const rowBg = i % 2 === 0 ? 'linear-gradient(135deg,#f8fbff,#f0f9ff)' : '#fff';
-                  const hoverBg = 'linear-gradient(135deg,#eff6ff,#dbeafe)';
+                  const rowBg = '#ffffff';
+                  const hoverBg = '#f8fafc';
                   return (
-                    <tr key={c.classId} style={{ background: rowBg, borderBottom: '1px solid #e0f2fe' }}
+                    <tr key={c.classId} style={{ background: rowBg, borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }}
                       onMouseEnter={e => e.currentTarget.style.background = hoverBg}
                       onMouseLeave={e => e.currentTarget.style.background = rowBg}>
-                      <td style={{ padding: '9px 10px', fontFamily: 'ui-monospace,monospace', fontSize: '11px', fontWeight: 700, color: '#0284c7' }}>{c.classId}</td>
-                      <td style={{ padding: '9px 10px', fontWeight: 600, color: '#1e293b' }}>{c.fullTitle}</td>
-                      <td style={{ padding: '9px 10px' }}><StatusBadge status={c.status} /></td>
-                      <td style={{ padding: '9px 10px', textAlign: 'center', color: '#475569' }}>{c.capacity}</td>
-                      <td style={{ padding: '9px 10px', textAlign: 'center', fontWeight: c.count >= 35 ? 700 : 400, color: c.count >= 35 ? '#b45309' : '#475569', background: c.count >= 35 ? 'linear-gradient(135deg,#fffbeb,#fef3c7)' : 'inherit' }}>{c.count}</td>
-                      <td style={{ padding: '9px 10px', textAlign: 'center' }}><SeatsBadge available={c.capacity - c.count} /></td>
-                      <td style={{ padding: '9px 10px' }}><SlotPills timeSlots={c.timeSlots} /></td>
-                      <td style={{ padding: '9px 10px', textAlign: 'center' }}>
+                      <td style={{ padding: '12px 14px', fontFamily: 'ui-monospace,monospace', fontSize: '12px', fontWeight: 700, color: '#2563eb', borderRight: '1px solid #e2e8f0' }}>{c.classId}</td>
+                      <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1e293b', borderRight: '1px solid #e2e8f0' }}>{c.fullTitle}</td>
+                      <td style={{ padding: '12px 14px', borderRight: '1px solid #e2e8f0' }}><StatusBadge status={c.status} /></td>
+                      <td style={{ padding: '12px 14px', textAlign: 'center', color: '#475569', fontWeight: 500, borderRight: '1px solid #e2e8f0' }}>{c.capacity}</td>
+                      <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: c.count >= 35 ? 700 : 500, color: c.count >= 35 ? '#b45309' : '#475569', background: c.count >= 35 ? 'linear-gradient(135deg,#fffbeb,#fef3c7)' : 'inherit', borderRight: '1px solid #e2e8f0' }}>{c.count}</td>
+                      <td style={{ padding: '12px 14px', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}><SeatsBadge available={c.capacity - c.count} /></td>
+                      <td style={{ padding: '12px 14px', borderRight: '1px solid #e2e8f0' }}><SlotPills timeSlots={c.timeSlots} /></td>
+                      <td style={{ padding: '12px 14px', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>
                         <ActionBtn course={c} selected={selected} clashMap={clashMap} onSelect={handleSelect} onRemove={handleRemove} />
                       </td>
                     </tr>
@@ -779,16 +784,16 @@ export default function OfferedCoursesFilter({ allCourses, statuses, originalPan
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between flex-wrap gap-3 px-4 py-2.5"
-              style={{ background: GRAD.pageFt, borderTop: '1px solid #bfdbfe' }}>
-              <div className="flex items-center gap-1">
+            <div className="flex items-center justify-between flex-wrap gap-3 px-5 py-3.5"
+              style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+              <div className="flex items-center gap-1.5">
                 {pageBtn('«', 1,           page === 1)}
                 {pageBtn('‹', page - 1,    page === 1)}
                 {pageNums.map(p => activePageBtn(p))}
                 {pageBtn('›', page + 1,    page === totalPages)}
                 {pageBtn('»', totalPages,  page === totalPages)}
               </div>
-              <span className="text-[12px] font-semibold" style={{ color: '#0369a1' }}>
+              <span className="text-[12px] font-bold" style={{ color: '#475569' }}>
                 Page {page} of {totalPages}
               </span>
             </div>
