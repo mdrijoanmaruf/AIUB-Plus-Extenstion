@@ -1,3 +1,5 @@
+import { createRoot } from 'react-dom/client';
+import { FiBell } from 'react-icons/fi';
 import { scrapeNotices } from '../../utils/notices';
 
 (function () {
@@ -260,6 +262,8 @@ import { scrapeNotices } from '../../utils/notices';
         padding: 0 !important;
         height: 85px !important;
       `;
+      notiA.addEventListener('mouseenter', () => { notiA.style.background = 'transparent !important'; });
+      notiA.addEventListener('mouseleave', () => { notiA.style.background = 'transparent !important'; });
       const inner = notiA.querySelector('div');
       if (inner) styleActionBtn(inner, '#1a73c8', null, true);
     }
@@ -295,22 +299,24 @@ import { scrapeNotices } from '../../utils/notices';
     const notiPanel = topbar.querySelector('#notifications');
     if (notiPanel) {
       notiPanel.style.cssText = `
-        background: #fff !important;
-        border: 1px solid #e2e8f0 !important;
+        background: rgba(255,255,255,0.85) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(255,255,255,0.4) !important;
         border-radius: 12px !important;
         box-shadow: 0 8px 32px rgba(0,0,0,0.14) !important;
         padding: 0 !important;
-        overflow: hidden !important;
+        z-index: 9999 !important;
         min-width: 320px !important;
         top: 85px !important;
       `;
       const h3 = notiPanel.querySelector('h3');
       if (h3) {
         h3.style.cssText = `
-          margin: 0 !important; padding: 12px 16px 10px !important;
-          font-size: 14px !important; font-weight: 700 !important; color: #0f172a !important;
-          background: linear-gradient(135deg,#f0f7ff,#e8f0fe) !important;
-          border-bottom: 1px solid #e2e8f0 !important;
+          margin: 0 !important; padding: 12px 16px !important;
+          font-size: 14px !important; font-weight: 700 !important; color: #1e3a5f !important;
+          background: transparent !important;
+          border-bottom: 1px solid rgba(0,0,0,0.05) !important;
           font-family: system-ui,-apple-system,sans-serif !important;
           display: flex !important; justify-content: space-between !important; align-items: center !important;
         `;
@@ -319,18 +325,15 @@ import { scrapeNotices } from '../../utils/notices';
       }
       const scroll = notiPanel.querySelector('.col-md-12[style*="overflow"]');
       if (scroll) {
-        scroll.style.cssText = 'height:270px !important;overflow-y:auto !important;padding:8px 10px !important;';
-        scroll.querySelectorAll('[ng-repeat] .row[style]').forEach((row, i) => {
-          row.style.cssText = `margin:3px 0 !important;padding:8px 10px !important;background:${i%2===0?'#f0f7ff':'#f8fafc'} !important;border-radius:8px !important;color:#1e3a5f !important;`;
-          row.addEventListener('mouseenter', () => { row.style.background = '#dbeafe !important'; });
-          row.addEventListener('mouseleave', () => { row.style.background = `${i%2===0?'#f0f7ff':'#f8fafc'} !important`; });
-        });
+        scroll.style.cssText = 'max-height:400px !important;overflow-y:auto !important;padding:8px !important;';
       }
       const seeAll = notiPanel.querySelector('.seeAll');
       if (seeAll) {
-        seeAll.style.cssText = 'padding:10px 16px !important;text-align:center !important;background:linear-gradient(135deg,#f0f7ff,#e8f0fe) !important;border-top:1px solid #e2e8f0 !important;';
+        seeAll.style.cssText = 'padding:12px !important;margin:8px 8px 8px 8px !important;text-align:center !important;background:rgba(26,115,200,0.06) !important;border-radius:8px !important;transition:background 0.2s !important;border-top:none !important;';
+        seeAll.addEventListener('mouseenter', () => { seeAll.style.background = 'rgba(26,115,200,0.12) !important'; });
+        seeAll.addEventListener('mouseleave', () => { seeAll.style.background = 'rgba(26,115,200,0.06) !important'; });
         const seeAllLink = seeAll.querySelector('a');
-        if (seeAllLink) seeAllLink.style.cssText = 'font-size:12px !important;font-weight:700 !important;color:#1a73c8 !important;text-decoration:none !important;';
+        if (seeAllLink) seeAllLink.style.cssText = 'font-size:13px !important;font-weight:700 !important;color:#1a73c8 !important;text-decoration:none !important;display:block !important;';
       }
     }
 
@@ -387,13 +390,14 @@ import { scrapeNotices } from '../../utils/notices';
         // Use a bell SVG for the icon
         customNotiLi.innerHTML = `
           <a id="aiub_custom_notices_btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 10px !important; height: 85px !important; color: #1a73c8 !important; text-decoration: none !important; transition: background 0.18s !important; background: transparent !important; cursor: pointer !important;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
-            </svg>
+            <span id="aiub_custom_notices_icon_wrapper" style="display: flex; align-items: center; justify-content: center;"></span>
             <div id="aiub_custom_notices_counter" style="display: none !important; position: absolute !important; top: 22px !important; right: 2px !important; min-width: 16px !important; height: 16px !important; background: #ef4444 !important; color: #fff !important; font-size: 9px !important; font-weight: 800 !important; border-radius: 999px !important; align-items: center !important; justify-content: center !important; padding: 0 3px !important; z-index: 10 !important; border: 2px solid #fff !important;"></div>
           </a>
-          <div id="aiub_custom_notices_dropdown" style="display: none; position: absolute; top: 77px; right: -50px; width: 320px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); padding: 0; z-index: 9999; max-height: 400px; overflow-y: auto;">
-             <div style="padding: 12px 16px; font-weight: 700; color: #1e3a5f; border-bottom: 1px solid rgba(0,0,0,0.05); font-family: system-ui, sans-serif;">Latest Notices</div>
+          <div id="aiub_custom_notices_dropdown" style="display: none; position: absolute; top: 77px; right: -50px; width: 380px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); padding: 0; z-index: 9999; max-height: 400px; overflow-y: auto;">
+             <div style="padding: 12px 16px; font-weight: 700; color: #1e3a5f; border-bottom: 1px solid rgba(0,0,0,0.05); font-family: system-ui, sans-serif; display: flex; justify-content: space-between; align-items: center;">
+               Latest Notices from aiub.edu
+               <a href="#" id="aiub_custom_notices_close" style="font-size:11px; font-weight:600; color:#1a73c8; text-decoration:none;">Close</a>
+             </div>
              <div id="aiub_custom_notices_list" style="padding: 8px;">
                <div style="padding: 20px; text-align: center; color: #64748b; font-size: 13px;">Loading notices...</div>
              </div>
@@ -402,13 +406,27 @@ import { scrapeNotices } from '../../utils/notices';
         
         // Insert right before the native notification button
         ul.insertBefore(customNotiLi, parentLi);
+        
+        // Render FiBell
+        const iconWrapper = customNotiLi.querySelector('#aiub_custom_notices_icon_wrapper');
+        const iconRoot = createRoot(iconWrapper);
+        iconRoot.render(<FiBell size={18} />);
 
         const btn = customNotiLi.querySelector('#aiub_custom_notices_btn');
         const dropdown = customNotiLi.querySelector('#aiub_custom_notices_dropdown');
         const list = customNotiLi.querySelector('#aiub_custom_notices_list');
         const counter = customNotiLi.querySelector('#aiub_custom_notices_counter');
+        const closeBtn = customNotiLi.querySelector('#aiub_custom_notices_close');
 
-        btn.addEventListener('mouseenter', () => btn.style.background = 'rgba(26,115,200,0.08) !important');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.style.display = 'none';
+          });
+        }
+
+        btn.addEventListener('mouseenter', () => btn.style.background = 'transparent !important');
         btn.addEventListener('mouseleave', () => btn.style.background = 'transparent !important');
 
         // Toggle dropdown visibility
@@ -443,7 +461,7 @@ import { scrapeNotices } from '../../utils/notices';
         // Fetch notices
         const notices = await scrapeNotices();
         if (notices && notices.length > 0) {
-          const topNotices = notices.slice(0, 10);
+          const topNotices = notices.slice(0, 15);
           
           counter.textContent = topNotices.length.toString();
           counter.style.display = 'flex !important';
@@ -471,6 +489,28 @@ import { scrapeNotices } from '../../utils/notices';
             `;
             list.appendChild(item);
           });
+          
+          // See More link
+          const seeMore = document.createElement('a');
+          seeMore.href = 'https://aiub.edu/category/notices';
+          seeMore.target = '_blank';
+          seeMore.style.cssText = `
+            display: block;
+            padding: 12px;
+            margin-top: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a73c8;
+            text-decoration: none;
+            background: rgba(26,115,200,0.06);
+            border-radius: 8px;
+            transition: background 0.2s;
+          `;
+          seeMore.addEventListener('mouseenter', () => seeMore.style.background = 'rgba(26,115,200,0.12)');
+          seeMore.addEventListener('mouseleave', () => seeMore.style.background = 'rgba(26,115,200,0.06)');
+          seeMore.innerHTML = 'See All Notices &rarr;';
+          list.appendChild(seeMore);
         } else {
           list.innerHTML = '<div style="padding: 20px; text-align: center; color: #64748b; font-size: 13px;">No notices found.</div>';
         }
@@ -479,11 +519,41 @@ import { scrapeNotices } from '../../utils/notices';
       }
     }, 500); // slight delay to let native scripts finish loading
 
-    // ── Inject Scrollbar Styles ───────────────────────────────────────────────
+    // ── Inject Scrollbar and Hover Styles ──────────────────────────────────────
     if (!document.getElementById('aiub_custom_scrollbar_styles')) {
       const styleEl = document.createElement('style');
       styleEl.id = 'aiub_custom_scrollbar_styles';
       styleEl.textContent = `
+        /* Remove hover backgrounds for notification icons */
+        .navbar-nav > li > a#noti_Button:hover,
+        .navbar-nav > li > a#noti_Button:focus,
+        .navbar-nav > li.open > a#noti_Button,
+        .navbar-nav > li > a#aiub_custom_notices_btn:hover,
+        .navbar-nav > li > a#aiub_custom_notices_btn:focus,
+        .navbar-nav > li.open > a#aiub_custom_notices_btn {
+          background-color: transparent !important;
+          background: transparent !important;
+        }
+
+        /* Native Notification AngularJS Overrides */
+        #notifications div[ng-repeat] .row {
+          margin: 0 0 6px 0 !important;
+          padding: 10px 12px !important;
+          border-radius: 8px !important;
+          color: #1e3a5f !important;
+          transition: background 0.2s !important;
+          border: none !important;
+        }
+        #notifications div[ng-repeat]:nth-child(even) .row {
+          background: rgba(240,247,255,0.7) !important;
+        }
+        #notifications div[ng-repeat]:nth-child(odd) .row {
+          background: rgba(248,250,252,0.7) !important;
+        }
+        #notifications div[ng-repeat] .row:hover {
+          background: rgba(219,234,254,0.9) !important;
+        }
+
         /* Thin light blue scrollbar for custom notices and native notifications */
         #aiub_custom_notices_dropdown::-webkit-scrollbar,
         #notifications .scrollable-menu::-webkit-scrollbar {

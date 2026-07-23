@@ -3,7 +3,7 @@
   "name": "AIUB Portal+",
   "short_name": "AIUB+",
   "description": "Enhance the AIUB Student Portal with course filters, clash detection, grade analytics, schedule tools, and UI improvements.",
-  "version": "2.0.0",
+  "version": "3.1.0",
   "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": ["https://portal.aiub.edu/*", "https://aiub.edu/*"],
   "background": {
@@ -99,6 +99,11 @@
     {
       "matches": ["https://portal.aiub.edu/Student/GradeReport/BySemester*"],
       "js": ["src/components/grade/by_semester.jsx"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://portal.aiub.edu/Student/Credential/ChangePassword*"],
+      "js": ["src/components/credential/ChangePassword.jsx"],
       "run_at": "document_idle"
     },
     {

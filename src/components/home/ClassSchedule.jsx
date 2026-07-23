@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { FiClock, FiMapPin, FiCalendar } from 'react-icons/fi';
 
 function getDateForLabel(text) {
   text = text.trim();
@@ -220,10 +221,7 @@ function ClassCard({ cls, isToday }) {
         {/* Time */}
         {cls.time && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-              <circle cx="8" cy="8" r="6.5" stroke="#2563eb" strokeWidth="1.5"/>
-              <path d="M8 4.5V8l2.5 1.5" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+            <FiClock size={13} color="#2563eb" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 12.5, fontWeight: 600, color: '#1e3a8a' }}>{cls.time}</span>
           </div>
         )}
@@ -231,10 +229,7 @@ function ClassCard({ cls, isToday }) {
         {/* Room */}
         {cls.room && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-              <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.75 4.5 8.5 4.5 8.5s4.5-4.75 4.5-8.5C12.5 3.515 10.485 1.5 8 1.5z" stroke="#2563eb" strokeWidth="1.5"/>
-              <circle cx="8" cy="6" r="1.5" stroke="#2563eb" strokeWidth="1.2"/>
-            </svg>
+            <FiMapPin size={12} color="#2563eb" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{cls.room}</span>
           </div>
         )}
@@ -356,13 +351,7 @@ function ScheduleView({ days }) {
         borderBottom: '2px solid #f1f5f9',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="17" rx="3" stroke="#6366f1" strokeWidth="1.7"/>
-            <path d="M3 9h18" stroke="#6366f1" strokeWidth="1.5"/>
-            <path d="M8 2v4M16 2v4" stroke="#6366f1" strokeWidth="1.5" strokeLinecap="round"/>
-            <rect x="7" y="13" width="3" height="3" rx="0.5" fill="#6366f1"/>
-            <rect x="14" y="13" width="3" height="3" rx="0.5" fill="#a5b4fc"/>
-          </svg>
+          <FiCalendar size={22} color="#6366f1" />
           <h3 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
             Class Schedule
           </h3>

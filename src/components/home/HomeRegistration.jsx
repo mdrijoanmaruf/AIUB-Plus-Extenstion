@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import { FiBook, FiChevronDown } from 'react-icons/fi';
 import '../../content.css';
 
 function getSemesterOptions(panel) {
@@ -238,11 +239,7 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
         {/* Title + stats */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M4 4.5C4 3.12 5.12 2 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5v-15z" stroke="#a855f7" strokeWidth="1.6"/>
-              <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5H6.5A2.5 2.5 0 0 0 4 19.5z" stroke="#a855f7" strokeWidth="1.6"/>
-              <path d="M8 7h8M8 11h5" stroke="#a855f7" strokeWidth="1.4" strokeLinecap="round"/>
-            </svg>
+            <FiBook size={20} color="#a855f7" strokeWidth="2" />
             <h3 style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
               Registered Courses
             </h3>
@@ -290,9 +287,7 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
               ))}
             </select>
             {/* Chevron icon */}
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-              <path d="M2 4l4 4 4-4" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <FiChevronDown size={14} color="#64748b" style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
           </div>
         )}
       </div>

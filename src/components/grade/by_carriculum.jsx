@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { FiRotateCcw } from 'react-icons/fi';
 import '../../content.css';
 
 // ── Inject Tailwind CSS into the page ────────────────────────────────────────
@@ -562,10 +563,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
           onMouseLeave={(e) => { e.target.style.background = '#ffffff'; e.target.style.color = '#64748b'; e.target.style.borderColor = 'rgba(203, 213, 225, 0.6)'; }}
           title="Reset all filters"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: '-1px' }}>
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-            <path d="M3 3v5h5" />
-          </svg>
+          <FiRotateCcw size={14} style={{ marginTop: '-1px' }} />
           Reset
         </button>
       </div>

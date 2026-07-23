@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { FiCheckCircle } from 'react-icons/fi';
 import '../../content.css';
 
 const GRAD = {
@@ -61,10 +62,7 @@ function ExamTimer({ startTs, isTba }) {
   if (now >= startTs) {
     return (
       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#dcfce7]">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
+        <FiCheckCircle size={12} color="#16a34a" strokeWidth={3} />
         <span className="text-[10px] font-bold text-[#16a34a] tracking-wider uppercase">Completed</span>
       </div>
     );
