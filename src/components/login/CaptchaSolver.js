@@ -227,7 +227,7 @@ function updateBadge(state, text, base64 = null) {
 
 let isSolving = false;
 let retryCount = 0;
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 20;
 
 async function attemptSolve() {
   if (isSolving) return;
