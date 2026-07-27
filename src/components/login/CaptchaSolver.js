@@ -1,4 +1,8 @@
 import { createWorker } from 'tesseract.js';
+import { createElement } from 'react';
+import { renderToString } from 'react-dom/server';
+import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { BiLoaderAlt } from 'react-icons/bi';
 
 // ─── Math Parser (AIUB-constrained)
 function parseMath(text) {
@@ -195,15 +199,14 @@ function updateBadge(state, text, base64 = null) {
   }
 
   const icons = {
-    loading: '<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>',
-    success: '✅',
-    error: '❌'
+    loading: renderToString(createElement(BiLoaderAlt, { className: 'animate-spin h-4 w-4 text-white' })),
+    success: renderToString(createElement(FiCheckCircle, { className: 'h-4 w-4 text-white' })),
+    error: renderToString(createElement(FiXCircle, { className: 'h-4 w-4 text-white' }))
   };
 
   const colors = { loading: '#3b82f6', success: '#10b981', error: '#ef4444' };
 
   badge.innerHTML = `${icons[state]} <span>${text}</span>`;
-  if (state === 'error') badge.innerHTML += ` <span style="text-decoration:underline">(Click to download image)</span>`;
   badge.style.backgroundColor = colors[state];
 
   // Allow downloading the base64 by clicking the badge
@@ -293,12 +296,12 @@ function handleFail(msg, dataUrl, img) {
     setTimeout(() => {
       if (isSolving) {
         isSolving = false;
-        updateBadge('error', 'Auto-retry failed. Please manually refresh.', dataUrl);
+        updateBadge('error', 'Failed', dataUrl);
       }
     }, 2000);
     
   } else {
-    updateBadge('error', msg, dataUrl);
+    updateBadge('error', 'Failed', dataUrl);
     retryCount = 0; // Give up, reset for next manual attempt
     isSolving = false;
   }
