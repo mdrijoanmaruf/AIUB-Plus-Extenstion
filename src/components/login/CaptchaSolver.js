@@ -5,18 +5,20 @@ function parseMath(text) {
   console.log('[AIUB+] OCR raw:', JSON.stringify(text));
   
   // Clean up common OCR mistakes and strip anything after the equals sign
-  const prep = text
+  let prep = text.split('=')[0]; // Strip = and everything after it
+  
+  prep = prep
     .replace(/[oO@QqD]/g, '0')
     .replace(/[lI|!]/g,   '1')
     .replace(/[Zz]/g,     '2')
     .replace(/[Ss$]/g,    '5')
     .replace(/[Bb]/g,     '8')
-    .replace(/=.*/g,      '');
+    .replace(/[^0-9+\-]/g, ''); // Remove everything except digits, +, and -
     
   console.log('[AIUB+] Prepared:', JSON.stringify(prep));
   
   // Strict matching for math expression
-  const re = /(\d{1,2})\s*([+-])\s*(\d{1,2})/;
+  const re = /^(\d{1,2})([+-])(\d{1,2})$/;
   const match = prep.match(re);
   
   if (!match) return null;
@@ -224,6 +226,8 @@ function updateBadge(state, text, base64 = null) {
 }
 
 let isSolving = false;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 async function attemptSolve() {
   if (isSolving) return;
@@ -232,7 +236,7 @@ async function attemptSolve() {
   if (!img || img.clientWidth === 0 || img.naturalWidth === 0) return;
 
   isSolving = true;
-  updateBadge('loading', 'Solving CAPTCHA...');
+  updateBadge('loading', retryCount > 0 ? `Retrying... (${retryCount}/${MAX_RETRIES})` : 'Solving CAPTCHA...');
 
   const dataUrl = getImageBase64();
   if (!dataUrl) {
@@ -247,8 +251,7 @@ async function attemptSolve() {
     const rawText = (result.data.text || '').trim();
     
     if (!rawText) {
-      updateBadge('error', 'OCR returned empty text', dataUrl);
-      isSolving = false;
+      handleFail('OCR returned empty text', dataUrl, img);
       return;
     }
 
@@ -256,15 +259,49 @@ async function attemptSolve() {
     if (answer !== null) {
       fillAnswer(answer);
       updateBadge('success', `Solved: ${answer}`);
+      retryCount = 0; // reset on success
     } else {
-      updateBadge('error', `Parse failed: "${rawText}"`, dataUrl);
+      handleFail(`Parse failed: "${rawText}"`, dataUrl, img);
     }
   } catch (err) {
     console.error('[AIUB+] Tesseract error:', err);
-    updateBadge('error', err.message || 'OCR failed');
+    handleFail(err.message || 'OCR failed', dataUrl, img);
   }
   
   isSolving = false;
+}
+
+function handleFail(msg, dataUrl, img) {
+  if (retryCount < MAX_RETRIES) {
+    retryCount++;
+    console.log(`[AIUB+] CAPTCHA failed. Auto-retrying (${retryCount}/${MAX_RETRIES})...`);
+    
+    // The AIUB server rejects custom query params (like '?retry=...') and returns a black error image.
+    // Instead, we will simulate a click on the actual blue refresh button on the page.
+    let refreshBtn = img.parentElement.querySelector('a, button');
+    if (!refreshBtn && img.parentElement.parentElement) {
+      refreshBtn = img.parentElement.parentElement.querySelector('a, button');
+    }
+    
+    if (refreshBtn) {
+      refreshBtn.click();
+    } else {
+      img.click(); // Fallback
+    }
+    
+    // Safety timeout: if the click didn't trigger a src change within 2 seconds, reset state.
+    setTimeout(() => {
+      if (isSolving) {
+        isSolving = false;
+        updateBadge('error', 'Auto-retry failed. Please manually refresh.', dataUrl);
+      }
+    }, 2000);
+    
+  } else {
+    updateBadge('error', msg, dataUrl);
+    retryCount = 0; // Give up, reset for next manual attempt
+    isSolving = false;
+  }
 }
 
 // Setup 
