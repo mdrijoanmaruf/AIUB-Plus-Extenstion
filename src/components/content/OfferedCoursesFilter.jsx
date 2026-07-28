@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
-import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck } from 'react-icons/fi';
+import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck, FiSave } from 'react-icons/fi';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -65,10 +65,10 @@ function hexToRgba(hex, opacity) {
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
-function loadSaved(allCourses) {
+function loadSaved() {
   try {
     const parsed = JSON.parse(localStorage.getItem('aiub_selectedSections') || '[]');
-    return Array.isArray(parsed) ? parsed.filter(s => allCourses.some(c => c.classId === s.classId)) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch { return []; }
 }
 
@@ -556,9 +556,17 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
   const [toM,   setToM]   = useState('0');
   const [page,    setPage]    = useState(1);
   const [perPage, setPerPage] = useState(25);
-  const [selected, setSelected] = useState(() => loadSaved(allCourses));
+  const [selected, setSelected] = useState(() => loadSaved());
   const [showRoutine, setShowRoutine] = useState(false);
-  const [isSelectedExpanded, setIsSelectedExpanded] = useState(true);
+  const [isSelectedExpanded, setIsSelectedExpanded] = useState(false);
+  const [lastSavedStr, setLastSavedStr] = useState(() => JSON.stringify(loadSaved()));
+  const currentSelectedStr = JSON.stringify(selected);
+  const isSavedLocally = currentSelectedStr === lastSavedStr;
+
+  const handleManualSave = () => {
+    localStorage.setItem('aiub_selectedSections', currentSelectedStr);
+    setLastSavedStr(currentSelectedStr);
+  };
 
   // Initialize statuses when data loads
   useEffect(() => {
@@ -566,11 +574,6 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
       setActiveStatuses(statuses.filter(s => s.toLowerCase().includes('open')));
     }
   }, [statuses]);
-
-  // Persist selection
-  useEffect(() => {
-    try { localStorage.setItem('aiub_selectedSections', JSON.stringify(selected)); } catch {}
-  }, [selected]);
 
   // Clash map
   const clashMap = useMemo(() => {
@@ -692,12 +695,47 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     { label: 'Action',    w: '95px',  center: true  },
   ];
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
+  // ── Render 
   return (
     <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
+      {selected.length > 0 && (
+        <div className="mb-6 p-6 transition-all" style={{ background: '#eff6ff', borderRadius: '16px', border: 'none' }}>
+          <div className="flex items-center justify-between transition-all duration-300" style={{ borderBottom: isSelectedExpanded ? '1px solid #dbeafe' : '1px solid transparent', paddingBottom: isSelectedExpanded ? '16px' : '0', marginBottom: isSelectedExpanded ? '20px' : '0' }}>
+             <div className="flex items-center gap-4">
+                 <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <FiList /> Selected Courses
+                 </span>
+                 <span style={{ background: '#fff', color: '#1e40af', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #bfdbfe' }}>
+                   {selected.length} course{selected.length !== 1 ? 's' : ''}
+                 </span>
+             </div>
+             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button title="will be save in your browser local storage" onClick={handleManualSave} className="hover:opacity-80 transition-all flex items-center gap-1.5" style={{ background: isSavedLocally ? '#16a34a' : '#fff', color: isSavedLocally ? '#fff' : '#1e3a8a', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: isSavedLocally ? '1px solid transparent' : '1px solid #bfdbfe' }}>
+                    {isSavedLocally ? <FiCheck /> : <FiSave />} {isSavedLocally ? 'Saved!' : 'Save'}
+                  </button>
+                  <button onClick={() => setShowRoutine(true)} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }}><FiCalendar /> Show Routine</button>
+                  <button onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); setLastSavedStr('[]'); }} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: '#fff', color: '#dc2626', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #fecdd3' }}><FiTrash2 /> Clear All</button>
+                </div>
+                
+                <button onClick={() => setIsSelectedExpanded(!isSelectedExpanded)} className="flex items-center justify-center gap-1.5 rounded-full hover:opacity-80 transition-all duration-200" style={{ padding: '6px 16px', color: '#1e40af', background: '#dbeafe', border: 'none', fontSize: '12px', fontWeight: 700 }}>
+                  {isSelectedExpanded ? 'Collapse' : 'Expand'}
+                  <FiChevronDown style={{ transform: isSelectedExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', fontSize: '16px' }} />
+                </button>
+             </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateRows: isSelectedExpanded ? '1fr' : '0fr', transition: 'grid-template-rows 0.3s ease-in-out' }}>
+            <div style={{ overflow: 'hidden' }}>
+              <div className="flex flex-wrap gap-4 pt-1 pb-1">
+                {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} allCourses={allCourses} selected={selected} onRemove={handleRemove} />)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* ══ Filter Panel ══════════════════════════════════════════════════════ */}
+      {showRoutine && <RoutineModal selected={selected} allCourses={allCourses} onClose={() => setShowRoutine(false)} />}
+
       <div className="mb-6 p-6 transition-all" style={{ background: '#eff6ff', borderRadius: '16px', border: 'none' }}>
         
         {/* Top Header */}
@@ -790,39 +828,6 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
         </div>
 
       </div>
-
-      {/* ══ Selected Courses Panel ════════════════════════════════════════════ */}
-      {selected.length > 0 && (
-        <div className="mb-6 p-6 transition-all" style={{ background: '#eff6ff', borderRadius: '16px', border: 'none' }}>
-          <div className="flex items-center justify-between" style={{ borderBottom: isSelectedExpanded ? '1px solid #dbeafe' : 'none', paddingBottom: isSelectedExpanded ? '16px' : '0', marginBottom: isSelectedExpanded ? '20px' : '0' }}>
-             <div className="flex items-center gap-4">
-                 <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                   <FiList /> Selected Courses
-                 </span>
-                 <span style={{ background: '#fff', color: '#1e40af', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #bfdbfe' }}>
-                   {selected.length} course{selected.length !== 1 ? 's' : ''}
-                 </span>
-             </div>
-             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '8px', opacity: isSelectedExpanded ? 1 : 0, pointerEvents: isSelectedExpanded ? 'auto' : 'none', transition: 'opacity 0.2s' }}>
-                  <button onClick={() => setShowRoutine(true)} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }}><FiCalendar /> Show Routine</button>
-                  <button onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); }} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: '#fff', color: '#dc2626', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #fecdd3' }}><FiTrash2 /> Clear All</button>
-                </div>
-                
-                <button onClick={() => setIsSelectedExpanded(!isSelectedExpanded)} className="flex items-center justify-center rounded-full hover:bg-blue-100 transition-colors" style={{ width: '32px', height: '32px', color: '#1e3a8a', border: '1.5px solid #1e3a8a', background: 'transparent' }}>
-                  <FiChevronDown style={{ transform: isSelectedExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', fontSize: '18px' }} />
-                </button>
-             </div>
-          </div>
-          {isSelectedExpanded && (
-            <div className="flex flex-wrap gap-4">
-              {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} allCourses={allCourses} selected={selected} onRemove={handleRemove} />)}
-            </div>
-          )}
-        </div>
-      )}
-
-      {showRoutine && <RoutineModal selected={selected} allCourses={allCourses} onClose={() => setShowRoutine(false)} />}
 
       {/* ══ Results Table ═════════════════════════════════════════════════════ */}
       {filtered.length > 0 && (
