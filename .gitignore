@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 post.txt
+WebStore.md
 
 # Editor directories and files
 .vscode/*

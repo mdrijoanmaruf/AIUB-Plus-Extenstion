@@ -37,15 +37,17 @@
 ## 🌟 What This Extension Does
 
 ### ✨ Special Features
+
 - 🤖 **Auto Captcha Calculation:** Instantly and accurately solves math CAPTCHAs during login using offline OCR.
 - 🔍 **Advanced Offered Course Filter:** Deep search and filter with smart clash detection.
 - 📅 **Routine Generation:** Automatically visualizes your selected courses in a beautiful weekly schedule.
 - 🔓 **Show Locked / Unlocked Courses [CSE only]:** Injects prerequisite data to instantly show which courses you can take.
+- 🔔 **Live AIUB Notices:** Read the latest AIUB notices directly inside your portal via a native notification bell.
 
 AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https://portal.aiub.edu) for:
 
 | Page | Enhancement |
-|------|-------------|
+| ------ | ------------- |
 | **Offered Courses** | Search, filters, clash checking, section selection, routine generation & PNG export |
 | **Registration** | Cleaner cards, semester switch, credit summary, print shortcut |
 | **Registration Print** | Fully redesigned payment print page with payment cards, bank selector & trust footer |
@@ -66,17 +68,20 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 ## 🆕 What's New in v3.5.0
 
 ### 🤖 Auto CAPTCHA Solver (97%+ Accuracy)
+
 - Fully automated login CAPTCHA solving using an embedded, offline Tesseract.js engine.
 - Extremely fast and completely private — no backend API calls or data sent externally.
 - Accurately solves the math expressions on the login screen to save you time.
 
 ### 📚 Offered Courses UI Revamp & Clash Detection
+
 - Completely redesigned filter interface and results table for Offered Courses.
 - Clean, responsive table showing capacity, class slots, and dynamically sized columns.
 - **Smart Actions:** Buttons to Add, Remove, and intelligently handle course clashes (preventing you from adding courses with conflicting schedules).
 - Beautiful "No courses found" state and dynamically disabled buttons for duplicate/similar courses.
 
 ### 🔔 Navbar & General UI Polish
+
 - Fixed a bug where empty notification badges (red dots without text) would stubbornly appear in the Navbar. The badge now uses a robust `MutationObserver` to ensure it only appears when you actually have unread notifications.
 - Cleaned up the **Drop Application** page for better readability.
 - Consistent typography and icon usage across the extension.
@@ -86,6 +91,7 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 ## 🆕 What's New in v3.1.0
 
 ### 🔔 Navbar — Live Notice Bell
+
 - New bell icon (`FiBell`) injected into the top navbar
 - Fetches and displays **Latest Notices from aiub.edu** in a glassmorphism dropdown (380px wide)
 - Badge counter shows unread notice count
@@ -93,6 +99,7 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 - Close button in dropdown header
 
 ### 🔐 Change Password — Premium Redesign
+
 - Fully redesigned Change Password page (`/Student/Credential/ChangePassword`)
 - Eye toggle buttons (`FiEye` / `FiEyeOff`) for all three password fields using `react-icons`
 - Input placeholders: *Enter current password*, *Enter new password*, *Confirm new password*
@@ -100,6 +107,7 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 - Respects extension ON/OFF toggle
 
 ### 🧾 Registration Print — New Page
+
 - Brand new redesign for `/Student/Registration/Print`
 - **Info card** showing Student ID, Printout For, Payment Option, and Credit badges
 - **Alert banner** with payment bank instructions
@@ -109,6 +117,7 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 - Respects extension ON/OFF toggle
 
 ### 💳 Online Payment History — New Page
+
 - Brand new redesign for `/Student/Payment/List`
 - Styled table with rounded card container and subtle shadow
 - Monospace transaction ID column
@@ -120,15 +129,17 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 - Respects extension ON/OFF toggle
 
 ### 🔒 Security Fix — localStorage Removed
+
 - Removed all `localStorage` usage for extension state storage
 - `contentBridge.jsx` now uses `chrome.storage.sync` (extension-only, inaccessible to page JS) and broadcasts state to MAIN world scripts via a secure DOM `CustomEvent` + `data-aiub-ext` attribute fallback
 - `OfferedFilters.jsx` updated to read state from the attribute or wait for the event — fixes timing race between `document_start` and `document_idle`
 
 ### 🎨 React Icons Migration
+
 All inline SVG icons replaced with `react-icons/fi` across 10 components:
 
 | Component | Icons |
-|-----------|-------|
+| ----------- | ------- |
 | `Navbar.jsx` | `FiBell` |
 | `HomeRegistration.jsx` | `FiBook`, `FiChevronDown` |
 | `ClassSchedule.jsx` | `FiClock`, `FiMapPin`, `FiCalendar` |
@@ -145,7 +156,7 @@ All inline SVG icons replaced with `react-icons/fi` across 10 components:
 ## 🛠 Tech Stack
 
 | Tool | Version | Purpose |
-|------|---------|---------|
+| ------ | --------- | --------- |
 | **React** | 19 | UI rendering |
 | **React DOM** | 19 | DOM management |
 | **react-icons** | — | Feather icon set (replacing inline SVGs) |
@@ -188,10 +199,12 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 ## 📄 Features by Module
 
 ### 🔐 Login & Security
+
 - **Auto CAPTCHA Solver:** Uses offline OCR (Tesseract.js) to automatically read and evaluate the math expression on the login page with 97%+ accuracy.
 - **Change Password:** Premium redesigned form with eye-toggle buttons to reveal/hide passwords, and custom placeholders.
 
 ### 📅 Offered Courses
+
 - Parses FooTable courses and nested time slots.
 - Filters by search, status, day, and start-time range.
 - **Smart Actions:** Interactive buttons to Add, Remove, and intelligently handle "Similar" courses.
@@ -201,25 +214,30 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 - Persists selected sections securely.
 
 ### 📝 Registration
+
 - **Academic Registration:** Redesigned registration page with cleaner cards, semester switch, print shortcuts, and a fee breakdown panel.
 - **Registration Print:** Fully redesigned payment print page with payment cards, bank selector, alert banners, and a modern trust footer.
 
 ### 🎓 Grades & Curriculum
+
 - **Course Results:** Modernized display with expandable section cards showing midterm/final breakdowns and colored grade badges.
 - **By Curriculum:** Visualizes grades across the entire curriculum, injecting prerequisite enrichment via bundled `CSE.json`. Beautiful color-coded grade pills.
 - **By Semester:** Expandable semester view tracking ongoing, dropped, failed, and passed statuses with GPA summary cards.
 - **Prerequisites:** Enriches the portal with course dependencies and modal table styling.
 
 ### 💳 Financials & Payments
+
 - **Financial Summary:** Debit-credit-balance parsing with visually appealing summary cards.
 - **Online Payment History:** Styled table with monospace transaction IDs and color-coded status badges (Success, Failed, Pending, Cancelled). Includes row hover highlights and "Check Status" buttons.
 
 ### 🏛 Academic Extras
+
 - **Exam Routine:** Highlights completed exams with "Completed" badges, adds countdown timers to upcoming exams, and neatly styles the schedule.
 - **Drop Application:** Cleans up the drop interface and clearly highlights refund status.
 - **Class Schedule & Home Registration:** Upgrades the today's schedule view on the home dashboard and elevates the registration status widget.
 
 ### 🎨 Shared UI Enhancements
+
 - **Sidebar:** Fully redesigned sidebar with Tailwind CSS, custom icons, collapsible sections, smooth hover effects, and a user profile summary widget.
 - **Navbar:** Clean transparent topbar with a Live Notice Bell (`FiBell`), native notification styling, active page highlighting, and smart empty-badge hiding via a robust `MutationObserver`.
 - **Profile Page:** Beautified student profile page with gradient backgrounds, clean form fields, and a polished photo frame.
@@ -295,7 +313,7 @@ Then load the generated `dist/` directory into Chrome via `chrome://extensions` 
 ## 📦 NPM Scripts
 
 | Script | Command | Description |
-|--------|---------|-------------|
+| -------- | --------- | ------------- |
 | Dev server | `npm run dev` | Starts Vite dev server |
 | Build | `npm run build` | Production extension build |
 | Lint | `npm run lint` | ESLint checks |
@@ -306,6 +324,7 @@ Then load the generated `dist/` directory into Chrome via `chrome://extensions` 
 ## 🔧 Configuration and Data Files
 
 ### `manifest.json`
+
 - Manifest Version 3
 - Host permissions: `https://portal.aiub.edu/*`
 - Permissions: `activeTab`, `storage`, `tabs`
@@ -313,9 +332,11 @@ Then load the generated `dist/` directory into Chrome via `chrome://extensions` 
 - `web_accessible_resources` includes icons and `Academic/CSE.json`
 
 ### `tailwind.config.js`
+
 Defines a custom `aiub` color palette and font/box-shadow extensions.
 
 ### `public/Academic/CSE.json`
+
 Bundled curriculum dataset used for prerequisite matching and curriculum enrichment across grade and curriculum pages.
 
 ---
@@ -325,7 +346,7 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 ### Permissions used
 
 | Permission | Purpose |
-|------------|---------|
+| ------------ | --------- |
 | `activeTab` | Reads current tab context for popup status behavior |
 | `storage` | Persists extension enabled state across sessions |
 | `tabs` | Tab query/reload triggered from popup |
@@ -344,23 +365,28 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 ## 🐛 Troubleshooting
 
 **Extension not working on page**
+
 - Confirm popup toggle is **ON**
 - Reload the target portal tab
 - Ensure the URL matches routes under `/Student`
 
 **Offered Courses panel not appearing**
+
 - Page must contain FooTable and course rows
 - Script waits for the table; if the portal is slow, wait a few seconds then refresh
 
 **Routine download not working**
+
 - Ensure the routine modal is open before downloading
 - Browser popup blockers can sometimes interfere with automatic downloads
 
 **Notice bell not showing in navbar**
+
 - Ensure the extension is toggled ON and the page has fully loaded
 - Hard-refresh (Ctrl+Shift+R) the portal page
 
 **Build warnings from CRXJS plugin**
+
 - `MAIN` world content script entries may show HMR warnings during build — harmless
 
 ---
@@ -377,6 +403,7 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 ## 📝 Changelog
 
 ### v3.1.0
+
 - ✨ New: Registration Print page redesign (`/Student/Registration/Print`)
 - ✨ New: Online Payment History redesign (`/Student/Payment/List`)
 - ✨ New: Change Password premium redesign with eye toggle & placeholders
