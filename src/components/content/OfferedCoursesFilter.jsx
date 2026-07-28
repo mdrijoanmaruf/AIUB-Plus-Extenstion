@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
-import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck, FiSave } from 'react-icons/fi';
+import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck, FiSave, FiSearch } from 'react-icons/fi';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -829,8 +829,8 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
 
       </div>
 
-      {/* ══ Results Table ═════════════════════════════════════════════════════ */}
-      {filtered.length > 0 && (
+      {/* ══ Results Table / Empty State ═════════════════════════════════════════════════════ */}
+      {filtered.length > 0 || isLoading ? (
         <div className="rounded-2xl overflow-hidden shadow-lg mb-4" style={{ border: '1px solid #e2e8f0', background: '#fff' }}>
           {/* Results header */}
           <div className="flex items-center justify-between flex-wrap gap-3 px-5 py-3.5"
@@ -867,12 +867,6 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
                         <span className="font-bold">Fetching course data...</span>
                         <span className="text-[11px] opacity-70">This may take a few seconds as we parse the schedule.</span>
                       </div>
-                    </td>
-                  </tr>
-                ) : pageData.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#fff' }}>
-                      No courses match your filters.
                     </td>
                   </tr>
                 ) : pageData.map((c, i) => {
@@ -915,6 +909,14 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
               </span>
             </div>
           )}
+        </div>
+      ) : (
+        <div className="rounded-2xl mb-4 flex flex-col items-center justify-center p-12 transition-all" style={{ border: '2px dashed #bfdbfe', background: 'linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%)' }}>
+          <span style={{ fontSize: '20px', fontWeight: 700, color: '#1e3a8a', marginBottom: '10px', letterSpacing: '-0.3px' }}>No courses found</span>
+          <span style={{ fontSize: '14px', color: '#64748b', textAlign: 'center', maxWidth: '340px', fontWeight: 500, lineHeight: '1.5' }}>We couldn't find any courses matching your search or filter criteria. Try adjusting your filters.</span>
+          <button onClick={() => { setSearch(''); setPage(1); setActiveStatuses([]); setActiveDays([]); setFromH('8'); setFromM('0'); setToH('18'); setToM('0'); }} className="mt-8 hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: '#fff', color: '#2563eb', fontSize: '13px', fontWeight: 700, padding: '10px 20px', borderRadius: '10px', border: '1px solid #bfdbfe', boxShadow: '0 2px 6px rgba(37,99,235,0.08)' }}>
+             <FiRefreshCw /> Reset Filters
+          </button>
         </div>
       )}
     </div>
