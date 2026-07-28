@@ -238,12 +238,12 @@ function SelectedCard({ sec, allCourses, selected, onRemove }) {
 
       {/* Remove button */}
       <button onClick={() => onRemove(sec.classId)}
-        className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full transition-all duration-150 hover:shadow-md"
+        className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 hover:shadow-md"
         style={{ background: '#fef2f2', border: '1px solid #fecdd3', color: '#dc2626' }}
         onMouseEnter={e => Object.assign(e.currentTarget.style, { background: '#ef4444', color: '#fff', borderColor: '#ef4444' })}
         onMouseLeave={e => Object.assign(e.currentTarget.style, { background: '#fef2f2', color: '#dc2626', borderColor: '#fecdd3' })}
         title="Remove course"
-      ><FiX size={14} /></button>
+      ><FiX size={18} /></button>
     </div>
   );
 }
@@ -388,7 +388,24 @@ function RoutineModal({ selected, allCourses, onClose }) {
         </div>
 
         {/* Table */}
-        <div style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, background: '#f8fafc' }}>
+        <style>{`
+          .routine-table-wrapper::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+          }
+          .routine-table-wrapper::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 4px;
+          }
+          .routine-table-wrapper::-webkit-scrollbar-thumb {
+            background: #bfdbfe;
+            border-radius: 4px;
+          }
+          .routine-table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #93c5fd;
+          }
+        `}</style>
+        <div className="routine-table-wrapper" style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, background: '#f8fafc' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: `${100 + activeDays.length * 150}px` }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
               <tr style={{ background: '#ffffff' }}>
@@ -419,6 +436,7 @@ function RoutineModal({ selected, allCourses, onClose }) {
                     );
                     const col = courseColor(cell.course.title);
                     const innerH = cell.span * ROW_H - 12; // accommodate padding/margin
+                    const linkedSecs = getLinkedSections(cell.course, allCourses);
                     
                     return (
                       <td key={day} rowSpan={cell.span}
@@ -458,6 +476,17 @@ function RoutineModal({ selected, allCourses, onClose }) {
                           {cell.slot.room && (
                             <div style={{ fontSize: '10px', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace', fontWeight: 700, color: col.border, background: '#ffffff', border: '1px solid', borderColor: hexToRgba(col.border, 0.2), borderRadius: '4px', padding: '2px 8px' }}>
                               {cell.slot.room}
+                            </div>
+                          )}
+                          {linkedSecs.length > 0 && (
+                            <div style={{ width: '100%', marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed', borderColor: hexToRgba(col.border, 0.3) }}>
+                              <div style={{ fontSize: '9px', fontWeight: 800, color: col.border, opacity: 0.8, marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Alt Sections</div>
+                              <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                {linkedSecs.slice(0, 3).map((ls, i) => (
+                                  <span key={i} style={{ fontSize: '9px', fontWeight: 700, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '1px 5px' }}>{ls.section || ls.classId}</span>
+                                ))}
+                                {linkedSecs.length > 3 && <span style={{ fontSize: '9px', fontWeight: 800, color: col.border, opacity: 0.8 }}>+{linkedSecs.length - 3}</span>}
+                              </div>
                             </div>
                           )}
                         </div>
