@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import { BiLoaderAlt } from 'react-icons/bi';
 
-// ─── Math Parser (AIUB-constrained)
+// Math Parser (AIUB-constrained)
 function parseMath(text) {
   console.log('[AIUB+] OCR raw:', JSON.stringify(text));
   
@@ -12,12 +12,17 @@ function parseMath(text) {
   let prep = text.split('=')[0]; // Strip = and everything after it
   
   prep = prep
-    .replace(/[oO@QqD]/g, '0')
-    .replace(/[lI|!]/g,   '1')
+    .replace(/[oO@DdQCcU]/g, '0')
+    .replace(/[lI|!i]/g,   '1')
     .replace(/[Zz]/g,     '2')
+    .replace(/[JjE]/g,    '3')
+    .replace(/[AahHy]/g,  '4')
     .replace(/[Ss$]/g,    '5')
-    .replace(/[Bb]/g,     '8')
-    .replace(/[^0-9+\-]/g, ''); // Remove everything except digits, +, and -
+    .replace(/[G]/g,      '6')
+    .replace(/[Tt]/g,     '7')
+    .replace(/[BbR]/g,    '8')
+    .replace(/[gPpq]/g,   '9')
+    .replace(/\s+/g, ''); // Remove spaces
     
   console.log('[AIUB+] Prepared:', JSON.stringify(prep));
   
@@ -41,7 +46,7 @@ function parseMath(text) {
   return null;
 }
 
-// ─── Tesseract Pipeline
+// Tesseract Pipeline
 let _tesseractWorker = null;
 async function getTesseractWorker() {
   if (_tesseractWorker) return _tesseractWorker;
@@ -57,11 +62,11 @@ async function getTesseractWorker() {
   return _tesseractWorker;
 }
 
-// ─── Main Execution 
+// Main Execution 
 const IMG_ID   = 'CaptchaImage';
 const INPUT_ID = 'CaptchaInputText';
 
-// ─── Image Filter 
+// Image Filter 
 function getImageBase64() {
   const img = document.getElementById(IMG_ID);
   if (!img) return null;
@@ -230,7 +235,7 @@ function updateBadge(state, text, base64 = null) {
 
 let isSolving = false;
 let retryCount = 0;
-const MAX_RETRIES = 20;
+const MAX_RETRIES = 30;
 
 async function attemptSolve() {
   if (isSolving) return;
