@@ -283,11 +283,38 @@ function RoutineModal({ selected, allCourses, onClose }) {
   const downloadAsImage = async () => {
     if (!routineRef.current) return;
     try {
-      const canvas = await html2canvas(routineRef.current, {
+      const node = routineRef.current;
+      const tableWrapper = node.querySelector('.routine-table-wrapper');
+      
+      // Save original styles
+      const origMaxH = node.style.maxHeight;
+      const origOvf = node.style.overflow;
+      const origTableOvfY = tableWrapper ? tableWrapper.style.overflowY : '';
+      const origTableOvfX = tableWrapper ? tableWrapper.style.overflowX : '';
+
+      // Expand for full capture
+      node.style.maxHeight = 'none';
+      node.style.overflow = 'visible';
+      if (tableWrapper) {
+        tableWrapper.style.overflowY = 'visible';
+        tableWrapper.style.overflowX = 'visible';
+      }
+
+      const canvas = await html2canvas(node, {
         backgroundColor: '#ffffff',
         scale: 2,
         logging: false,
+        windowHeight: node.scrollHeight
       });
+
+      // Restore styles
+      node.style.maxHeight = origMaxH;
+      node.style.overflow = origOvf;
+      if (tableWrapper) {
+        tableWrapper.style.overflowY = origTableOvfY;
+        tableWrapper.style.overflowX = origTableOvfX;
+      }
+
       const link = document.createElement('a');
       link.href = canvas.toDataURL('image/png');
       link.download = `routine-${new Date().toISOString().split('T')[0]}.png`;
@@ -364,7 +391,7 @@ function RoutineModal({ selected, allCourses, onClose }) {
       <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', width: '100%', maxWidth: '1100px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", border: '1px solid #e2e8f0' }} ref={routineRef}>
 
         {/* Header */}
-        <div style={{ background: '#fff', padding: '20px 28px', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #f1f5f9' }}>
+        <div data-html2canvas-ignore="true" style={{ background: '#fff', padding: '20px 28px', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ color: '#0f172a', fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FiCalendar style={{ color: '#3b82f6' }} /> Weekly Schedule
