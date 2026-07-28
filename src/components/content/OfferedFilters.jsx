@@ -121,7 +121,7 @@ async function getAllCourses() {
   return courses;
 }
 
-// ── Wrapper Component 
+// Wrapper Component 
 function FilterWrapper({ originalPanel }) {
   const [courses, setCourses] = React.useState([]);
   const [statuses, setStatuses] = React.useState([]);
@@ -155,7 +155,7 @@ function FilterWrapper({ originalPanel }) {
   );
 }
 
-// ── Mount 
+// Mount 
 async function init() {
   try {
     await waitForTable();

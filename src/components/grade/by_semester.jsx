@@ -101,7 +101,7 @@ function parseSemesters(tbl) {
   return sems;
 }
 
-// ── Sub-components ───────────────────────────────────────────────────────────
+// Sub-components 
 
 function GradePill({ grade }) {
   if (!grade) return <span className="text-slate-300 text-[14px]">—</span>;
@@ -297,7 +297,7 @@ function SemesterGradeReport({ infoItems, semesters, printHref }) {
   );
 }
 
-// ── Self-mount ───────────────────────────────────────────────────────────────
+// Self-mount 
 
 (function mount() {
   if (window.__aiubSemGradeEnhanced) return;

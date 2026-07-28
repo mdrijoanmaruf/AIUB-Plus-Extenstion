@@ -70,7 +70,7 @@ function DropView({ pct, angularNode, rulesNode }) {
         #Rules .table td { font-size: 12px !important; padding: 9px 14px !important; color: #475569 !important; border-color: #f1f5f9 !important; }
         #Rules .table tbody tr:hover { background: #f8fafc !important; }
 
-        /* ── COURSE CARDS ── */
+        /* COURSE CARDS */
         [ng-controller="DropApplicationController2"] .ng-scope > [ng-repeat] { display: none !important; }
 
         [ng-controller="DropApplicationController2"] [ng-repeat].ng-scope {
@@ -94,7 +94,6 @@ function DropView({ pct, angularNode, rulesNode }) {
           background: linear-gradient(135deg, #fff8f8 0%, #fff1f2 50%, #ffe4e6 100%) !important;
         }
 
-        /* ── CARD INNER ROW ── */
         [ng-controller="DropApplicationController2"] [ng-repeat].ng-scope > .row {
           margin: 0 !important;
           padding: 20px 24px !important;
@@ -103,7 +102,6 @@ function DropView({ pct, angularNode, rulesNode }) {
           gap: 20px !important;
         }
 
-        /* ── LEFT: Course Number Icon ── */
         [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-1 {
           flex: 0 0 auto !important;
           padding: 0 !important;
@@ -134,7 +132,6 @@ function DropView({ pct, angularNode, rulesNode }) {
           line-height: 1.2 !important;
         }
 
-        /* ── MIDDLE: Course Info ── */
         [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-6 {
           flex: 1 1 auto !important;
           padding: 0 !important;
@@ -177,7 +174,6 @@ function DropView({ pct, angularNode, rulesNode }) {
           margin-top: 4px !important;
         }
 
-        /* ── RIGHT: Credits, Capacity & Drop Button ── */
         [ng-controller="DropApplicationController2"] [ng-repeat] .col-md-2 {
           flex: 0 0 auto !important;
           padding: 0 !important;

@@ -11,7 +11,6 @@ function fmtAmt(num) {
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// ── Enhanced table via DOM augmentation + React summary cards ────────────────
 
 function SummaryCards({ totalDebit, totalCredit, finalBalance }) {
   return (

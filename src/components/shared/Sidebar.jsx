@@ -61,8 +61,6 @@
   function enhance() {
     const sidebar = document.getElementById('navigation-bar');
     if (!sidebar) return;
-
-    // loadCSS(); // ── Commented out: using Tailwind classes instead
     
     const name = getStudentName();
     const idEl = document.querySelector('.navbar-text .navbar-link small');
@@ -70,10 +68,8 @@
     const idMatch = rawId.match(/(\d{2}-\d{5}-\d+)/);
     const studentId = idMatch ? idMatch[1] : '';
 
-    // ── Apply Tailwind styles to sidebar container ──────────────────────────────
     sidebar.style.cssText = 'padding-right: 12px !important; padding-left: 0 !important; padding-top: 4px !important;';
 
-    // ── Style .panel-group with Tailwind ─────────────────────────────────────────
     const panelGroup = sidebar.querySelector('.panel-group');
     if (panelGroup) {
       panelGroup.style.cssText = `
@@ -85,7 +81,6 @@
         background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 100%) !important;
       `;
 
-      // ── Style .panel elements ────────────────────────────────────────────────────
       panelGroup.querySelectorAll('.panel').forEach((panel, idx) => {
         panel.style.cssText = `
           border: none !important;
@@ -96,14 +91,13 @@
           border-bottom: ${idx === panelGroup.children.length - 1 ? 'none' : '1px solid rgba(0, 0, 0, 0.05)'} !important;
         `;
 
-        // ── Style .panel-heading ─────────────────────────────────────────────────────
+
         const heading = panel.querySelector('.panel-heading');
         if (heading) {
           heading.style.cssText = 'background: transparent !important; border: none !important; padding: 0 !important;';
           const title = heading.querySelector('.panel-title');
           if (title) title.style.fontSize = '13px !important';
 
-          // ── Style heading link with Tailwind ────────────────────────────────────────
           const link = heading.querySelector('a');
           if (link) {
             link.style.cssText = `
@@ -121,7 +115,7 @@
               position: relative !important;
             `;
 
-            // ── Handle hover states ──────────────────────────────────────────────────
+            // ── Handle hover states 
             link.addEventListener('mouseenter', function () {
               this.style.background = 'rgba(59, 130, 246, 0.1) !important';
               this.style.color = '#1d4ed8 !important';
@@ -137,7 +131,7 @@
               if (fa) fa.style.color = isExpanded ? '#2563eb !important' : '#9ca3af !important';
             });
 
-            // ── Style icon ──────────────────────────────────────────────────────────────
+            // Style icon 
             const icon = link.querySelector('.fa, .glyphicon');
             if (icon) {
               icon.style.cssText = `
@@ -150,7 +144,7 @@
               `;
             }
 
-            // ── Style caret icon ────────────────────────────────────────────────────────
+            // Style caret icon 
             const caret = link.querySelector('.fa-caret-down');
             if (caret) {
               caret.style.cssText = `
@@ -163,7 +157,7 @@
               `;
             }
 
-            // ── Handle aria-expanded state ──────────────────────────────────────────────
+            // Handle aria-expanded state 
             const updateExpanded = () => {
               const isExpanded = link.getAttribute('aria-expanded') === 'true';
               if (isExpanded) {
@@ -195,7 +189,7 @@
           }
         }
 
-        // ── Style .panel-collapse ────────────────────────────────────────────────────────
+        // Style .panel-collapse 
         const collapse = panel.querySelector('.panel-collapse');
         if (collapse) {
           collapse.style.cssText = 'border: none !important; background: transparent !important;';
@@ -207,7 +201,7 @@
       });
     }
 
-    // ── Style .list-group-item with Tailwind ────────────────────────────────────────
+    // Style .list-group-item with Tailwind 
     sidebar.querySelectorAll('.list-group-item').forEach((item) => {
       item.style.cssText = `
         border: none !important;
@@ -227,7 +221,7 @@
         position: relative !important;
       `;
 
-      // ── Hover state ──────────────────────────────────────────────────────────────────
+      // Hover state 
       item.addEventListener('mouseenter', function () {
         if (!this.classList.contains('active')) {
           this.style.color = '#1e3a8a !important';
@@ -244,7 +238,7 @@
         }
       });
 
-      // ── Style glyphicon ──────────────────────────────────────────────────────────────
+      // Style glyphicon 
       const glyphicon = item.querySelector('.glyphicon');
       if (glyphicon) {
         glyphicon.style.cssText = `
@@ -276,7 +270,7 @@
         gap: 10px !important;
       `;
 
-      // ── AIUB Logo ─────────────────────────────────────────────────────────────
+      // AIUB Logo 
       const logoImg = document.createElement('img');
       logoImg.src = chrome.runtime.getURL('logo/icon48.png');
       logoImg.alt = 'AIUB';
@@ -332,7 +326,7 @@
       sidebar.insertBefore(profileDiv, sidebar.firstChild);
     }
 
-    // ── Mark active item ─────────────────────────────────────────────────────────────
+    // Mark active item 
     const path = window.location.pathname;
     sidebar.querySelectorAll('.list-group-item').forEach((a) => {
       try {
@@ -350,7 +344,7 @@
       } catch (_) {}
     });
 
-    // ── Add section dividers ─────────────────────────────────────────────────────────
+    // Add section dividers 
     sidebar.querySelectorAll('.panel-group > .panel + .panel').forEach((panel) => {
       const prev = panel.previousElementSibling;
       if (!prev || !prev.classList || !prev.classList.contains('nav-section-divider')) {

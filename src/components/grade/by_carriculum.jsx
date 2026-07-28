@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { FiRotateCcw } from 'react-icons/fi';
 import '../../content.css';
 
-// ── Inject Tailwind CSS into the page ────────────────────────────────────────
+// Inject Tailwind CSS into the page 
 
 function injectCurriculumStyles() {
   if (document.getElementById('__aiub_curriculum_styles')) return;
@@ -197,7 +197,7 @@ function injectCurriculumStyles() {
   document.head.appendChild(style);
 }
 
-// ── Constants & helpers ──────────────────────────────────────────────────────
+// Constants & helpers 
 
 const GRADE_BG = {
   'A+': '#059669', A: '#10b981', 'B+': '#2563eb', B: '#3b82f6',
@@ -332,7 +332,7 @@ function addLockInfo(semSections, electiveRows) {
   });
 }
 
-// ── React components ─────────────────────────────────────────────────────────
+// React components 
 
 function GradePill({ grades }) {
   if (!grades.length) return <span className="text-[14px] text-slate-300">—</span>;
@@ -849,7 +849,6 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
   );
 }
 
-// ── Self-mount ───────────────────────────────────────────────────────────────
 
 (function mount() {
   if (window.__aiubGradeCurrMounted) return;

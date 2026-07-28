@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { FiPrinter, FiCreditCard, FiShield, FiLock, FiChevronDown, FiClock, FiMoreVertical } from 'react-icons/fi';
 import React from 'react';
 
-// ─── Bootstrap into the page ─────────────────────────────────────────────────
+// Bootstrap into the page
 chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
   if (!r.extensionEnabled) return;
 
@@ -15,7 +15,7 @@ chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
   }, 100);
 });
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// Helpers 
 function parseInfoTable(container) {
   const data = {};
   const credits = {};
@@ -71,7 +71,7 @@ function parseBankOptions(container) {
   }));
 }
 
-// ─── Main Redesign ────────────────────────────────────────────────────────────
+// Main Redesign 
 function redesign(wrapper) {
   const table = wrapper.querySelector('table.table-bordered');
   if (!table) return;
@@ -100,7 +100,7 @@ function redesign(wrapper) {
   );
 }
 
-// ─── React Components ─────────────────────────────────────────────────────────
+// React Components 
 function RegistrationPrintUI({ info, panels, alerts, banks, paymentHistoryHref }) {
   const [selectedBank, setSelectedBank] = React.useState('');
   const credits = info.credits || {};
@@ -109,7 +109,7 @@ function RegistrationPrintUI({ info, panels, alerts, banks, paymentHistoryHref }
   return (
     <div style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: '#0f172a', maxWidth: '100%' }}>
 
-      {/* ── Info Card ── */}
+      {/* Info Card  */}
       <div style={{
         background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16,
         padding: '18px 24px', marginBottom: 14,
@@ -138,7 +138,7 @@ function RegistrationPrintUI({ info, panels, alerts, banks, paymentHistoryHref }
         </div>
       </div>
 
-      {/* ── Alert Banner ── */}
+      {/*  Alert Banner  */}
       <div style={{
         background: 'linear-gradient(135deg, #fff5f5 0%, #fff1f0 100%)',
         border: '1px solid #fecaca', borderRadius: 16,
@@ -168,7 +168,7 @@ function RegistrationPrintUI({ info, panels, alerts, banks, paymentHistoryHref }
         </a>
       </div>
 
-      {/* ── Bank Select ── */}
+      {/*  Bank Select  */}
       <div style={{
         background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16,
         padding: '4px 20px', marginBottom: 22, position: 'relative',
@@ -193,12 +193,12 @@ function RegistrationPrintUI({ info, panels, alerts, banks, paymentHistoryHref }
         <FiChevronDown size={16} color="#94a3b8" style={{ flexShrink: 0, pointerEvents: 'none' }} />
       </div>
 
-      {/* ── Payment Cards ── */}
+      {/*  Payment Cards  */}
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 22 }}>
         {panels.map((p, i) => <PaymentCard key={i} panel={p} />)}
       </div>
 
-      {/* ── Footer Trust Bar ── */}
+      {/*  Footer Trust Bar  */}
       <div style={{
         background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16,
         padding: '14px 24px', display: 'flex', alignItems: 'center',

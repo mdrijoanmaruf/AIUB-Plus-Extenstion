@@ -1,18 +1,8 @@
 import { createWorker } from 'tesseract.js';
 
-/**
- * background.js — AIUB Portal+ Service Worker
- *
- * CAPTCHA Solve Pipeline:
- *   1. Content script reads img element via canvas → base64 PNG (no re-fetch!)
- *   2. background.js receives imageBase64
- *   3. Uses local offline Tesseract.js to OCR the image
- *   4. Parse the math expression → return the answer
- */
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-  // ── Notices ────────────────────────────────────────────────────────────────
+  // Notices
   if (request.type === 'FETCH_NOTICES') {
     fetch('https://aiub.edu/category/notices')
       .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.text(); })
@@ -21,9 +11,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  // ── CAPTCHA Solve ──────────────────────────────────────────────────────────
+  // CAPTCHA Solve 
   if (request.type === 'SOLVE_CAPTCHA') {
-    // imageBase64 = PNG from content script canvas (already extracted from DOM)
     const base64 = request.imageBase64;
     if (!base64) {
       sendResponse({ success: false, error: 'No image data received' });
@@ -36,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// ─── Main Pipeline (Tesseract) ────────────────────────────────────────────────
+// Main Pipeline 
 
 let _tesseractWorker = null;
 
@@ -48,7 +37,7 @@ async function getTesseractWorker() {
     workerPath: chrome.runtime.getURL('tesseract/worker.min.js'),
     corePath: chrome.runtime.getURL('tesseract/tesseract-core-simd-lstm.wasm.js'),
     langPath: chrome.runtime.getURL('tesseract/langs'),
-    cacheMethod: 'none', // extensions don't need IndexedDB caching, assets are local
+    cacheMethod: 'none', 
     gzip: true,
     logger: m => console.log('[Tesseract]', m.status, Math.round(m.progress * 100) + '%')
   });
@@ -86,15 +75,6 @@ async function solveCaptcha(base64) {
 }
 
 
-// ─── Math Parser (AIUB-constrained) ──────────────────────────────────────────
-//
-//  AIUB CAPTCHA facts:
-//   • Operators: only + or −  (never × or ÷)
-//   • Operands:  each 1–99
-//   • Answer:    always 0–100
-//   • OCR often misreads + as * (the cross shape looks similar in noisy images)
-//   → We accept * and treat it as + for the purposes of evaluation.
-
 function parseMath(text) {
   console.log('[AIUB+ BG] OCR raw:', JSON.stringify(text));
 
@@ -105,11 +85,10 @@ function parseMath(text) {
     .replace(/[Ss$]/g,   '5')
     .replace(/[Bb]/g,    '8')
     .replace(/[Zz]/g,    '2')
-    .replace(/=.*/g,     ''); // strip "=?" and everything after
+    .replace(/=.*/g,     '');
 
   console.log('[AIUB+ BG] Prepared:', JSON.stringify(prep));
 
-  // Scan for NUMBER OP NUMBER  (op = + | - | * where * means misread +)
   const re = /(\d{1,3})\s*([+\-*])\s*(\d{1,3})/g;
   let m;
 
@@ -118,13 +97,10 @@ function parseMath(text) {
     const op = m[2];
     const b  = parseInt(m[3], 10);
 
-    // Skip operands outside the expected AIUB range
     if (a < 1 || a > 99 || b < 1 || b > 99) continue;
 
-    // Evaluate: * is treated as + (OCR misread — AIUB never uses multiplication)
     const result = (op === '-') ? (a - b) : (a + b);
 
-    // Validate answer range
     if (result >= 0 && result <= 100) {
       console.log(`[AIUB+ BG] ✅ ${a} ${op === '-' ? '-' : '+'} ${b} = ${result}`);
       return result;

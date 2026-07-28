@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../content.css';
 
-// ── Grade helpers ────────────────────────────────────────────────────────────
 
 const GRADE_COLORS = {
   'A+': '#059669', A: '#10b981', 'B+': '#2563eb', B: '#3b82f6',
@@ -79,7 +78,6 @@ function parseTerm(termEl) {
   return { termName, termMeta, grade: gs.grade, score: gs.score, sections };
 }
 
-// ── Sub-components ───────────────────────────────────────────────────────────
 
 function SectionCard({ sec, isMidterm }) {
   const [open, setOpen] = useState(false);
@@ -255,7 +253,6 @@ function CourseAndResultsView({ sectionOpts, semesterOpts, courseName, courseMet
   );
 }
 
-// ── Self-mount ───────────────────────────────────────────────────────────────
 
 (function mount() {
   if (window.__aiubCourseResultsMounted) return;

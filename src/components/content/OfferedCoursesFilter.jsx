@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck, FiSave, FiSearch } from 'react-icons/fi';
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// Constants 
 
 const ALL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 
@@ -17,8 +17,7 @@ const ROUTINE_COLORS = [
   { border: '#be185d', bg: 'linear-gradient(135deg, #fdf2f8, #fce7f3)' },
 ];
 
-// ── Pure helpers ──────────────────────────────────────────────────────────────
-
+// Pure helpers 
 function timeToMinutes(str) {
   const m = (str || '').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
   if (!m) return null;
@@ -89,7 +88,7 @@ function getLinkedSections(course, allCourses) {
     .map(({ section, classId, capacity, count, timeSlots }) => ({ section, classId, capacity, count, timeSlots }));
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// Sub-components 
 
 const GRAD = {
   blue:    'linear-gradient(135deg,#1e3a8a,#2563eb)',
@@ -277,7 +276,7 @@ function GhostBtn({ onClick, children }) {
   );
 }
 
-// ── Routine Modal ─────────────────────────────────────────────────────────────
+// Routine Modal 
 
 function RoutineModal({ selected, allCourses, onClose }) {
   const DAY_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -547,7 +546,7 @@ function RoutineModal({ selected, allCourses, onClose }) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+// Main component 
 
 export default function OfferedCoursesFilter({ allCourses = [], statuses = [], originalPanel, isLoading = false }) {
   const [search,         setSearch]         = useState('');
@@ -624,7 +623,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     originalPanel.style.display = filtered.length ? 'none' : '';
   }, [filtered.length, originalPanel]);
 
-  // ── Actions ────────────────────────────────────────────────────────────────
+  // Actions 
 
   function toggleStatus(s) { setActiveStatuses(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]); setPage(1); }
   function toggleDay(d)    { setActiveDays(p => p.includes(d) ? p.filter(x => x !== d) : [...p, d]); setPage(1); }
@@ -648,7 +647,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     setActiveDays([]); setFromH('8'); setFromM('0'); setToH('18'); setToM('0'); setPage(1);
   }
 
-  // ── Status button style ────────────────────────────────────────────────────
+  // Status button style 
 
   function statusBtnStyle(s) {
     const k = s.toLowerCase();
@@ -663,7 +662,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
       : { background: '#f8fafc', color: '#475569', borderColor: '#e2e8f0' };
   }
 
-  // ── Pagination ─────────────────────────────────────────────────────────────
+  // Pagination 
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const pageData   = filtered.slice((page - 1) * perPage, page * perPage);
@@ -686,7 +685,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
 
   const pageNums = Array.from({ length: Math.min(5, totalPages) }, (_, i) => Math.max(1, Math.min(page - 2, totalPages - 4)) + i);
 
-  // ── Table header columns ───────────────────────────────────────────────────
+  // Table header columns 
   const TH_COLS = [
     { label: 'Class ID',  w: '70px',  center: false },
     { label: 'Title',     w: '100%',  center: false },
@@ -698,7 +697,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     { label: 'Action',    w: '95px',  center: true  },
   ];
 
-  // ── Render 
+  // Render 
   return (
     <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
       {selected.length > 0 && (
@@ -832,7 +831,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
 
       </div>
 
-      {/* ══ Results Table / Empty State ═════════════════════════════════════════════════════ */}
+      {/*  Results Table / Empty State  */}
       {filtered.length > 0 || isLoading ? (
         <div className="rounded-2xl overflow-hidden shadow-lg mb-4" style={{ border: '1px solid #e2e8f0', background: '#fff' }}>
           {/* Results header */}

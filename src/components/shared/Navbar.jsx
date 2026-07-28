@@ -24,7 +24,7 @@ import { scrapeNotices } from '../../utils/notices';
   });
 
   function enhance(topbar) {
-    // ── Outer navbar ──────────────────────────────────────────────────────────
+    // Outer navbar 
     const navbar = topbar.closest('nav') || topbar.closest('.navbar') || topbar.parentElement;
     if (navbar) {
       navbar.style.cssText = `
@@ -42,7 +42,7 @@ import { scrapeNotices } from '../../utils/notices';
       `;
     }
 
-    // ── Topbar — preserve original Bootstrap layout, only style ──────────────
+    // Topbar — preserve original Bootstrap layout, only style 
     topbar.style.cssText = `
       background: transparent !important;
       min-height: 85px !important;
@@ -56,7 +56,7 @@ import { scrapeNotices } from '../../utils/notices';
       overflow: visible !important;
     `;
 
-    // ── Navbar header (brand + mobile toggle) ─────────────────────────────────
+    // Navbar header (brand + mobile toggle) 
     const navHeader = topbar.querySelector('.navbar-header');
     if (navHeader) {
       navHeader.style.cssText = `
@@ -70,7 +70,7 @@ import { scrapeNotices } from '../../utils/notices';
       `;
     }
 
-    // ── Brand — keep original logo fully visible ──────────────────────────────
+    // Brand — keep original logo fully visible 
     const brand = topbar.querySelector('.navbar-brand');
     if (brand) {
       const existing = brand.querySelector('.aiub-logo-text');
@@ -102,19 +102,19 @@ import { scrapeNotices } from '../../utils/notices';
       });
     }
 
-    // ── Navbar header must not clip the logo ──────────────────────────────────
+    // Navbar header must not clip the logo 
     const navHeaderEl = topbar.querySelector('.navbar-header');
     if (navHeaderEl) {
       navHeaderEl.style.overflow = 'visible !important';
     }
 
-    // ── Mobile toggle ─────────────────────────────────────────────────────────
+    // Mobile toggle 
     const toggle = topbar.querySelector('.navbar-toggle');
     if (toggle) {
       toggle.style.display = 'none !important';
     }
 
-    // ── Collapse container ────────────────────────────────────────────────────
+    // Collapse container 
     const collapse = topbar.querySelector('.navbar-collapse');
     if (collapse) {
       collapse.style.cssText = `
@@ -131,7 +131,7 @@ import { scrapeNotices } from '../../utils/notices';
       `;
     }
 
-    // ── Quick nav links (left side, desktop) ──────────────────────────────────
+    // Quick nav links (left side, desktop) 
     const quickNav = topbar.querySelector('ul.nav.navbar-nav.hidden-md');
     if (quickNav) {
       quickNav.style.cssText = `
@@ -148,7 +148,7 @@ import { scrapeNotices } from '../../utils/notices';
       });
     }
 
-    // ── Style each right-side nav ul ──────────────────────────────────────────
+    // Style each right-side nav ul 
     const allLists = topbar.querySelectorAll('.navbar-collapse .navbar-nav');
     let logoutLi = null;
 
@@ -192,7 +192,6 @@ import { scrapeNotices } from '../../utils/notices';
       `;
     }
 
-    // ── Welcome / user block ──────────────────────────────────────────────────
     const welcomeP = topbar.querySelector('.navbar-text');
     if (welcomeP) {
       welcomeP.style.cssText = `
@@ -246,13 +245,12 @@ import { scrapeNotices } from '../../utils/notices';
       }
     }
 
-    // ── Logout button ─────────────────────────────────────────────────────────
+    // Logout button 
     if (logoutLi) {
       const logoutA = logoutLi.querySelector('a');
       if (logoutA) styleActionBtn(logoutA, '#e53e3e');
     }
 
-    // ── Notification button ────────────────────────────────────────────────────
     const notiA = topbar.querySelector('#noti_Button');
     if (notiA) {
       notiA.style.cssText = `
@@ -268,14 +266,13 @@ import { scrapeNotices } from '../../utils/notices';
       if (inner) styleActionBtn(inner, '#1a73c8', null, true);
     }
 
-    // ── Settings dropdown toggle ───────────────────────────────────────────────
     const settingsA = topbar.querySelector('li.dropdown > a.dropdown-toggle');
     if (settingsA) styleActionBtn(settingsA, '#1a73c8');
 
-    // ── Notification counter badge ─────────────────────────────────────────────
+
     const notiCounter = topbar.querySelector('#noti_Counter');
     if (notiCounter) {
-      notiCounter.style.cssText = `
+      const baseNotiCss = `
         position: absolute !important;
         top: 8px !important;
         right: 2px !important;
@@ -286,16 +283,28 @@ import { scrapeNotices } from '../../utils/notices';
         font-size: 9px !important;
         font-weight: 800 !important;
         border-radius: 999px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        text-align: center !important;
+        line-height: 12px !important;
         padding: 0 3px !important;
         z-index: 10 !important;
         border: 2px solid #fff !important;
+        transition: opacity 0.2s !important;
       `;
+
+      const updateNoti = () => {
+        const text = notiCounter.textContent.trim();
+        if (!text || text === '0') {
+          notiCounter.style.cssText = baseNotiCss + 'opacity: 0 !important; pointer-events: none !important;';
+        } else {
+          notiCounter.style.cssText = baseNotiCss + 'opacity: 1 !important; pointer-events: auto !important;';
+        }
+      };
+
+      updateNoti();
+      new MutationObserver(updateNoti).observe(notiCounter, { childList: true, characterData: true, subtree: true });
     }
 
-    // ── Notifications dropdown ─────────────────────────────────────────────────
+
     const notiPanel = topbar.querySelector('#notifications');
     if (notiPanel) {
       notiPanel.style.cssText = `
@@ -337,7 +346,7 @@ import { scrapeNotices } from '../../utils/notices';
       }
     }
 
-    // ── Settings dropdown menu ─────────────────────────────────────────────────
+
     const settingsMenu = topbar.querySelector('.dropdown-menu');
     if (settingsMenu) {
       settingsMenu.style.cssText = `
@@ -352,7 +361,7 @@ import { scrapeNotices } from '../../utils/notices';
       });
     }
 
-    // ── Active page highlight ──────────────────────────────────────────────────
+
     const currentPath = window.location.pathname;
     topbar.querySelectorAll('a[href]').forEach(a => {
       try {

@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { FiPrinter } from 'react-icons/fi';
 import '../../content.css';
 
-// ── Data parsers (ported from old Registration.js) ──────────────────────────
 
 function parseScheduleLine(text) {
   const typeMatch = text.match(/^\(([^)]+)\)/);
@@ -94,7 +93,6 @@ function parseFees(div) {
   return items;
 }
 
-// ── Sub-components ───────────────────────────────────────────────────────────
 
 function schedTypeClass(type) {
   const t = (type || '').toLowerCase();
@@ -301,7 +299,6 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
   );
 }
 
-// ── Self-mount ───────────────────────────────────────────────────────────────
 
 (function mount() {
   if (window.__aiubRegMounted) return;
