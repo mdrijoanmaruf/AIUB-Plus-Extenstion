@@ -1,14 +1,20 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { FiCalendar, FiX, FiChevronDown, FiList, FiTrash2, FiZap, FiDownload, FiFileText, FiRefreshCw, FiClock, FiRepeat, FiCheck } from 'react-icons/fi';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const ALL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 
 const ROUTINE_COLORS = [
-  { border: '#1565c0' }, { border: '#7b1fa2' }, { border: '#2e7d32' },
-  { border: '#ef6c00' }, { border: '#c62828' }, { border: '#00838f' },
-  { border: '#283593' }, { border: '#00695c' },
+  { border: '#1d4ed8', bg: 'linear-gradient(135deg, #eff6ff, #dbeafe)' },
+  { border: '#7e22ce', bg: 'linear-gradient(135deg, #faf5ff, #f3e8ff)' },
+  { border: '#15803d', bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)' },
+  { border: '#c2410c', bg: 'linear-gradient(135deg, #fff7ed, #ffedd5)' },
+  { border: '#b91c1c', bg: 'linear-gradient(135deg, #fef2f2, #fee2e2)' },
+  { border: '#0f766e', bg: 'linear-gradient(135deg, #f0fdfa, #ccfbf1)' },
+  { border: '#4338ca', bg: 'linear-gradient(135deg, #eef2ff, #e0e7ff)' },
+  { border: '#be185d', bg: 'linear-gradient(135deg, #fdf2f8, #fce7f3)' },
 ];
 
 // ── Pure helpers ──────────────────────────────────────────────────────────────
@@ -45,13 +51,6 @@ function checkClash(course, selected) {
   return { hasClash: false };
 }
 
-function linkedSections(course, allCourses) {
-  const sig = timeSignature(course);
-  return allCourses
-    .filter(c => c.title === course.title && c.classId !== course.classId && timeSignature(c) === sig)
-    .map(({ section, classId, fullTitle, capacity, count, status, timeSlots }) => ({ section, classId, fullTitle, capacity, count, status, timeSlots }));
-}
-
 const colorCache = {};
 let colorIdx = 0;
 function courseColor(title) {
@@ -71,6 +70,23 @@ function loadSaved(allCourses) {
     const parsed = JSON.parse(localStorage.getItem('aiub_selectedSections') || '[]');
     return Array.isArray(parsed) ? parsed.filter(s => allCourses.some(c => c.classId === s.classId)) : [];
   } catch { return []; }
+}
+
+function getLooseSig(c) {
+  return (c.timeSlots || []).map(ts => `${ts.day}|${ts.startTime}`).sort().join(';;');
+}
+
+function getLinkedSections(course, allCourses) {
+  if (!allCourses || !allCourses.length) return [];
+  const mySig = getLooseSig(course);
+  return allCourses
+    .filter(c => 
+      c.title === course.title && 
+      c.classId !== course.classId && 
+      c.status.toLowerCase().includes('open') && 
+      getLooseSig(c) === mySig
+    )
+    .map(({ section, classId, capacity, count, timeSlots }) => ({ section, classId, capacity, count, timeSlots }));
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -131,11 +147,11 @@ function ActionBtn({ course, selected, clashMap, onSelect, onRemove }) {
   const base          = 'text-[11px] font-bold px-3 py-1.5 rounded-lg text-white transition-all';
 
   if (isSelected)
-    return <button onClick={() => onRemove(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px`} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', border: 'none', boxShadow: '0 2px 6px rgba(220,38,38,0.2)' }}>✕ Remove</button>;
+    return <button onClick={() => onRemove(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', border: 'none', boxShadow: '0 2px 6px rgba(220,38,38,0.2)' }}><FiTrash2 /> Remove</button>;
   if (clash?.hasClash)
-    return <button disabled title={`${clash.clashWith} — ${clash.details}`} className={base} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', cursor: 'not-allowed', opacity: 0.85, border: 'none' }}>✕ Clash</button>;
+    return <button disabled title={`${clash.clashWith} — ${clash.details}`} className={`${base} flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', cursor: 'not-allowed', opacity: 0.85, border: 'none' }}><FiX /> Clash</button>;
   if (sameCourse)
-    return <button disabled className={base} style={{ background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}>Course Added</button>;
+    return <button disabled className={`${base} flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}><FiCheck /> Course Added</button>;
 
   const high = course.count >= 35;
   return (
@@ -146,9 +162,12 @@ function ActionBtn({ course, selected, clashMap, onSelect, onRemove }) {
   );
 }
 
-function SelectedCard({ sec, onRemove }) {
+function SelectedCard({ sec, allCourses, selected, onRemove }) {
   const col = courseColor(sec.title);
   const avail = sec.capacity - sec.count;
+  
+  const _linked = useMemo(() => getLinkedSections(sec, allCourses), [sec, allCourses]);
+
   return (
     <div className="relative rounded-2xl border transition-all duration-200 hover:-translate-y-1"
       style={{ background: '#fff', borderColor: '#e2e8f0', boxShadow: '0 4px 24px rgba(0,0,0,0.03)', padding: '20px', minWidth: '280px', flex: '1 1 280px', maxWidth: '400px' }}>
@@ -187,42 +206,44 @@ function SelectedCard({ sec, onRemove }) {
       </div>
 
       {/* Linked sections section */}
-      {sec._linked?.length > 0 && (
+      {_linked?.length > 0 && (
         <div style={{ borderRadius: '12px', overflow: 'hidden', background: '#f8fafc', border: `1px solid #e2e8f0` }}>
-          <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wider px-3 py-2.5"
+          <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wider px-3 py-2.5 flex items-center gap-1.5"
             style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
-            ↔️ All {sec._linked.length + 1} sections
+            <FiRepeat /> All {_linked.length + 1} sections
           </div>
-          <div className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-200"
-            style={{ background: '#fff' }}>
-            <span className="font-bold text-emerald-600 w-10 flex-shrink-0 text-center">{sec.section || sec.classId}</span>
-            <span className="flex-1 text-slate-600 text-[10px] font-medium">{sec.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}`).join(' · ')}</span>
-            <span className="font-bold text-emerald-600 text-[10px] flex-shrink-0 text-right" style={{ minWidth: '50px' }}>{avail} seats</span>
+          <div style={{ maxHeight: '180px', overflowY: 'auto' }}>
+            <div className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-200"
+              style={{ background: '#fff' }}>
+              <span className="font-bold text-emerald-600 w-10 flex-shrink-0 text-center">{sec.section || sec.classId}</span>
+              <span className="flex-1 text-slate-600 text-[10px] font-medium">{sec.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}–${ts.endTime}`).join(' · ')}</span>
+              <span className="font-bold text-emerald-600 text-[10px] flex-shrink-0 text-right" style={{ minWidth: '50px' }}>{avail} seats</span>
+            </div>
+            {_linked.map((ls, i) => {
+              const a = ls.capacity - ls.count;
+              return (
+                <div key={i} className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-100 last:border-0"
+                  style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
+                  <span className="font-bold text-slate-700 w-10 flex-shrink-0 text-center text-[10px]">{ls.section || ls.classId}</span>
+                  <span className="flex-1 text-slate-600 text-[10px] font-medium">{ls.timeSlots.length ? ls.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}–${ts.endTime}`).join(' · ') : '—'}</span>
+                  <span className={`font-bold text-[10px] flex-shrink-0 text-right ${a <= 0 ? 'text-red-500' : 'text-emerald-600'}`} style={{ minWidth: '50px' }}>
+                    {a <= 0 ? 'FULL' : `${a} seats`}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-          {sec._linked.map((ls, i) => {
-            const a = ls.capacity - ls.count;
-            return (
-              <div key={i} className="flex items-center gap-2 px-3 py-2.5 text-[11px] border-b border-slate-100 last:border-0"
-                style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
-                <span className="font-bold text-slate-700 w-10 flex-shrink-0 text-center text-[10px]">{ls.section || ls.classId}</span>
-                <span className="flex-1 text-slate-600 text-[10px] font-medium">{ls.timeSlots.length ? ls.timeSlots.map(ts => `${ts.day.slice(0, 3)} ${ts.startTime}`).join(' · ') : '—'}</span>
-                <span className={`font-bold text-[10px] flex-shrink-0 text-right ${a <= 0 ? 'text-red-500' : 'text-emerald-600'}`} style={{ minWidth: '50px' }}>
-                  {a <= 0 ? 'FULL' : `${a} seats`}
-                </span>
-              </div>
-            );
-          })}
         </div>
       )}
 
       {/* Remove button */}
       <button onClick={() => onRemove(sec.classId)}
-        className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full text-[12px] font-bold transition-all duration-150 hover:shadow-md"
+        className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full transition-all duration-150 hover:shadow-md"
         style={{ background: '#fef2f2', border: '1px solid #fecdd3', color: '#dc2626' }}
         onMouseEnter={e => Object.assign(e.currentTarget.style, { background: '#ef4444', color: '#fff', borderColor: '#ef4444' })}
         onMouseLeave={e => Object.assign(e.currentTarget.style, { background: '#fef2f2', color: '#dc2626', borderColor: '#fecdd3' })}
         title="Remove course"
-      >✕</button>
+      ><FiX size={14} /></button>
     </div>
   );
 }
@@ -255,7 +276,7 @@ function GhostBtn({ onClick, children }) {
 
 // ── Routine Modal ─────────────────────────────────────────────────────────────
 
-function RoutineModal({ selected, onClose }) {
+function RoutineModal({ selected, allCourses, onClose }) {
   const DAY_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const routineRef = useRef(null);
 
@@ -305,7 +326,7 @@ function RoutineModal({ selected, onClose }) {
     return `${h12}:${String(m).padStart(2, '0')} ${ap}`;
   }
 
-  // Build render plan: for each day, map timeSlot -> { course, slot, span } | 'skip' | null
+  // Build render plan
   const plan = {};
   activeDays.forEach(day => {
     plan[day] = {};
@@ -333,47 +354,49 @@ function RoutineModal({ selected, onClose }) {
     });
   });
 
-  const ROW_H = 48;
+  const ROW_H = 64;
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div style={{ background: '#fff', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.12)', width: '100%', maxWidth: '1050px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", border: '1px solid #e2e8f0' }} ref={routineRef}>
+      <div style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', width: '100%', maxWidth: '1100px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif", border: '1px solid #e2e8f0' }} ref={routineRef}>
 
         {/* Header */}
-        <div style={{ background: '#fff', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ background: '#fff', padding: '20px 28px', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #f1f5f9' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ color: '#1e3a8a', fontWeight: 800, fontSize: '18px', letterSpacing: '-0.3px' }}>📅 Weekly Schedule</span>
-            <span style={{ fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}>
+            <span style={{ color: '#0f172a', fontWeight: 800, fontSize: '20px', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FiCalendar style={{ color: '#3b82f6' }} /> Weekly Schedule
+            </span>
+            <span style={{ fontSize: '12px', fontWeight: 600, padding: '4px 12px', borderRadius: '999px', background: '#f1f5f9', color: '#475569' }}>
               {selected.length} course{selected.length !== 1 ? 's' : ''}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={() => downloadAsImage()}
-              className="hover:opacity-80 transition-all duration-150"
-              style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)', color: '#fff', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-              ⬇️ Download Image
+              className="hover:shadow-lg transition-all duration-200 flex items-center gap-1.5 hover:-translate-y-0.5"
+              style={{ background: '#2563eb', border: 'none', color: '#fff', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', fontWeight: 700 }}>
+              <FiDownload /> Download Image
             </button>
             <button onClick={onClose}
-              className="hover:opacity-80 transition-all duration-150"
-              style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', borderRadius: '8px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-              ✕ Close
+              className="hover:bg-slate-100 transition-all duration-200 flex items-center gap-1.5"
+              style={{ background: '#ffffff', border: '1px solid #e2e8f0', color: '#475569', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', fontWeight: 700 }}>
+              <FiX /> Close
             </button>
           </div>
         </div>
 
         {/* Table */}
         <div style={{ overflowY: 'auto', overflowX: 'auto', flex: 1, background: '#f8fafc' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: `${90 + activeDays.length * 140}px` }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: `${100 + activeDays.length * 150}px` }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
-              <tr style={{ background: '#eef2f9' }}>
-                <th style={{ width: '80px', padding: '12px 8px', fontSize: '11px', fontWeight: 800, color: '#334669', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
+              <tr style={{ background: '#ffffff' }}>
+                <th style={{ width: '80px', padding: '16px 8px', fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
                   Time
                 </th>
                 {activeDays.map(day => (
-                  <th key={day} style={{ padding: '12px 8px', fontSize: '12px', fontWeight: 800, color: '#334669', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
+                  <th key={day} style={{ padding: '16px 8px', fontSize: '12px', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>
                     {day}
                   </th>
                 ))}
@@ -381,10 +404,10 @@ function RoutineModal({ selected, onClose }) {
             </thead>
             <tbody>
               {timeSlots.map((t, ti) => (
-                <tr key={t} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <tr key={t} style={{ borderBottom: '1px dashed #e2e8f0' }}>
                   {/* Time label */}
-                  <td style={{ padding: '8px', fontSize: '10px', fontWeight: 700, color: '#475569', background: '#f8fafc', borderRight: '1px solid #e2e8f0', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', height: `${ROW_H}px` }}>
-                    <div style={{ fontWeight: 800, fontSize: '12px' }}>{fmtTime(t)}</div>
+                  <td style={{ padding: '8px', background: '#ffffff', borderRight: '1px solid #f1f5f9', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', height: `${ROW_H}px` }}>
+                    <div style={{ fontWeight: 700, fontSize: '12px', color: '#64748b' }}>{fmtTime(t)}</div>
                   </td>
 
                   {/* Day cells */}
@@ -392,30 +415,49 @@ function RoutineModal({ selected, onClose }) {
                     const cell = plan[day][t];
                     if (cell === 'skip') return null;
                     if (!cell) return (
-                      <td key={day} style={{ height: `${ROW_H}px`, borderRight: '1px solid #e2e8f0', background: ti % 2 === 0 ? '#ffffff' : '#f8fafc' }} />
+                      <td key={day} style={{ height: `${ROW_H}px`, borderRight: '1px dashed #f1f5f9' }} />
                     );
                     const col = courseColor(cell.course.title);
-                    const innerH = cell.span * ROW_H - 8;
-                    const linkedSecs = linkedSections(cell.course, selected);
+                    const innerH = cell.span * ROW_H - 12; // accommodate padding/margin
+                    
                     return (
                       <td key={day} rowSpan={cell.span}
-                        style={{ padding: '4px', borderRight: '1px solid #e2e8f0', verticalAlign: 'top', background: '#ffffff' }}>
-                        <div style={{ background: hexToRgba(col.border, 0.08), border: `1px solid ${hexToRgba(col.border, 0.3)}`, borderLeft: `4px solid ${col.border}`, borderRadius: '6px', padding: '6px 8px', minHeight: `${innerH}px`, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: '3px', transition: 'all 0.2s', overflow: 'hidden' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.2 }}>{cell.course.title}</div>
-                          <div style={{ fontSize: '9px', fontWeight: 700, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '2px 5px', textTransform: 'uppercase', letterSpacing: '0.02em' }}>{cell.course.section || cell.course.classId}</div>
-                          <div style={{ fontSize: '9px', fontWeight: 700, color: col.border, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{cell.slot.classType}</div>
-                          <div style={{ fontSize: '9px', color: '#475569', fontWeight: 600, lineHeight: 1.1 }}>{cell.slot.startTime}–{cell.slot.endTime}</div>
+                        style={{ padding: '6px', borderRight: '1px dashed #f1f5f9', verticalAlign: 'top' }}>
+                        <div style={{ 
+                          background: col.bg, 
+                          border: '1px solid', 
+                          borderColor: hexToRgba(col.border, 0.15),
+                          borderTop: `4px solid ${col.border}`, 
+                          borderRadius: '8px', 
+                          padding: '10px 8px', 
+                          minHeight: `${innerH}px`, 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          justifyContent: 'center',
+                          alignItems: 'center', 
+                          textAlign: 'center', 
+                          transition: 'all 0.2s', 
+                          overflow: 'hidden', 
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                          height: '100%'
+                        }}>
+                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.3, marginBottom: '4px' }}>
+                            {cell.course.title}
+                          </div>
+                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap', justifyItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                             <span style={{ fontSize: '10px', fontWeight: 800, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '2px 6px', letterSpacing: '0.02em', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                               {cell.course.section || cell.course.classId}
+                             </span>
+                             <span style={{ fontSize: '9px', fontWeight: 800, color: col.border, background: '#ffffff', borderRadius: '4px', padding: '2px 6px', textTransform: 'uppercase', letterSpacing: '0.04em', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                               {cell.slot.classType}
+                             </span>
+                          </div>
+                          <div style={{ fontSize: '10px', color: '#475569', fontWeight: 700, marginBottom: '4px' }}>
+                            {cell.slot.startTime}–{cell.slot.endTime}
+                          </div>
                           {cell.slot.room && (
-                            <div style={{ fontSize: '9px', fontFamily: 'ui-monospace,monospace', fontWeight: 700, color: '#475569', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '4px', padding: '2px 5px', alignSelf: 'center' }}>
+                            <div style={{ fontSize: '10px', fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace', fontWeight: 700, color: col.border, background: '#ffffff', border: '1px solid', borderColor: hexToRgba(col.border, 0.2), borderRadius: '4px', padding: '2px 8px' }}>
                               {cell.slot.room}
-                            </div>
-                          )}
-                          {linkedSecs.length > 0 && (
-                            <div style={{ fontSize: '8px', color: '#64748b', borderTop: `1px solid ${hexToRgba(col.border, 0.2)}`, paddingTop: '4px', marginTop: '4px', width: '100%' }}>
-                              <div style={{ fontWeight: 600, marginBottom: '2px' }}>Alt Sections:</div>
-                              {linkedSecs.slice(0, 2).map((ls, i) => (
-                                <div key={i} style={{ fontSize: '8px', fontWeight: 500 }}>{ls.section || ls.classId}</div>
-                              ))}
                             </div>
                           )}
                         </div>
@@ -429,14 +471,14 @@ function RoutineModal({ selected, onClose }) {
         </div>
 
         {/* Legend */}
-        <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid #e2e8f0', display: 'flex', flexWrap: 'wrap', gap: '16px', flexShrink: 0, alignItems: 'center' }}>
-          <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Legend</span>
+        <div style={{ padding: '16px 28px', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', flexWrap: 'wrap', gap: '20px', flexShrink: 0, alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Legend</span>
           {selected.map(sec => {
             const col = courseColor(sec.title);
             return (
-              <div key={sec.classId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: col.border, flexShrink: 0 }} />
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>{sec.title}</span>
+              <div key={sec.classId} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: col.border, flexShrink: 0, boxShadow: `0 2px 4px ${hexToRgba(col.border, 0.3)}` }} />
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>{sec.title}</span>
               </div>
             );
           })}
@@ -460,6 +502,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
   const [perPage, setPerPage] = useState(25);
   const [selected, setSelected] = useState(() => loadSaved(allCourses));
   const [showRoutine, setShowRoutine] = useState(false);
+  const [isSelectedExpanded, setIsSelectedExpanded] = useState(true);
 
   // Initialize statuses when data loads
   useEffect(() => {
@@ -467,11 +510,6 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
       setActiveStatuses(statuses.filter(s => s.toLowerCase().includes('open')));
     }
   }, [statuses]);
-
-  // Restore linked sections on mount
-  useEffect(() => {
-    setSelected(prev => prev.map(s => ({ ...s, _linked: linkedSections(s, allCourses) })));
-  }, [allCourses]);
 
   // Persist selection
   useEffect(() => {
@@ -533,7 +571,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     const c = allCourses.find(x => x.classId === classId);
     if (!c || selected.some(s => s.classId === classId) || selected.some(s => s.title === c.title)) return;
     if (checkClash(c, selected).hasClash) return;
-    setSelected(p => [...p, { ...c, _linked: linkedSections(c, allCourses) }]);
+    setSelected(p => [...p, c]);
   }
 
   function handleRemove(classId) {
@@ -604,18 +642,18 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
     <div style={{ fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif" }}>
 
       {/* ══ Filter Panel ══════════════════════════════════════════════════════ */}
-      <div className="mb-6 p-6 transition-all" style={{ background: '#ffffff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0' }}>
+      <div className="mb-6 p-6 transition-all" style={{ background: '#eff6ff', borderRadius: '16px', border: 'none' }}>
         
         {/* Top Header */}
-        <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: '1px solid #f1f5f9' }}>
+        <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: '1px solid #dbeafe' }}>
            <div className="flex items-center gap-3">
-               <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px' }}>⚡ Advanced Filters</span>
-               <span style={{ background: '#f8fafc', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
-                 {isLoading ? '⏳ Loading courses...' : `${allCourses.length} courses loaded`}
+               <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '8px' }}><FiZap /> Advanced Filters</span>
+               <span style={{ background: '#fff', color: '#1e40af', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                 {isLoading ? <><FiClock className="animate-spin" /> Loading courses...</> : `${allCourses.length} courses loaded`}
                </span>
            </div>
-           <button onClick={handleReset} className="hover:opacity-80 transition-opacity" style={{ background: '#eff6ff', color: '#2563eb', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none' }}>
-             ↺ Reset Filters
+           <button onClick={handleReset} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: '#fff', color: '#2563eb', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+             <FiRefreshCw /> Reset Filters
            </button>
         </div>
 
@@ -628,9 +666,9 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
               <input type="text" value={search} placeholder="Course name or Class ID…"
                 onChange={e => { setSearch(e.target.value); setPage(1); }}
                 className="w-full text-[13px] px-4 py-2.5 transition-all"
-                style={{ border: '1.5px solid #e2e8f0', borderRadius: '10px', background: '#f8fafc', outline: 'none', color: '#1e293b', fontWeight: 500 }}
-                onFocus={e => Object.assign(e.target.style, { borderColor: '#2563eb', background: '#fff', boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' })}
-                onBlur={e  => Object.assign(e.target.style, { borderColor: '#e2e8f0', background: '#f8fafc', boxShadow: 'none' })}
+                style={{ border: '1.5px solid #bfdbfe', borderRadius: '10px', background: '#fff', outline: 'none', color: '#1e293b', fontWeight: 500 }}
+                onFocus={e => Object.assign(e.target.style, { borderColor: '#2563eb', boxShadow: '0 0 0 3px rgba(37,99,235,0.1)' })}
+                onBlur={e  => Object.assign(e.target.style, { borderColor: '#bfdbfe', boxShadow: 'none' })}
               />
            </div>
 
@@ -657,7 +695,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
                     className="text-[11px] font-bold px-3.5 py-1.5 rounded-full transition-all hover:-translate-y-px"
                     style={activeDays.includes(d)
                       ? { background: GRAD.blue, color: '#fff', border: '1.5px solid transparent', boxShadow: '0 4px 10px rgba(37,99,235,0.25)' }
-                      : { background: '#f8fafc', color: '#475569', border: '1.5px solid #e2e8f0' }}>
+                      : { background: '#fff', color: '#475569', border: '1.5px solid #bfdbfe' }}>
                     {d}
                   </button>
                 ))}
@@ -667,27 +705,27 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
            {/* 4. Time Range */}
            <div className="flex flex-col gap-2.5">
               <label style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time Range</label>
-              <div className="flex items-center gap-2 flex-wrap" style={{ background: '#f8fafc', padding: '4px', borderRadius: '12px', border: '1px solid #e2e8f0', width: 'fit-content' }}>
+              <div className="flex items-center gap-2 flex-wrap" style={{ background: '#fff', padding: '4px', borderRadius: '12px', border: '1px solid #bfdbfe', width: 'fit-content' }}>
                 <div className="flex gap-1">
                   <select value={fromH} onChange={e => { setFromH(e.target.value); setPage(1); }}
-                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
                     <option value="">Hr</option>
                     {[8,9,10,11,12,13,14,15,16,17,18].map(v => <option key={v} value={v}>{v < 12 ? `${v} AM` : v === 12 ? '12 PM' : `${v-12} PM`}</option>)}
                   </select>
                   <select value={fromM} onChange={e => { setFromM(e.target.value); setPage(1); }}
-                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
                     {[0,10,20,30,40,50].map(v => <option key={v} value={v}>{`:${String(v).padStart(2,'0')}`}</option>)}
                   </select>
                 </div>
                 <span style={{ fontSize: '14px', color: '#94a3b8', fontWeight: 800, margin: '0 2px' }}>→</span>
                 <div className="flex gap-1">
                   <select value={toH} onChange={e => { setToH(e.target.value); setPage(1); }}
-                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
                     <option value="">Hr</option>
                     {[8,9,10,11,12,13,14,15,16,17,18].map(v => <option key={v} value={v}>{v < 12 ? `${v} AM` : v === 12 ? '12 PM' : `${v-12} PM`}</option>)}
                   </select>
                   <select value={toM} onChange={e => { setToM(e.target.value); setPage(1); }}
-                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+                    style={{ padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', color: '#1e293b', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
                     {[0,10,20,30,40,50].map(v => <option key={v} value={v}>{`:${String(v).padStart(2,'0')}`}</option>)}
                   </select>
                 </div>
@@ -699,26 +737,36 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
 
       {/* ══ Selected Courses Panel ════════════════════════════════════════════ */}
       {selected.length > 0 && (
-        <div className="mb-6 p-6 transition-all" style={{ background: '#ffffff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.04)', border: '1px solid #e2e8f0' }}>
-          <div className="flex items-center justify-between mb-5 pb-4" style={{ borderBottom: '1px solid #f1f5f9' }}>
-             <div className="flex items-center gap-3">
-                 <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px' }}>📋 Selected Courses</span>
-                 <span style={{ background: '#f8fafc', color: '#475569', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
+        <div className="mb-6 p-6 transition-all" style={{ background: '#eff6ff', borderRadius: '16px', border: 'none' }}>
+          <div className="flex items-center justify-between" style={{ borderBottom: isSelectedExpanded ? '1px solid #dbeafe' : 'none', paddingBottom: isSelectedExpanded ? '16px' : '0', marginBottom: isSelectedExpanded ? '20px' : '0' }}>
+             <div className="flex items-center gap-4">
+                 <span style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <FiList /> Selected Courses
+                 </span>
+                 <span style={{ background: '#fff', color: '#1e40af', fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', border: '1px solid #bfdbfe' }}>
                    {selected.length} course{selected.length !== 1 ? 's' : ''}
                  </span>
              </div>
-             <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => setShowRoutine(true)} className="hover:opacity-80 transition-opacity" style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }}>📅 Show Routine</button>
-                <button onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); }} className="hover:opacity-80 transition-opacity" style={{ background: '#fef2f2', color: '#dc2626', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #fecdd3' }}>✕ Clear All</button>
+             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', opacity: isSelectedExpanded ? 1 : 0, pointerEvents: isSelectedExpanded ? 'auto' : 'none', transition: 'opacity 0.2s' }}>
+                  <button onClick={() => setShowRoutine(true)} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', color: '#fff', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.3)' }}><FiCalendar /> Show Routine</button>
+                  <button onClick={() => { setSelected([]); localStorage.removeItem('aiub_selectedSections'); }} className="hover:opacity-80 transition-opacity flex items-center gap-1.5" style={{ background: '#fff', color: '#dc2626', fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid #fecdd3' }}><FiTrash2 /> Clear All</button>
+                </div>
+                
+                <button onClick={() => setIsSelectedExpanded(!isSelectedExpanded)} className="flex items-center justify-center rounded-full hover:bg-blue-100 transition-colors" style={{ width: '32px', height: '32px', color: '#1e3a8a', border: '1.5px solid #1e3a8a', background: 'transparent' }}>
+                  <FiChevronDown style={{ transform: isSelectedExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', fontSize: '18px' }} />
+                </button>
              </div>
           </div>
-          <div className="flex flex-wrap gap-4">
-            {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} onRemove={handleRemove} />)}
-          </div>
+          {isSelectedExpanded && (
+            <div className="flex flex-wrap gap-4">
+              {selected.map(sec => <SelectedCard key={sec.classId} sec={sec} allCourses={allCourses} selected={selected} onRemove={handleRemove} />)}
+            </div>
+          )}
         </div>
       )}
 
-      {showRoutine && <RoutineModal selected={selected} onClose={() => setShowRoutine(false)} />}
+      {showRoutine && <RoutineModal selected={selected} allCourses={allCourses} onClose={() => setShowRoutine(false)} />}
 
       {/* ══ Results Table ═════════════════════════════════════════════════════ */}
       {filtered.length > 0 && (
@@ -726,7 +774,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
           {/* Results header */}
           <div className="flex items-center justify-between flex-wrap gap-3 px-5 py-3.5"
             style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-            <span className="text-[13px] font-bold text-slate-700">📄 {filtered.length} course(s) found</span>
+            <span className="text-[13px] font-bold text-slate-700 flex items-center gap-1.5"><FiFileText /> {filtered.length} course(s) found</span>
             <div className="flex items-center gap-2 text-[12px] font-semibold text-slate-600">
               Show
               <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
@@ -754,7 +802,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
                   <tr>
                     <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#fff' }}>
                       <div className="flex flex-col items-center gap-2">
-                        <span className="text-[18px]">⏳</span>
+                        <FiClock className="animate-spin text-[24px]" />
                         <span className="font-bold">Fetching course data...</span>
                         <span className="text-[11px] opacity-70">This may take a few seconds as we parse the schedule.</span>
                       </div>
