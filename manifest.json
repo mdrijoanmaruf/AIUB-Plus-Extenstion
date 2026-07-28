@@ -33,6 +33,7 @@
     {
       "matches": [
         "https://portal.aiub.edu/",
+        "https://portal.aiub.edu/?*",
         "https://portal.aiub.edu/Account/Login*",
         "https://portal.aiub.edu/Login*"
       ],
