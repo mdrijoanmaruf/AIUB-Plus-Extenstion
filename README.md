@@ -36,6 +36,12 @@
 
 ## 🌟 What This Extension Does
 
+### ✨ Special Features
+- 🤖 **Auto Captcha Calculation:** Instantly and accurately solves math CAPTCHAs during login using offline OCR.
+- 🔍 **Advanced Offered Course Filter:** Deep search and filter with smart clash detection.
+- 📅 **Routine Generation:** Automatically visualizes your selected courses in a beautiful weekly schedule.
+- 🔓 **Show Locked / Unlocked Courses [CSE only]:** Injects prerequisite data to instantly show which courses you can take.
+
 AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https://portal.aiub.edu) for:
 
 | Page | Enhancement |
@@ -54,6 +60,26 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 | **Shared UI** | Sidebar, navbar, profile widget, and live Notices bell from aiub.edu |
 
 > Pure client-side — no backend API calls. All data is parsed from the existing portal DOM in-browser.
+
+---
+
+## 🆕 What's New in v3.5.0
+
+### 🤖 Auto CAPTCHA Solver (97%+ Accuracy)
+- Fully automated login CAPTCHA solving using an embedded, offline Tesseract.js engine.
+- Extremely fast and completely private — no backend API calls or data sent externally.
+- Accurately solves the math expressions on the login screen to save you time.
+
+### 📚 Offered Courses UI Revamp & Clash Detection
+- Completely redesigned filter interface and results table for Offered Courses.
+- Clean, responsive table showing capacity, class slots, and dynamically sized columns.
+- **Smart Actions:** Buttons to Add, Remove, and intelligently handle course clashes (preventing you from adding courses with conflicting schedules).
+- Beautiful "No courses found" state and dynamically disabled buttons for duplicate/similar courses.
+
+### 🔔 Navbar & General UI Polish
+- Fixed a bug where empty notification badges (red dots without text) would stubbornly appear in the Navbar. The badge now uses a robust `MutationObserver` to ensure it only appears when you actually have unread notifications.
+- Cleaned up the **Drop Application** page for better readability.
+- Consistent typography and icon usage across the extension.
 
 ---
 
@@ -159,140 +185,46 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ---
 
-## 📄 Features by Portal Page
+## 📄 Features by Module
+
+### 🔐 Login & Security
+- **Auto CAPTCHA Solver:** Uses offline OCR (Tesseract.js) to automatically read and evaluate the math expression on the login page with 97%+ accuracy.
+- **Change Password:** Premium redesigned form with eye-toggle buttons to reveal/hide passwords, and custom placeholders.
 
 ### 📅 Offered Courses
-**Component:** `src/components/content/OfferedFilters.jsx`
-
-- Parses FooTable courses and nested time slots
-- Filters by search, status, day, and start-time range
-- Detects schedule overlaps before selection
-- Prevents duplicate course title selection
-- Shows linked/alternative sections via time signature matching
-- Generates weekly routine modal with color-coded course blocks
-- Exports routine as PNG image via `html2canvas`
-- Persists selected sections in `localStorage.aiub_selectedSections`
-
----
+- Parses FooTable courses and nested time slots.
+- Filters by search, status, day, and start-time range.
+- **Smart Actions:** Interactive buttons to Add, Remove, and intelligently handle "Similar" courses.
+- **Clash Detection:** Detects schedule overlaps before selection and dynamically disables buttons to prevent conflicting schedules.
+- Beautiful "No courses found" state and dynamic pagination.
+- Generates a weekly routine modal with color-coded course blocks and exports the routine as a PNG image via `html2canvas`.
+- Persists selected sections securely.
 
 ### 📝 Registration
-**Component:** `src/components/academic/AcademicRegistration.jsx`
+- **Academic Registration:** Redesigned registration page with cleaner cards, semester switch, print shortcuts, and a fee breakdown panel.
+- **Registration Print:** Fully redesigned payment print page with payment cards, bank selector, alert banners, and a modern trust footer.
 
-- Parses course cards from `StudentCourseList`
-- Displays dropped, active, and result labels
-- Shows semester selector and print shortcut (`FiPrinter`)
-- Builds fee breakdown panel from `divAssesment`
+### 🎓 Grades & Curriculum
+- **Course Results:** Modernized display with expandable section cards showing midterm/final breakdowns and colored grade badges.
+- **By Curriculum:** Visualizes grades across the entire curriculum, injecting prerequisite enrichment via bundled `CSE.json`. Beautiful color-coded grade pills.
+- **By Semester:** Expandable semester view tracking ongoing, dropped, failed, and passed statuses with GPA summary cards.
+- **Prerequisites:** Enriches the portal with course dependencies and modal table styling.
 
----
+### 💳 Financials & Payments
+- **Financial Summary:** Debit-credit-balance parsing with visually appealing summary cards.
+- **Online Payment History:** Styled table with monospace transaction IDs and color-coded status badges (Success, Failed, Pending, Cancelled). Includes row hover highlights and "Check Status" buttons.
 
-### 🧾 Registration Print *(New in v3.1.0)*
-**Component:** `src/components/academic/RegistrationPrint.jsx`
-
-- Triggered on `/Student/Registration/Print*`
-- Parses student info, payment panels, bank options, and alert messages
-- Renders info card, alert banner, bank selector, payment cards, and trust footer
-- Print button calls native `Confirmation3()` function
-- Respects the extension ON/OFF toggle
-
----
-
-### 📊 Course and Results
-**Component:** `src/components/academic/CourseAndResults.jsx`
-
-- Parses active course and term breakdown
-- Builds expandable section cards with grade/score metadata
-- Preserves section and semester navigation behavior
-
----
-
-### 🎓 Grade Report — By Curriculum
-**Component:** `src/components/grade/by_carriculum.jsx`
-
-- Parses curriculum report rows and summary info
-- Applies status/grade-aware visual cues
-- Integrates prerequisite information from `Academic/CSE.json`
-- Reset filter button using `FiRotateCcw`
-
----
-
-### 📆 Grade Report — By Semester
-**Component:** `src/components/grade/by_semester.jsx`
-
-- Parses semester groups and course rows
-- Displays compact semester cards with GPA indicators
-- Tracks ongoing, dropped, failed, and passed statuses
-
----
-
-### 💰 Financials
-**Component:** `src/components/academic/Financials.jsx`
-
-- Parses transaction table and total rows
-- Computes total charged, paid, and current balance
-- Styles rows by transaction type and amount semantics
-
----
-
-### 💳 Online Payment History *(New in v3.1.0)*
-**Component:** `src/components/academic/OnlinePaymentHistory.jsx`
-
-- Triggered on `/Student/Payment/List*`
-- Parses all transaction rows from the portal table
-- Formats amounts with ৳ symbol and 2-decimal precision
-- Color-coded status badges: Success (green), Failed (red), Cancelled (amber), Pending (blue)
-- "Check Status" links styled as gradient blue buttons with `FiArrowUpRight`
-- Row hover highlight, monospace ID column, clean "Not Applicable" text
-- Respects the extension ON/OFF toggle
-
----
-
-### 🗂️ Curriculum
-**Component:** `src/components/academic/MkCurriculumn.jsx`
-
-- Loads bundled `public/Academic/CSE.json`
-- Matches course by code and/or normalized name
-- Injects prerequisite column and modal table styling
-
----
-
-### ❌ Drop Application
-**Component:** `src/components/academic/DropApplication.jsx`
-
-- Preserves Angular-rendered content while wrapping in improved React layout
-- Shows a refund eligibility panel
-- Applies structured styling to rules and course rows
-
----
-
-### 📅 Exam Routine
-**Component:** `src/components/academic/ExamRoutine.jsx`
-
-- Countdown timers per exam
-- "Completed" badge using `FiCheckCircle` for past exams
-
----
-
-### 🔐 Change Password *(Redesigned in v3.1.0)*
-**Component:** `src/components/credential/ChangePassword.jsx`
-
-- Triggered on `/Student/Credential/ChangePassword*`
-- Full premium redesign with rounded card, gradient header
-- Eye toggle buttons using `FiEye` / `FiEyeOff`
-- Per-field placeholders (Current / New / Confirm)
-- Respects the extension ON/OFF toggle
-
----
+### 🏛 Academic Extras
+- **Exam Routine:** Highlights completed exams with "Completed" badges, adds countdown timers to upcoming exams, and neatly styles the schedule.
+- **Drop Application:** Cleans up the drop interface and clearly highlights refund status.
+- **Class Schedule & Home Registration:** Upgrades the today's schedule view on the home dashboard and elevates the registration status widget.
 
 ### 🎨 Shared UI Enhancements
-
-| Component | Path | Notes |
-|-----------|------|-------|
-| Sidebar | `src/components/shared/Sidebar.jsx` | — |
-| Navbar | `src/components/shared/Navbar.jsx` | Live notice bell (`FiBell`), native notification styling |
-| Profile page | `src/components/content/ProfileContent.jsx` | — |
-| Intro widget | `src/components/home/Intro.jsx` | — |
-| Class Schedule | `src/components/home/ClassSchedule.jsx` | `FiClock`, `FiMapPin`, `FiCalendar` |
-| Registration widget | `src/components/home/HomeRegistration.jsx` | `FiBook`, `FiChevronDown` |
+- **Sidebar:** Fully redesigned sidebar with Tailwind CSS, custom icons, collapsible sections, smooth hover effects, and a user profile summary widget.
+- **Navbar:** Clean transparent topbar with a Live Notice Bell (`FiBell`), native notification styling, active page highlighting, and smart empty-badge hiding via a robust `MutationObserver`.
+- **Profile Page:** Beautified student profile page with gradient backgrounds, clean form fields, and a polished photo frame.
+- **Dashboard Intro:** Upgraded welcome widget on the home dashboard.
+- **General Polish:** Modern typography, consistent spacing, intuitive layout, and beautiful glassmorphism dropdowns across the portal.
 
 ---
 
