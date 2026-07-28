@@ -116,25 +116,25 @@ function StatusBadge({ status }) {
 
 function SeatsBadge({ available }) {
   if (available <= 0)
-    return <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: 'linear-gradient(135deg,#fee2e2,#fecdd3)', color: '#dc2626' }}>FULL</span>;
-  return <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full" style={{ background: 'linear-gradient(135deg,#dcfce7,#bbf7d0)', color: '#059669' }}>{available} seats</span>;
+    return <span className="inline-block text-[11px] font-bold" style={{ color: '#dc2626' }}>FULL</span>;
+  return <span className="inline-block text-[11px] font-bold" style={{ color: '#059669' }}>{available} seats</span>;
 }
 
 function SlotPills({ timeSlots }) {
   if (!timeSlots?.length) return null;
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-col gap-1.5">
       {timeSlots.map((ts, i) => (
-        <span key={i} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md"
-          style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-          <span className="font-bold text-slate-700">{ts.day.slice(0, 3)}</span>
-          <span className="text-slate-600 font-medium">{ts.startTime}–{ts.endTime}</span>
+        <div key={i} className="flex items-center gap-2 text-[11px] px-2.5 py-1.5 rounded-lg transition-colors hover:bg-slate-50"
+          style={{ background: '#f8fafc', border: '1px solid #e2e8f0', width: 'max-content' }}>
+          <span className="font-bold text-slate-700" style={{ width: '26px' }}>{ts.day.slice(0, 3)}</span>
+          <span className="text-slate-600 font-medium" style={{ whiteSpace: 'nowrap' }}>{ts.startTime} - {ts.endTime}</span>
           {ts.room && (
-            <span className="font-mono text-[10px] text-slate-600 px-1 rounded" style={{ background: '#fff', border: '1px solid #e2e8f0' }}>
+            <span className="font-mono text-[10px] text-slate-600 px-1.5 py-0.5 rounded bg-white" style={{ border: '1px solid #cbd5e1', marginLeft: '4px' }}>
               {ts.room}
             </span>
           )}
-        </span>
+        </div>
       ))}
     </div>
   );
@@ -144,20 +144,23 @@ function ActionBtn({ course, selected, clashMap, onSelect, onRemove }) {
   const isSelected    = selected.some(s => s.classId === course.classId);
   const sameCourse    = selected.some(s => s.title === course.title && s.classId !== course.classId);
   const clash         = clashMap[course.classId];
-  const base          = 'text-[11px] font-bold px-3 py-1.5 rounded-lg text-white transition-all';
+  const base          = 'text-[11px] font-bold px-1 py-1.5 rounded-lg text-white transition-all text-center';
+  const width         = '70px';
 
   if (isSelected)
-    return <button onClick={() => onRemove(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', border: 'none', boxShadow: '0 2px 6px rgba(220,38,38,0.2)' }}><FiTrash2 /> Remove</button>;
+    return <button onClick={() => onRemove(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px`} style={{ width, background: 'linear-gradient(135deg,#dc2626,#ef4444)', border: 'none', boxShadow: '0 2px 6px rgba(220,38,38,0.2)' }}>Remove</button>;
+  if (sameCourse && clash?.hasClash)
+    return <button disabled title="This section has a similar schedule to the one you already added" className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#f59e0b,#d97706)', cursor: 'not-allowed', opacity: 0.9, border: 'none' }}>Similar</button>;
   if (clash?.hasClash)
-    return <button disabled title={`${clash.clashWith} — ${clash.details}`} className={`${base} flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#dc2626,#ef4444)', cursor: 'not-allowed', opacity: 0.85, border: 'none' }}><FiX /> Clash</button>;
+    return <button disabled title={`${clash.clashWith} — ${clash.details}`} className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#dc2626,#ef4444)', cursor: 'not-allowed', opacity: 0.85, border: 'none' }}>Clash</button>;
   if (sameCourse)
-    return <button disabled className={`${base} flex items-center justify-center gap-1.5`} style={{ background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}><FiCheck /> Course Added</button>;
+    return <button disabled className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}>Added</button>;
 
   const high = course.count >= 35;
   return (
     <button onClick={() => onSelect(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px`}
-      style={{ background: high ? 'linear-gradient(135deg,#b45309,#d97706)' : GRAD.blue, boxShadow: '0 2px 6px rgba(37,99,235,0.2)', border: 'none' }}>
-      + Select
+      style={{ width, background: high ? 'linear-gradient(135deg,#b45309,#d97706)' : GRAD.blue, boxShadow: '0 2px 6px rgba(37,99,235,0.2)', border: 'none' }}>
+      Select
     </button>
   );
 }
@@ -686,7 +689,7 @@ export default function OfferedCoursesFilter({ allCourses = [], statuses = [], o
   // ── Table header columns ───────────────────────────────────────────────────
   const TH_COLS = [
     { label: 'Class ID',  w: '70px',  center: false },
-    { label: 'Title',     w: 'auto',  center: false },
+    { label: 'Title',     w: '100%',  center: false },
     { label: 'Status',    w: '100px', center: false },
     { label: 'Capacity',  w: '70px',  center: true  },
     { label: 'Count',     w: '55px',  center: true  },
