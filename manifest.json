@@ -3,9 +3,15 @@
   "name": "AIUB Portal+",
   "short_name": "AIUB+",
   "description": "Enhance the AIUB Student Portal with course filters, clash detection, grade analytics, schedule tools, and UI improvements.",
-  "version": "3.1.0",
+  "version": "3.5.0",
   "permissions": ["activeTab", "storage", "tabs"],
-  "host_permissions": ["https://portal.aiub.edu/*", "https://aiub.edu/*"],
+  "host_permissions": [
+    "https://portal.aiub.edu/*",
+    "https://aiub.edu/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
   "background": {
     "service_worker": "src/background/background.js",
     "type": "module"
@@ -24,6 +30,16 @@
     "128": "logo/icon128.png"
   },
   "content_scripts": [
+    {
+      "matches": [
+        "https://portal.aiub.edu/",
+        "https://portal.aiub.edu/?*",
+        "https://portal.aiub.edu/Account/Login*",
+        "https://portal.aiub.edu/Login*"
+      ],
+      "js": ["src/components/login/CaptchaSolver.js"],
+      "run_at": "document_idle"
+    },
     {
       "matches": ["https://portal.aiub.edu/Student*"],
       "js": ["src/components/shared/contentBridge.jsx"],
@@ -129,9 +145,13 @@
         "logo/icon48.png",
         "logo/icon128.png",
         "logo/logo128.png",
-        "Academic/CSE.json"
+        "Academic/CSE.json",
+        "tesseract/worker.min.js",
+        "tesseract/tesseract-core-simd-lstm.wasm.js",
+        "tesseract/tesseract-core-simd-lstm.wasm",
+        "tesseract/langs/eng.traineddata.gz"
       ],
-      "matches": ["https://portal.aiub.edu/*"]
+      "matches": ["<all_urls>"]
     }
   ]
 }
