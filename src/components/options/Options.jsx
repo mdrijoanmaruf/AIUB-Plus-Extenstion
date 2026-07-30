@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiSettings, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 const FEATURES = [
   {
@@ -38,12 +38,14 @@ const FEATURES = [
 
 export default function Options() {
   const [settings, setSettings] = useState({});
+  const [masterEnabled, setMasterEnabled] = useState(true);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.get('featureToggles', (result) => {
+      chrome.storage.sync.get(['featureToggles', 'extensionEnabled'], (result) => {
         setSettings(result.featureToggles || {});
+        setMasterEnabled(result.extensionEnabled ?? true);
         setLoaded(true);
       });
     } else {
@@ -67,6 +69,14 @@ export default function Options() {
     }
   };
 
+  const handleMasterToggle = () => {
+    const newVal = !masterEnabled;
+    setMasterEnabled(newVal);
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.sync.set({ extensionEnabled: newVal });
+    }
+  };
+
   if (!loaded) {
     return <div className="flex h-screen items-center justify-center bg-slate-50 text-slate-500">Loading settings...</div>;
   }
@@ -75,13 +85,36 @@ export default function Options() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10 px-4 font-sans text-slate-800 selection:bg-blue-200">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <header className="mb-10 flex items-center gap-4 rounded-3xl bg-white/70 p-6 shadow-sm backdrop-blur-md ring-1 ring-slate-200/50">
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-500/20">
-            <FiSettings className="h-7 w-7 text-white" />
+        <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 rounded-3xl bg-white/70 p-6 shadow-sm backdrop-blur-md ring-1 ring-slate-200/50">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl overflow-hidden bg-white shadow-md shadow-blue-500/10 ring-1 ring-slate-100">
+              <img src="/logo/icon128.png" alt="AIUB+ Logo" className="h-10 w-10 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">AIUB+ Features Dashboard</h1>
+              <p className="text-sm text-slate-500">Customize which portal enhancements and UI upgrades are active.</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">AIUB+ Features Dashboard</h1>
-            <p className="text-sm text-slate-500">Customize which portal enhancements and UI upgrades are active.</p>
+          
+          <div className="flex items-center gap-4 md:ml-auto border-t md:border-t-0 md:border-l border-slate-200 pt-4 md:pt-0 md:pl-4">
+            <a 
+              href="https://portal.aiub.edu" 
+              className="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+            >
+              Back to Portal
+            </a>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-slate-700">Extension</span>
+              <button
+                onClick={handleMasterToggle}
+                className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${masterEnabled ? 'bg-blue-600' : 'bg-slate-300'}`}
+                role="switch"
+                aria-checked={masterEnabled}
+              >
+                <span className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${masterEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
           </div>
         </header>
 

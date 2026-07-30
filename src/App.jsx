@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 
 const features = [
+  'Settings Dashboard with feature toggles',
+  'Auto CAPTCHA solver for fast login',
   'Advanced offered-course filters and clash detection',
-  'Routine builder with PNG download',
+  'Live AIUB notices from native bell',
   'Registration and fee insights panel',
-  'Grade reports (semester and curriculum views)',
-  'Financial dashboard with balance summary',
-  'Curriculum prerequisite and drop/refund enhancements',
+  'Redesigned grades and financial dashboards',
 ]
 
 function getChromeApi() {
