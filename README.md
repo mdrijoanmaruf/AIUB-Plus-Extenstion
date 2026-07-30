@@ -80,6 +80,12 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 - **Smart Actions:** Buttons to Add, Remove, and intelligently handle course clashes (preventing you from adding courses with conflicting schedules).
 - Beautiful "No courses found" state and dynamically disabled buttons for duplicate/similar courses.
 
+### ⚙️ Settings Dashboard & Feature Toggles
+
+- **Full-Screen Options Page**: A beautifully designed Settings Dashboard accessible from the extension popup.
+- **Granular Control**: Toggle individual features (like Captcha Solver, Course & Results, Registration improvements) ON or OFF based on your preference.
+- **Syncs Everywhere**: Preferences are saved using `chrome.storage.sync`, keeping your settings synchronized across all your devices.
+
 ### 🔔 Navbar & General UI Polish
 
 - Fixed a bug where empty notification badges (red dots without text) would stubbornly appear in the Navbar. The badge now uses a robust `MutationObserver` to ensure it only appears when you actually have unread notifications.
