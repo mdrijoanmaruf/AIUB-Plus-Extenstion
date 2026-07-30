@@ -186,7 +186,16 @@ function fillAnswer(answer) {
 }
 
 function updateBadge(state, text, base64 = null) {
+  const savedState = localStorage.getItem('aiub_captcha_solver_enabled');
+  const isEnabled = savedState === null ? true : savedState === 'true';
+  
   let badge = document.getElementById('aiub-plus-captcha-badge');
+  
+  if (!isEnabled) {
+    if (badge) badge.remove();
+    return;
+  }
+  
   if (!badge) {
     badge = document.createElement('div');
     badge.id = 'aiub-plus-captcha-badge';
@@ -291,10 +300,16 @@ function handleFail(msg, dataUrl, img) {
     
     // The AIUB server rejects custom query params (like '?retry=...') and returns a black error image.
     // Instead, we will simulate a click on the actual blue refresh button on the page.
-    let refreshBtn = img.parentElement.querySelector('a, button');
-    if (!refreshBtn && img.parentElement.parentElement) {
-      refreshBtn = img.parentElement.parentElement.querySelector('a, button');
+    let possibleBtns = Array.from(img.parentElement.querySelectorAll('a, button'));
+    if (possibleBtns.length === 0 && img.parentElement.parentElement) {
+      possibleBtns = Array.from(img.parentElement.parentElement.querySelectorAll('a, button'));
     }
+    
+    let refreshBtn = possibleBtns.find(btn => {
+      const text = btn.textContent.toLowerCase();
+      const isSubmit = btn.type === 'submit' || text.includes('login') || text.includes('sign');
+      return !isSubmit;
+    });
     
     if (refreshBtn) {
       refreshBtn.click();
@@ -413,8 +428,7 @@ function injectToggleUI() {
 }
 
 // Setup 
-function setupCaptchaSolver() {
-  if (!window.location.href.includes('portal.aiub.edu')) return;
+function initCaptchaSolver() {
   injectToggleUI();
   if (document.getElementById(IMG_ID)) {
     const img = document.getElementById(IMG_ID);
@@ -444,6 +458,11 @@ function setupCaptchaSolver() {
     });
     observer.observe(img, { attributes: true, attributeFilter: ['src'] });
   }
+}
+
+function setupCaptchaSolver() {
+  if (!window.location.href.includes('portal.aiub.edu')) return;
+  initCaptchaSolver();
 }
 
 if (document.readyState === 'loading') {
