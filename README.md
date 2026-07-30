@@ -12,7 +12,7 @@
     <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite" alt="Vite" /></a>
     <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" /></a>
     <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome" alt="Manifest" /></a>
-    <a href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"><img src="https://img.shields.io/badge/Version-3.5.0-orange?style=flat-square" alt="Version" /></a>
+    <a href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"><img src="https://img.shields.io/badge/Version-3.5.1-orange?style=flat-square" alt="Version" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" /></a>
   </p>
 
@@ -31,7 +31,7 @@
 ## 📋 Table of Contents
 
 - [What This Extension Does](#-what-this-extension-does)
-- [What's New in v3.5.0](#-whats-new-in-v350)
+- [What's New in v3.5.1](#-whats-new-in-v351)
 - [What's New in v3.1.0](#-whats-new-in-v310)
 - [Tech Stack](#-tech-stack)
 - [How It Works](#-how-it-works)
@@ -78,7 +78,7 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 
 ---
 
-## 🆕 What's New in v3.5.0
+## 🆕 What's New in v3.5.1
 
 ### 🤖 Auto CAPTCHA Solver (97%+ Accuracy)
 
