@@ -379,8 +379,8 @@ function ScheduleView({ days }) {
 (function mount() {
   if (window.__aiubScheduleMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['generalUI'] === false) return;
 
     function tryMount() {
       const mainContent = document.getElementById('main-content');

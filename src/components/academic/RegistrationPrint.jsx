@@ -3,8 +3,8 @@ import { FiPrinter, FiCreditCard, FiShield, FiLock, FiChevronDown, FiClock, FiMo
 import React from 'react';
 
 // Bootstrap into the page
-chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-  if (!r.extensionEnabled) return;
+chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['registration'] === false) return;
 
   const init = setInterval(() => {
     const body = document.querySelector('.portal-body .margin5');

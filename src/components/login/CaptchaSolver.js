@@ -462,7 +462,36 @@ function initCaptchaSolver() {
 
 function setupCaptchaSolver() {
   if (!window.location.href.includes('portal.aiub.edu')) return;
-  initCaptchaSolver();
+  
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.sync.get({ featureToggles: {} }, (result) => {
+      const toggles = result.featureToggles || {};
+      if (toggles.captchaSolver === false) {
+        localStorage.setItem('aiub_captcha_solver_enabled', false);
+      }
+      initCaptchaSolver();
+    });
+
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'sync' && changes.featureToggles) {
+        const newToggles = changes.featureToggles.newValue || {};
+        if (newToggles.captchaSolver !== undefined) {
+          const isEnabled = newToggles.captchaSolver;
+          localStorage.setItem('aiub_captcha_solver_enabled', isEnabled);
+          
+          // Try to update UI if it exists
+          const toggleInput = document.getElementById('aiub-captcha-toggle-input');
+          if (toggleInput && toggleInput.checked !== isEnabled) {
+            toggleInput.checked = isEnabled;
+            // Dispatch change event to trigger the visual updates
+            toggleInput.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    });
+  } else {
+    initCaptchaSolver();
+  }
 }
 
 if (document.readyState === 'loading') {

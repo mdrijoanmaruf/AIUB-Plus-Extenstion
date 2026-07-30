@@ -68,8 +68,8 @@ function SummaryCards({ totalDebit, totalCredit, finalBalance }) {
 (function mount() {
   if (window.__aiubFinanceMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['financials'] === false) return;
 
     function init() {
       const panelBody = document.querySelector('#main-content .panel-body');

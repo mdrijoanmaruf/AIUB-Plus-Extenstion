@@ -314,8 +314,8 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
 (function mount() {
   if (window.__aiubHomeRegMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['registration'] === false) return;
 
     let attempts = 0;
     let reactRoot = null;

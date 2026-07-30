@@ -415,8 +415,8 @@ function SectionDetailsView({ data }) {
 (function mount() {
   if (window.__aiubSectionDetailsMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['generalUI'] === false) return;
 
     function init() {
       const rootEl = document.querySelector('#main-content');

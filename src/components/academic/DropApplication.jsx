@@ -40,8 +40,8 @@ function DropView({ pct, angularNode, rulesNode }) {
   if (window.__aiubDropMounted) return;
   if (!window.location.href.includes('/Student/Adrop/DropApplication')) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['dropApplication'] === false) return;
 
     function init() {
       const courses = document.querySelectorAll(

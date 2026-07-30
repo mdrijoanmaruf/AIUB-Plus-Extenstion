@@ -3,15 +3,19 @@ import { FiEye, FiEyeOff, FiInfo } from 'react-icons/fi';
 import React from 'react';
 
 // Wait for the main content area to load
-const init = setInterval(() => {
-  const mainContent = document.querySelector('#main-content');
-  const panel = mainContent ? mainContent.querySelector('.panel') : null;
+chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+  if (!r.extensionEnabled || r.featureToggles?.profile === false) return;
 
-  if (panel) {
-    clearInterval(init);
-    redesignChangePassword(panel);
-  }
-}, 100);
+  const init = setInterval(() => {
+    const mainContent = document.querySelector('#main-content');
+    const panel = mainContent ? mainContent.querySelector('.panel') : null;
+
+    if (panel) {
+      clearInterval(init);
+      redesignChangePassword(panel);
+    }
+  }, 100);
+});
 
 function redesignChangePassword(panel) {
   // Basic structural elements

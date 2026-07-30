@@ -257,8 +257,8 @@ function CourseAndResultsView({ sectionOpts, semesterOpts, courseName, courseMet
 (function mount() {
   if (window.__aiubCourseResultsMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['courseAndResults'] === false) return;
 
     function init() {
       const listGroup = document.querySelector('#main-content .panel-body .list-group');

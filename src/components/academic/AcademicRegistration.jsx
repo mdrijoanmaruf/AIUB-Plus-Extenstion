@@ -303,8 +303,8 @@ function RegistrationView({ semOptions, printHref, creditItems, courses, fees, o
 (function mount() {
   if (window.__aiubRegMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['registration'] === false) return;
 
     function init() {
       const panel =

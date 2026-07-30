@@ -11,15 +11,25 @@ if (!window.__aiubFilterInjected) {
   window.__aiubFilterInjected = true;
 
   const ATTR = 'data-aiub-ext';
+  const ATTR_FEATURES = 'data-aiub-features';
+
+  function checkFeatureAndInit(featuresObj) {
+    if (featuresObj && featuresObj.offeredFilters === false) return;
+    init();
+  }
+
   const current = document.documentElement.getAttribute(ATTR);
+  const currentFeatures = document.documentElement.getAttribute(ATTR_FEATURES);
 
   if (current !== null) {
-    // contentBridge already resolved — read state directly, no need to wait
-    if (current === '1') init();
+    if (current === '1') {
+      let features = {};
+      try { features = JSON.parse(currentFeatures || '{}'); } catch(e) {}
+      checkFeatureAndInit(features);
+    }
   } else {
-    // contentBridge hasn't resolved yet — wait for the event
     document.addEventListener('__aiubExt:state', (e) => {
-      if (e.detail.enabled) init();
+      if (e.detail.enabled) checkFeatureAndInit(e.detail.features);
     }, { once: true });
   }
 }

@@ -286,8 +286,8 @@ function enhance() {
 (function mount() {
   if (window.__aiubCurriculumMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['curriculum'] === false) return;
 
     function init() {
       if (window.__aiubCurriculumMounted) return;

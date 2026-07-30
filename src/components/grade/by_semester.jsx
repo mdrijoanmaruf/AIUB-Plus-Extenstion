@@ -303,8 +303,8 @@ function SemesterGradeReport({ infoItems, semesters, printHref }) {
   if (window.__aiubSemGradeEnhanced) return;
   if (!window.location.href.includes('/Student/GradeReport/BySemester')) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['gradeReport'] === false) return;
 
     function init() {
       const gr = document.querySelector('.grade-report');

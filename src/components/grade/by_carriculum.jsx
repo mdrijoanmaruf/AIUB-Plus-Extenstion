@@ -854,8 +854,8 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
   if (window.__aiubGradeCurrMounted) return;
   if (!window.location.href.includes('/Student/GradeReport/ByCurriculum')) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['gradeReport'] === false) return;
 
     function init() {
       const gr = document.querySelector('.grade-report');

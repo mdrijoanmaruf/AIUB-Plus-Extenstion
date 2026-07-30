@@ -221,8 +221,9 @@
     }
   }
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    applyEnabledState(Boolean(r && r.extensionEnabled));
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    const isEnabled = Boolean(r && r.extensionEnabled && r.featureToggles?.profile !== false);
+    applyEnabledState(isEnabled);
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {

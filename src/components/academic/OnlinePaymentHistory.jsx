@@ -84,8 +84,8 @@ function StatusBadge({ status }) {
 (function mount() {
   if (window.__aiubPayHistoryMounted) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['paymentHistory'] === false) return;
 
     function init() {
       const fieldset = document.querySelector('#main-content .margin5 fieldset');

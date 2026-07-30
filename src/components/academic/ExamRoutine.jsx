@@ -174,8 +174,8 @@ function ExamRoutineView({ disclaimer, exams }) {
   if (window.__aiubExamRoutineMounted) return;
   if (!window.location.href.includes('/Student/ExamRoutineSchedule')) return;
 
-  chrome.storage.sync.get({ extensionEnabled: true }, (r) => {
-    if (!r.extensionEnabled) return;
+  chrome.storage.sync.get({ extensionEnabled: true, featureToggles: {} }, (r) => {
+    if (!r.extensionEnabled || r.featureToggles?.['examRoutine'] === false) return;
 
     function init() {
       const target = document.getElementById('main-content');
