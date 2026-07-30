@@ -19,6 +19,7 @@
 ## 📋 Table of Contents
 
 - [What This Extension Does](#-what-this-extension-does)
+- [What's New in v3.5.0](#-whats-new-in-v350)
 - [What's New in v3.1.0](#-whats-new-in-v310)
 - [Tech Stack](#-tech-stack)
 - [How It Works](#-how-it-works)
