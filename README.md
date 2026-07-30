@@ -1,18 +1,30 @@
-# AIUB Portal+ 🚀
+<div align="center">
+  <img src="public/logo/logo128.png" alt="AIUB Portal+ Logo" width="120" height="120" />
 
-> A comprehensive Chrome extension that supercharges the official AIUB Student Portal with a modern UI, intelligent scheduling, grade analytics, and financial insights.
+  # AIUB Portal+ 🚀
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
-[![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome)](https://developer.chrome.com/docs/extensions/mv3/)
-[![Version](https://img.shields.io/badge/Version-3.1.0-orange?style=flat-square)](https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+  **A comprehensive Chrome extension that supercharges the official AIUB Student Portal with a modern UI, intelligent scheduling, grade analytics, and financial insights.**
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Install_Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel)
+  <br />
 
-**Chrome Web Store:** [Install AIUB Portal+](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel)  
-**Repository:** [github.com/mdrijoanmaruf/AIUB-Plus-Extenstion](https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion)
+  <p>
+    <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" alt="React" /></a>
+    <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite" alt="Vite" /></a>
+    <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" /></a>
+    <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome" alt="Manifest" /></a>
+    <a href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"><img src="https://img.shields.io/badge/Version-3.5.0-orange?style=flat-square" alt="Version" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" /></a>
+  </p>
+
+  <a href="https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel">
+    <img src="https://img.shields.io/badge/Chrome_Web_Store-Install_Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Install from Chrome Web Store" />
+  </a>
+
+  <br />
+  <br />
+
+  **[Install Extension](https://chromewebstore.google.com/detail/aiub-portal+/fjabnpkpkjdeblonjloimdamobghofel)** &nbsp; · &nbsp; **[GitHub Repository](https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion)**
+</div>
 
 ---
 
@@ -181,12 +193,15 @@ All inline SVG icons replaced with `react-icons/fi` across 10 components:
 
 ## ⚙️ How It Works
 
-```
-┌─────────────┐     ┌──────────────────┐     ┌───────────────────────┐
-│  Popup UI   │────▶│  contentBridge   │────▶│  Content Scripts      │
-│ (App.jsx)   │     │  (CustomEvent)   │     │  (self-guarded)       │
-└─────────────┘     └──────────────────┘     └───────────────────────┘
-chrome.storage.sync   broadcasts to MAIN       parse & enhance DOM
+```mermaid
+graph LR
+  A["Popup UI (App.jsx)"] -->|chrome.storage.sync| B(contentBridge)
+  B -->|CustomEvent & data attr| C{"Content Scripts (self-guarded)"}
+  C -->|Parse & Enhance| D[Portal DOM]
+  
+  style A fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
+  style B fill:#06B6D4,stroke:#fff,stroke-width:2px,color:#fff
+  style C fill:#61DAFB,stroke:#fff,stroke-width:2px,color:#000
 ```
 
 **Step 1 — Popup controls state**
@@ -205,12 +220,15 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 
 ## 📄 Features by Module
 
-### 🔐 Login & Security
+<details>
+<summary><b>🔐 Login & Security</b></summary>
 
 - **Auto CAPTCHA Solver:** Uses offline OCR (Tesseract.js) to automatically read and evaluate the math expression on the login page with 97%+ accuracy.
 - **Change Password:** Premium redesigned form with eye-toggle buttons to reveal/hide passwords, and custom placeholders.
+</details>
 
-### 📅 Offered Courses
+<details>
+<summary><b>📅 Offered Courses</b></summary>
 
 - Parses FooTable courses and nested time slots.
 - Filters by search, status, day, and start-time range.
@@ -219,37 +237,48 @@ Feature modules parse portal HTML tables/panels, then replace or augment them wi
 - Beautiful "No courses found" state and dynamic pagination.
 - Generates a weekly routine modal with color-coded course blocks and exports the routine as a PNG image via `html2canvas`.
 - Persists selected sections securely.
+</details>
 
-### 📝 Registration
+<details>
+<summary><b>📝 Registration</b></summary>
 
 - **Academic Registration:** Redesigned registration page with cleaner cards, semester switch, print shortcuts, and a fee breakdown panel.
 - **Registration Print:** Fully redesigned payment print page with payment cards, bank selector, alert banners, and a modern trust footer.
+</details>
 
-### 🎓 Grades & Curriculum
+<details>
+<summary><b>🎓 Grades & Curriculum</b></summary>
 
 - **Course Results:** Modernized display with expandable section cards showing midterm/final breakdowns and colored grade badges.
 - **By Curriculum:** Visualizes grades across the entire curriculum, injecting prerequisite enrichment via bundled `CSE.json`. Beautiful color-coded grade pills.
 - **By Semester:** Expandable semester view tracking ongoing, dropped, failed, and passed statuses with GPA summary cards.
 - **Prerequisites:** Enriches the portal with course dependencies and modal table styling.
+</details>
 
-### 💳 Financials & Payments
+<details>
+<summary><b>💳 Financials & Payments</b></summary>
 
 - **Financial Summary:** Debit-credit-balance parsing with visually appealing summary cards.
 - **Online Payment History:** Styled table with monospace transaction IDs and color-coded status badges (Success, Failed, Pending, Cancelled). Includes row hover highlights and "Check Status" buttons.
+</details>
 
-### 🏛 Academic Extras
+<details>
+<summary><b>🏛 Academic Extras</b></summary>
 
 - **Exam Routine:** Highlights completed exams with "Completed" badges, adds countdown timers to upcoming exams, and neatly styles the schedule.
 - **Drop Application:** Cleans up the drop interface and clearly highlights refund status.
 - **Class Schedule & Home Registration:** Upgrades the today's schedule view on the home dashboard and elevates the registration status widget.
+</details>
 
-### 🎨 Shared UI Enhancements
+<details>
+<summary><b>🎨 Shared UI Enhancements</b></summary>
 
 - **Sidebar:** Fully redesigned sidebar with Tailwind CSS, custom icons, collapsible sections, smooth hover effects, and a user profile summary widget.
 - **Navbar:** Clean transparent topbar with a Live Notice Bell (`FiBell`), native notification styling, active page highlighting, and smart empty-badge hiding via a robust `MutationObserver`.
 - **Profile Page:** Beautified student profile page with gradient backgrounds, clean form fields, and a polished photo frame.
 - **Dashboard Intro:** Upgraded welcome widget on the home dashboard.
 - **General Polish:** Modern typography, consistent spacing, intuitive layout, and beautiful glassmorphism dropdowns across the portal.
+</details>
 
 ---
 
