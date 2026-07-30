@@ -194,14 +194,44 @@ All inline SVG icons replaced with `react-icons/fi` across 10 components:
 ## ⚙️ How It Works
 
 ```mermaid
-graph LR
-  A["Popup UI (App.jsx)"] -->|chrome.storage.sync| B(contentBridge)
-  B -->|CustomEvent & data attr| C{"Content Scripts (self-guarded)"}
-  C -->|Parse & Enhance| D[Portal DOM]
-  
-  style A fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
-  style B fill:#06B6D4,stroke:#fff,stroke-width:2px,color:#fff
-  style C fill:#61DAFB,stroke:#fff,stroke-width:2px,color:#000
+graph TD
+    subgraph ExtensionContext ["Extension Context"]
+        UI["Popup & Settings Dashboard<br/>React + Tailwind"]
+        Sync[("(chrome.storage.sync)")]
+    end
+
+    subgraph IsolatedWorld ["Portal Content (Isolated World)"]
+        CB["contentBridge.jsx"]
+        IsolatedScripts["Isolated Content Scripts<br/>e.g. Registration, Grades"]
+    end
+
+    subgraph MainWorld ["Portal Content (MAIN World)"]
+        MainScripts["MAIN Content Scripts<br/>e.g. OfferedFilters, Captcha"]
+    end
+
+    subgraph AIUBPortal ["AIUB Student Portal"]
+        DOM["Portal DOM"]
+    end
+
+    UI -->|Saves Toggles| Sync
+    Sync -->|onChanged Listener| CB
+    Sync -->|Initial Load| CB
+    Sync -.->|Direct Read| IsolatedScripts
+    Sync -.->|Direct Read| MainScripts
+    
+    CB -->|Sets data-attributes| DOM
+    CB -->|Dispatches CustomEvent| DOM
+    DOM -->|Listens for Event| MainScripts
+
+    IsolatedScripts -->|Parses & Mutates| DOM
+    MainScripts -->|Parses & Mutates| DOM
+
+    style UI fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
+    style Sync fill:#fbbc05,stroke:#fff,stroke-width:2px,color:#000
+    style CB fill:#34A853,stroke:#fff,stroke-width:2px,color:#fff
+    style IsolatedScripts fill:#06B6D4,stroke:#fff,stroke-width:2px,color:#fff
+    style MainScripts fill:#EA4335,stroke:#fff,stroke-width:2px,color:#fff
+    style DOM fill:#9AA0A6,stroke:#fff,stroke-width:2px,color:#fff
 ```
 
 **Step 1 — Popup controls state**
