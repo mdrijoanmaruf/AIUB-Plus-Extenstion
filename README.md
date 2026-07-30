@@ -422,7 +422,7 @@ Then load the generated `dist/` directory into Chrome via `chrome://extensions` 
 - Manifest Version 3
 - Host permissions: `https://portal.aiub.edu/*`
 - Permissions: `activeTab`, `storage`, `tabs`
-- Content scripts mapped per portal route (18 total entries in v3.1.0)
+- Content scripts mapped per portal route (17 total entries in v3.5.1)
 - `web_accessible_resources` includes icons and `Academic/CSE.json`
 
 ### `tailwind.config.js`
@@ -488,7 +488,6 @@ Bundled curriculum dataset used for prerequisite matching and curriculum enrichm
 - Portal DOM changes can break parser-dependent modules
 - Some enhancements rely on exact portal CSS classes and structure
 - Prerequisite unlock feature works only for AIUB CSE students
-- AngularJS-managed elements may re-render and require CSS injection rather than inline DOM styling
 
 ---
 
