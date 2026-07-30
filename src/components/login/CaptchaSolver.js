@@ -371,6 +371,7 @@ function injectToggleUI() {
 
   const toggleInput = document.createElement('input');
   toggleInput.type = 'checkbox';
+  toggleInput.id = 'aiub-captcha-toggle-input';
   toggleInput.style.cssText = `
     opacity: 0;
     width: 0;
@@ -417,8 +418,20 @@ function injectToggleUI() {
     slider.style.backgroundColor = checked ? '#10b981' : '#ccc';
     circle.style.left = checked ? '22px' : '2px';
     
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.sync.get(['featureToggles'], (result) => {
+        const toggles = result.featureToggles || {};
+        toggles.captchaSolver = checked;
+        chrome.storage.sync.set({ featureToggles: toggles });
+      });
+    }
+    
     if (checked) {
       attemptSolve();
+    } else {
+      const badge = document.getElementById('aiub-plus-captcha-badge');
+      if (badge) badge.remove();
+      isSolving = false;
     }
   });
 
@@ -464,29 +477,43 @@ function setupCaptchaSolver() {
   if (!window.location.href.includes('portal.aiub.edu')) return;
   
   if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.sync.get({ featureToggles: {} }, (result) => {
+    chrome.storage.sync.get(['featureToggles', 'extensionEnabled'], (result) => {
       const toggles = result.featureToggles || {};
-      if (toggles.captchaSolver === false) {
+      const masterEnabled = result.extensionEnabled ?? true;
+      if (toggles.captchaSolver === false || !masterEnabled) {
         localStorage.setItem('aiub_captcha_solver_enabled', false);
+      } else {
+        localStorage.setItem('aiub_captcha_solver_enabled', true);
       }
       initCaptchaSolver();
     });
 
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === 'sync' && changes.featureToggles) {
-        const newToggles = changes.featureToggles.newValue || {};
-        if (newToggles.captchaSolver !== undefined) {
-          const isEnabled = newToggles.captchaSolver;
+      if (area === 'sync') {
+        chrome.storage.sync.get(['featureToggles', 'extensionEnabled'], (result) => {
+          const toggles = result.featureToggles || {};
+          const masterEnabled = result.extensionEnabled ?? true;
+          const isEnabled = masterEnabled && toggles.captchaSolver !== false;
+          
           localStorage.setItem('aiub_captcha_solver_enabled', isEnabled);
           
-          // Try to update UI if it exists
+          if (!isEnabled) {
+            const badge = document.getElementById('aiub-plus-captcha-badge');
+            if (badge) badge.remove();
+            isSolving = false;
+          }
+
           const toggleInput = document.getElementById('aiub-captcha-toggle-input');
           if (toggleInput && toggleInput.checked !== isEnabled) {
             toggleInput.checked = isEnabled;
-            // Dispatch change event to trigger the visual updates
-            toggleInput.dispatchEvent(new Event('change'));
+            // Dispatch change event manually but prevent infinite sync loops
+            const slider = toggleInput.nextElementSibling;
+            if (slider) {
+              slider.style.backgroundColor = isEnabled ? '#10b981' : '#ccc';
+              slider.firstChild.style.left = isEnabled ? '22px' : '2px';
+            }
           }
-        }
+        });
       }
     });
   } else {
