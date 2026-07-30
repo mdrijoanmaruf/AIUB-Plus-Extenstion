@@ -31,10 +31,10 @@
 ## 📋 Table of Contents
 
 - [What This Extension Does](#-what-this-extension-does)
+- [How It Works (Architecture)](#-how-it-works-architecture)
 - [What's New in v3.5.1](#-whats-new-in-v351)
 - [What's New in v3.1.0](#-whats-new-in-v310)
 - [Tech Stack](#-tech-stack)
-- [How It Works](#-how-it-works)
 - [Features by Portal Page](#-features-by-portal-page)
 - [Project Structure](#-project-structure)
 - [Installation & Setup](#-installation--setup)
@@ -75,6 +75,91 @@ AIUB Portal+ adds page-specific enhancements on [https://portal.aiub.edu](https:
 | **Shared UI** | Sidebar, navbar, profile widget, and live Notices bell from aiub.edu |
 
 > Pure client-side — no backend API calls. All data is parsed from the existing portal DOM in-browser.
+
+---
+
+## ⚙️ How It Works (Architecture)
+
+The extension utilizes a modern Chrome Extension V3 architecture, bridging secure background scripts with dynamic React-rendered components injected directly into the AIUB Portal DOM.
+
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "18px"}}}%%
+flowchart TB
+    %% Premium Styling Definitions
+    classDef chromeAPI fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
+    classDef reactUI fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
+    classDef isolated fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
+    classDef mainWorld fill:#f43f5e,stroke:#e11d48,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
+    classDef portalDOM fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff,font-weight:bold,rx:6px,ry:6px,shadow:true,font-size:18px;
+    classDef eventBus fill:#475569,stroke:#334155,stroke-width:2px,color:#fff,font-style:italic,rx:50px,ry:50px,shadow:true,font-size:18px;
+    
+    %% Base styling
+    linkStyle default stroke:#94a3b8,stroke-width:2px;
+
+    %% Architectural Subgraphs
+    subgraph ExtensionLayer ["1. Extension Layer (Background & UI)"]
+        direction LR
+        UI("React UI<br/><i>Popup & Dashboard</i>"):::reactUI
+        Storage[("chrome.storage.sync<br/><i>Global Preferences</i>")]:::chromeAPI
+    end
+
+    subgraph ContentLayer ["2. Content Scripts Layer (Injected Contexts)"]
+        direction TB
+        
+        subgraph Isolated ["ISOLATED WORLD (Secure Chrome Context)"]
+            direction LR
+            CB("contentBridge.jsx<br/><i>Initialization & Security</i>"):::isolated
+            IsolatedModules["Secure Modules<br/><i>Grades, Registration</i>"]:::isolated
+        end
+        
+        subgraph Main ["MAIN WORLD (Shared Page Context)"]
+            MainModules["MAIN Modules<br/><i>OfferedFilters, CAPTCHA</i>"]:::mainWorld
+        end
+    end
+
+    subgraph TargetLayer ["3. Target Environment (portal.aiub.edu)"]
+        direction LR
+        Events(("CustomEvent Bus<br/><i>'aiub-extension-sync'</i>")):::eventBus
+        DOM["AIUB Portal DOM<br/><i>HTML Tables & Layouts</i>"]:::portalDOM
+    end
+
+    %% Precise Data Flow Paths
+    UI == "Saves user settings" ==> Storage
+    
+    Storage -- "Fires onChanged" --> CB
+    Storage -. "Direct data read" .-> IsolatedModules
+    
+    CB == "Dispatches state payload" ==> Events
+    CB -- "Mounts data-aiub-ext" --> DOM
+    
+    Events -. "Intercepted by listeners" .-> MainModules
+    
+    IsolatedModules == "Mounts React DOM Tree" ==> DOM
+    MainModules == "Mounts React DOM Tree" ==> DOM
+    
+    %% Force spatial arrangement
+    ExtensionLayer ~~~ ContentLayer
+    ContentLayer ~~~ TargetLayer
+
+```
+
+### 🧠 The Workflow Breakdown
+
+**Step 1: Preference Management (Popup & Sync)**
+The user interacts with the Popup UI or Settings Dashboard (`src/App.jsx`, `Options.jsx`), which reads and writes user preferences globally using the `chrome.storage.sync` API. This ensures settings persist seamlessly across all synced Chrome devices.
+
+**Step 2: The Security Bridge (`contentBridge.jsx`)**
+Chrome Extensions run content scripts in an **Isolated World** for security, meaning they cannot access variables from the portal's original scripts. However, some complex features (like the `OfferedFilters` or `CaptchaSolver`) require execution in the **MAIN World** to bypass strict Content Security Policies (CSP). 
+`contentBridge.jsx` acts as the securely anchored middleman. Running at `document_start`, it listens to `chrome.storage.sync` and securely broadcasts the extension's enabled/disabled state to the page.
+
+**Step 3: Secure Communication via CustomEvents**
+Since MAIN world scripts cannot access `chrome.*` APIs directly, they rely on `contentBridge`. When settings change, the bridge dispatches a specialized `CustomEvent` (`aiub-extension-sync`) and updates data-attributes (`data-aiub-ext`) directly on the `<html>` root. 
+
+**Step 4: Module Initialization & DOM Safeguards**
+Each content script module (e.g., `ClassSchedule.jsx`, `CourseAndResults.jsx`) waits for the `document_idle` lifecycle. They utilize global guard flags (`window.__aiubMounted`) to prevent duplicate executions. They verify their enabled state either by pinging `chrome.storage` (Isolated modules) or by reading the bridge signals (MAIN modules).
+
+**Step 5: DOM Parsing & React Mounting**
+Once authorized, the modules parse the clunky HTML tables and layouts of the original AIUB Portal. They extract the raw data, hide the legacy elements, create a fresh anchor `div`, and use `createRoot` to mount beautiful, Tailwind-styled React components right inside the portal natively.
 
 ---
 
@@ -188,91 +273,6 @@ All inline SVG icons replaced with `react-icons/fi` across 10 components:
 | **ESLint** | 9 | Code linting |
 
 **Primary config files:** `manifest.json` · `vite.config.js` · `tailwind.config.js` · `postcss.config.js` · `eslint.config.js`
-
----
-
-## ⚙️ How It Works (Architecture)
-
-The extension utilizes a modern Chrome Extension V3 architecture, bridging secure background scripts with dynamic React-rendered components injected directly into the AIUB Portal DOM.
-
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}}}%%
-flowchart TB
-    %% Premium Styling Definitions
-    classDef chromeAPI fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
-    classDef reactUI fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
-    classDef isolated fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
-    classDef mainWorld fill:#f43f5e,stroke:#e11d48,stroke-width:2px,color:#fff,font-weight:bold,rx:12px,ry:12px,shadow:true,font-size:18px;
-    classDef portalDOM fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff,font-weight:bold,rx:6px,ry:6px,shadow:true,font-size:18px;
-    classDef eventBus fill:#475569,stroke:#334155,stroke-width:2px,color:#fff,font-style:italic,rx:50px,ry:50px,shadow:true,font-size:18px;
-    
-    %% Base styling
-    linkStyle default stroke:#94a3b8,stroke-width:2px;
-
-    %% Architectural Subgraphs
-    subgraph ExtensionLayer ["1. Extension Layer (Background & UI)"]
-        direction LR
-        UI("React UI<br/><i>Popup & Dashboard</i>"):::reactUI
-        Storage[("chrome.storage.sync<br/><i>Global Preferences</i>")]:::chromeAPI
-    end
-
-    subgraph ContentLayer ["2. Content Scripts Layer (Injected Contexts)"]
-        direction TB
-        
-        subgraph Isolated ["ISOLATED WORLD (Secure Chrome Context)"]
-            direction LR
-            CB("contentBridge.jsx<br/><i>Initialization & Security</i>"):::isolated
-            IsolatedModules["Secure Modules<br/><i>Grades, Registration</i>"]:::isolated
-        end
-        
-        subgraph Main ["MAIN WORLD (Shared Page Context)"]
-            MainModules["MAIN Modules<br/><i>OfferedFilters, CAPTCHA</i>"]:::mainWorld
-        end
-    end
-
-    subgraph TargetLayer ["3. Target Environment (portal.aiub.edu)"]
-        direction LR
-        Events(("CustomEvent Bus<br/><i>'aiub-extension-sync'</i>")):::eventBus
-        DOM["AIUB Portal DOM<br/><i>HTML Tables & Layouts</i>"]:::portalDOM
-    end
-
-    %% Precise Data Flow Paths
-    UI == "Saves user settings" ==> Storage
-    
-    Storage -- "Fires onChanged" --> CB
-    Storage -. "Direct data read" .-> IsolatedModules
-    
-    CB == "Dispatches state payload" ==> Events
-    CB -- "Mounts data-aiub-ext" --> DOM
-    
-    Events -. "Intercepted by listeners" .-> MainModules
-    
-    IsolatedModules == "Mounts React DOM Tree" ==> DOM
-    MainModules == "Mounts React DOM Tree" ==> DOM
-    
-    %% Force spatial arrangement
-    ExtensionLayer ~~~ ContentLayer
-    ContentLayer ~~~ TargetLayer
-
-```
-
-### 🧠 The Workflow Breakdown
-
-**Step 1: Preference Management (Popup & Sync)**
-The user interacts with the Popup UI or Settings Dashboard (`src/App.jsx`, `Options.jsx`), which reads and writes user preferences globally using the `chrome.storage.sync` API. This ensures settings persist seamlessly across all synced Chrome devices.
-
-**Step 2: The Security Bridge (`contentBridge.jsx`)**
-Chrome Extensions run content scripts in an **Isolated World** for security, meaning they cannot access variables from the portal's original scripts. However, some complex features (like the `OfferedFilters` or `CaptchaSolver`) require execution in the **MAIN World** to bypass strict Content Security Policies (CSP). 
-`contentBridge.jsx` acts as the securely anchored middleman. Running at `document_start`, it listens to `chrome.storage.sync` and securely broadcasts the extension's enabled/disabled state to the page.
-
-**Step 3: Secure Communication via CustomEvents**
-Since MAIN world scripts cannot access `chrome.*` APIs directly, they rely on `contentBridge`. When settings change, the bridge dispatches a specialized `CustomEvent` (`aiub-extension-sync`) and updates data-attributes (`data-aiub-ext`) directly on the `<html>` root. 
-
-**Step 4: Module Initialization & DOM Safeguards**
-Each content script module (e.g., `ClassSchedule.jsx`, `CourseAndResults.jsx`) waits for the `document_idle` lifecycle. They utilize global guard flags (`window.__aiubMounted`) to prevent duplicate executions. They verify their enabled state either by pinging `chrome.storage` (Isolated modules) or by reading the bridge signals (MAIN modules).
-
-**Step 5: DOM Parsing & React Mounting**
-Once authorized, the modules parse the clunky HTML tables and layouts of the original AIUB Portal. They extract the raw data, hide the legacy elements, create a fresh anchor `div`, and use `createRoot` to mount beautiful, Tailwind-styled React components right inside the portal natively.
 
 ---
 
