@@ -1,186 +1,150 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react';
+import { 
+  FiSettings, FiStar, FiSliders, FiLock, 
+  FiFilter, FiBell, FiUser, FiBarChart2, 
+  FiCheckCircle, FiShield, FiGlobe, FiGithub, FiLinkedin 
+} from 'react-icons/fi';
+import { FaPuzzlePiece } from 'react-icons/fa';
 
 const features = [
-  'Advanced offered-course filters and clash detection',
-  'Routine builder with PNG download',
-  'Registration and fee insights panel',
-  'Grade reports (semester and curriculum views)',
-  'Financial dashboard with balance summary',
-  'Curriculum prerequisite and drop/refund enhancements',
-]
+  { text: 'Settings Dashboard with feature toggles', icon: FiSliders },
+  { text: 'Auto CAPTCHA solver for fast login', icon: FiLock },
+  { text: 'Advanced offered-course filters and clash detection', icon: FiFilter },
+  { text: 'Live AIUB notices from native bell', icon: FiBell },
+  { text: 'Registration and fee insights panel', icon: FiUser },
+  { text: 'Redesigned grades and financial dashboards', icon: FiBarChart2 },
+];
 
 function getChromeApi() {
-  if (typeof globalThis === 'undefined') return null
-  return globalThis.chrome ?? null
+  if (typeof globalThis === 'undefined') return null;
+  return globalThis.chrome ?? null;
 }
 
 function storageGetEnabled(api) {
   return new Promise((resolve) => {
     try {
       api.storage.sync.get({ extensionEnabled: true }, (result) => {
-        resolve(Boolean(result?.extensionEnabled ?? true))
-      })
+        resolve(Boolean(result?.extensionEnabled ?? true));
+      });
     } catch {
-      resolve(true)
+      resolve(true);
     }
-  })
+  });
 }
 
 function queryCurrentTab(api) {
   return new Promise((resolve) => {
     try {
       api.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        resolve(tabs?.[0] ?? null)
-      })
+        resolve(tabs?.[0] ?? null);
+      });
     } catch {
-      resolve(null)
+      resolve(null);
     }
-  })
+  });
 }
 
 function setEnabled(api, enabled) {
   return new Promise((resolve) => {
     try {
-      api.storage.sync.set({ extensionEnabled: enabled }, () => resolve())
+      api.storage.sync.set({ extensionEnabled: enabled }, () => resolve());
     } catch {
-      resolve()
+      resolve();
     }
-  })
+  });
 }
 
 function reloadTab(api, tabId) {
-  if (!tabId) return
+  if (!tabId) return;
   try {
-    api.tabs.reload(tabId)
+    api.tabs.reload(tabId);
   } catch {
     // no-op
   }
 }
 
 function App() {
-  const chromeApi = useMemo(getChromeApi, [])
-  const [enabled, setEnabledState] = useState(true)
-  const [currentTab, setCurrentTab] = useState(null)
-  const [ready, setReady] = useState(false)
+  const chromeApi = useMemo(getChromeApi, []);
+  const [enabled, setEnabledState] = useState(true);
+  const [currentTab, setCurrentTab] = useState(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     async function initPopup() {
       if (!chromeApi) {
-        setReady(true)
-        return
+        setReady(true);
+        return;
       }
 
       const [enabledState, tab] = await Promise.all([
         storageGetEnabled(chromeApi),
         queryCurrentTab(chromeApi),
-      ])
+      ]);
 
-      setEnabledState(enabledState)
-      setCurrentTab(tab)
-      setReady(true)
+      setEnabledState(enabledState);
+      setCurrentTab(tab);
+      setReady(true);
     }
 
-    initPopup()
-  }, [chromeApi])
-
-  const isOfferedPage = Boolean(
-    currentTab?.url?.includes('portal.aiub.edu/Student/Section/Offered'),
-  )
-
-  const isStudentPortalPage = Boolean(
-    currentTab?.url?.includes('portal.aiub.edu/Student'),
-  )
-
-  const status = useMemo(() => {
-    if (!ready) {
-      return {
-        text: 'Loading extension status...',
-        classes: 'bg-slate-100 text-slate-700 border-slate-200',
-      }
-    }
-
-    if (!chromeApi) {
-      return {
-        text: 'Open as a Chrome extension popup to use toggle controls.',
-        classes: 'bg-amber-50 text-amber-800 border-amber-200',
-      }
-    }
-
-    if (!enabled) {
-      return {
-        text: 'Extension is disabled. Toggle ON to activate.',
-        classes: 'bg-red-50 text-red-700 border-red-200',
-      }
-    }
-
-    if (isOfferedPage) {
-      return {
-        text: 'Advanced filter tools are active on this page.',
-        classes: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      }
-    }
-
-    if (isStudentPortalPage) {
-      return {
-        text: 'AIUB+ enhancements are active on this portal page.',
-        classes: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      }
-    }
-
-    return {
-      text: 'Go to AIUB Student Portal pages to use AIUB+ tools.',
-      classes: 'bg-amber-50 text-amber-800 border-amber-200',
-    }
-  }, [chromeApi, enabled, isOfferedPage, isStudentPortalPage, ready])
+    initPopup();
+  }, [chromeApi]);
 
   const handleToggle = async () => {
-    if (!chromeApi) return
-    const next = !enabled
-    setEnabledState(next)
-    await setEnabled(chromeApi, next)
-    reloadTab(chromeApi, currentTab?.id)
-  }
+    if (!chromeApi) return;
+    const next = !enabled;
+    setEnabledState(next);
+    await setEnabled(chromeApi, next);
+    reloadTab(chromeApi, currentTab?.id);
+  };
 
   const handleOpenSettings = () => {
     if (chromeApi && chromeApi.runtime.openOptionsPage) {
-      chromeApi.runtime.openOptionsPage()
+      chromeApi.runtime.openOptionsPage();
     } else {
-      window.open('/options.html', '_blank')
+      window.open('/options.html', '_blank');
     }
-  }
+  };
 
   return (
-    <div className="relative w-[340px] overflow-hidden rounded-2xl border border-aiub-blue/15 bg-gradient-to-br from-white via-aiub-sky to-[#dbeaff] font-display text-[#20314f] shadow-card">
-      <div className="absolute -top-14 right-[-52px] h-40 w-40 rounded-full bg-aiub-blue/20 blur-2xl" />
-
-      <header className="relative flex items-center justify-between gap-3 bg-gradient-to-r from-aiub-navy via-aiub-blue to-[#2f7be7] px-4 py-4 text-white">
+    <div className="w-[360px] bg-white font-sans text-slate-800 shadow-xl overflow-hidden rounded-md border border-slate-200">
+      
+      {/* Top Header */}
+      <header className="flex items-center justify-between bg-gradient-to-r from-[#003B95] to-[#1E67DF] p-4 text-white">
         <div className="flex items-center gap-3">
-          <img
-            src="/logo/logo128.png"
-            alt="AIUB Portal+"
-            className="h-10 w-10 rounded-xl border border-white/40 object-contain"
-          />
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm p-1">
+            <img src="/logo/icon128.png" alt="AIUB Portal+" className="h-full w-full object-contain rounded-full" />
+          </div>
           <div>
-            <h1 className="text-[15px] font-bold leading-tight tracking-wide">AIUB Portal+</h1>
-            <p className="text-[11px] text-white/75">Portal Enhancement Suite</p>
+            <h1 className="text-[17px] font-bold leading-tight tracking-wide">AIUB Portal+</h1>
+            <p className="text-[12px] text-white/90">Portal Enhancement Suite</p>
           </div>
         </div>
         <button 
           onClick={handleOpenSettings}
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 transition-colors shadow-sm"
           title="Settings Dashboard"
         >
-          <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <FiSettings className="h-5 w-5" />
         </button>
       </header>
 
-      <main className="relative space-y-3 px-4 pb-3 pt-4">
-        <section className="flex items-center justify-between rounded-xl border border-aiub-blue/15 bg-white/90 px-3 py-3 shadow-sm">
-          <div>
-            <p className="text-[13px] font-bold text-aiub-navy">Extension</p>
-            <p className={`text-[11px] font-semibold ${enabled ? 'text-aiub-success' : 'text-aiub-danger'}`}>
-              {enabled ? 'Enabled' : 'Disabled'}
-            </p>
+      <main className="px-4 py-2 space-y-2">
+        
+        {/* Extension Toggle Card */}
+        <section className="flex items-center justify-between rounded-xl border border-slate-100 bg-white p-3 shadow-sm ring-1 ring-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
+              <FaPuzzlePiece className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[14px] font-bold text-slate-800 leading-tight">Extension</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className={`h-2 w-2 rounded-full ${enabled ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <p className={`text-[12px] font-semibold ${enabled ? 'text-green-600' : 'text-red-500'}`}>
+                  {enabled ? 'Enabled' : 'Disabled'}
+                </p>
+              </div>
+            </div>
           </div>
 
           <button
@@ -188,44 +152,60 @@ function App() {
             onClick={handleToggle}
             disabled={!chromeApi}
             aria-label="Enable or disable extension"
-            className={`relative h-7 w-14 rounded-full border transition ${enabled ? 'border-aiub-blue bg-aiub-blue' : 'border-slate-300 bg-slate-300'} ${chromeApi ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+            className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${enabled ? 'bg-blue-600' : 'bg-slate-300'} ${chromeApi ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
           >
             <span
-              className={`absolute top-[2px] h-5 w-5 rounded-full bg-white shadow transition ${enabled ? 'left-[31px]' : 'left-[3px]'}`}
+              className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${enabled ? 'translate-x-5' : 'translate-x-0'}`}
             />
           </button>
         </section>
 
-        <section className={`rounded-lg border px-3 py-2 text-center text-[12px] font-semibold ${status.classes}`}>
-          {status.text}
-        </section>
-
-        <section className="rounded-xl border border-aiub-blue/15 bg-white/90 px-3 py-3 shadow-sm">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Features</p>
-          <ul className="space-y-1.5">
-            {features.map((item) => (
-              <li key={item} className="relative pl-3.5 text-[12px] leading-5 text-slate-700">
-                <span className="absolute left-0 top-2 h-1.5 w-1.5 rounded-full bg-aiub-blue" />
-                {item}
+        {/* Features List */}
+        <section>
+          <div className="flex items-center gap-2 mb-2 pl-1">
+            <FiStar className="h-4 w-4 text-blue-600 fill-blue-600" />
+            <h2 className="text-[12px] font-bold uppercase tracking-wider text-blue-700">Features</h2>
+          </div>
+          
+          <ul className="space-y-0 border-t border-slate-100">
+            {features.map((item, index) => (
+              <li key={index} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-b-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-500">
+                    <item.icon className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-[12px] font-semibold text-slate-700 leading-tight">
+                    {item.text}
+                  </span>
+                </div>
+                <FiCheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 ml-2" />
               </li>
             ))}
           </ul>
         </section>
-      </main>
 
-      <footer className="px-4 pb-4 text-center text-[11px] text-slate-500">
-        Developed by{' '}
-        <a
-          href="https://rijoan.com"
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-aiub-blue hover:underline"
-        >
-          Md Rijoan Maruf
-        </a>
-      </footer>
+        {/* Developer Card */}
+        <section className="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-100 p-2.5">
+          <div>
+            <p className="text-[11px] text-slate-500 leading-tight">Developed by</p>
+            <a href="https://rijoan.com" target="_blank" rel="noreferrer" className="block text-[13px] font-bold text-blue-700 leading-tight mt-0.5 hover:underline decoration-blue-700 decoration-2 underline-offset-2">Md Rijoan Maruf</a>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <a href="https://rijoan.com" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors">
+              <FiGlobe className="h-4 w-4" />
+            </a>
+            <a href="https://github.com/mdrijoanmaruf" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors">
+              <FiGithub className="h-4 w-4" />
+            </a>
+            <a href="https://www.linkedin.com/in/mdrijoanmaruf/" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-blue-700 hover:bg-blue-50 transition-colors">
+              <FiLinkedin className="h-4 w-4" />
+            </a>
+          </div>
+        </section>
+      </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
