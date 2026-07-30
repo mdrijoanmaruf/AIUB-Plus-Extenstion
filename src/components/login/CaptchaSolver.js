@@ -191,7 +191,7 @@ function updateBadge(state, text, base64 = null) {
     badge = document.createElement('div');
     badge.id = 'aiub-plus-captcha-badge';
     badge.style.cssText = `
-      position: absolute; top: 10px; right: 10px; padding: 6px 12px;
+      position: fixed; top: 75px; right: 20px; padding: 6px 12px;
       border-radius: 20px; font-size: 13px; font-weight: bold; color: white;
       z-index: 999999; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px;
       transition: all 0.3s ease; opacity: 0; transform: translateY(-10px); cursor: pointer;
@@ -239,6 +239,11 @@ const MAX_RETRIES = 30;
 
 async function attemptSolve() {
   if (isSolving) return;
+
+  const savedState = localStorage.getItem('aiub_captcha_solver_enabled');
+  const isEnabled = savedState === null ? true : savedState === 'true';
+  if (!isEnabled) return;
+
   const img = document.getElementById(IMG_ID);
   
   if (!img || img.clientWidth === 0 || img.naturalWidth === 0) return;
@@ -312,9 +317,105 @@ function handleFail(msg, dataUrl, img) {
   }
 }
 
+function injectToggleUI() {
+  if (document.getElementById('aiub-captcha-toggle-container')) return;
+
+  const container = document.createElement('div');
+  container.id = 'aiub-captcha-toggle-container';
+  container.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999999;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: sans-serif;
+    border: 1px solid #e5e7eb;
+  `;
+
+  const label = document.createElement('span');
+  label.textContent = 'Captcha Solver';
+  label.style.cssText = `
+    font-weight: bold;
+    color: #374151;
+    font-size: 14px;
+  `;
+
+  const toggleWrapper = document.createElement('label');
+  toggleWrapper.style.cssText = `
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+  `;
+
+  const toggleInput = document.createElement('input');
+  toggleInput.type = 'checkbox';
+  toggleInput.style.cssText = `
+    opacity: 0;
+    width: 0;
+    height: 0;
+  `;
+  
+  const savedState = localStorage.getItem('aiub_captcha_solver_enabled');
+  const isEnabled = savedState === null ? true : savedState === 'true';
+  toggleInput.checked = isEnabled;
+
+  const slider = document.createElement('span');
+  slider.style.cssText = `
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: ${isEnabled ? '#10b981' : '#ccc'};
+    transition: .4s;
+    border-radius: 20px;
+  `;
+
+  const circle = document.createElement('span');
+  circle.style.cssText = `
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: ${isEnabled ? '22px' : '2px'};
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  `;
+
+  slider.appendChild(circle);
+  toggleWrapper.appendChild(toggleInput);
+  toggleWrapper.appendChild(slider);
+
+  toggleInput.addEventListener('change', (e) => {
+    const checked = e.target.checked;
+    localStorage.setItem('aiub_captcha_solver_enabled', checked);
+    slider.style.backgroundColor = checked ? '#10b981' : '#ccc';
+    circle.style.left = checked ? '22px' : '2px';
+    
+    if (checked) {
+      attemptSolve();
+    }
+  });
+
+  container.appendChild(label);
+  container.appendChild(toggleWrapper);
+  document.body.appendChild(container);
+}
+
 // Setup 
 function setupCaptchaSolver() {
   if (!window.location.href.includes('portal.aiub.edu')) return;
+  injectToggleUI();
   if (document.getElementById(IMG_ID)) {
     const img = document.getElementById(IMG_ID);
     
