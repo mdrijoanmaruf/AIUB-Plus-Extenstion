@@ -340,9 +340,22 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
       if (!panelBody) return;
       panelBody.style.cssText = 'padding:0!important;background:transparent!important;border:none!important';
 
-      // Hide the original row content (don't remove — AngularJS needs #divCourseList in DOM)
+      // Hide original dropdown and courses, but keep the row visible
+      // in case AIUB dynamically injects a "Start Registration" button during the 2-hour window.
       const originalRow = panelBody.querySelector('.row');
-      if (originalRow) originalRow.style.display = 'none';
+      if (originalRow) {
+        if (originalSelect) {
+          const selectWrapper = originalSelect.closest('div[class^="col-"]');
+          if (selectWrapper) selectWrapper.style.display = 'none';
+          else originalSelect.style.display = 'none';
+        }
+        const divCourseList = panelBody.querySelector('#divCourseList');
+        if (divCourseList) {
+          const courseWrapper = divCourseList.closest('div[class^="col-"]');
+          if (courseWrapper) courseWrapper.style.display = 'none';
+          else divCourseList.style.display = 'none';
+        }
+      }
 
       // Insert our React container above the hidden original content
       const container = document.createElement('div');
@@ -360,8 +373,20 @@ function RegistrationView({ initialCourses, initialSemOpts, onSemChange, registe
 
         const observer = new MutationObserver(() => {
           observer.disconnect();
-          // Keep original row hidden after Angular re-renders it
-          if (originalRow) originalRow.style.display = 'none';
+          // Keep original wrappers hidden after Angular re-renders
+          if (originalRow) {
+            if (originalSelect) {
+              const selectWrapper = originalSelect.closest('div[class^="col-"]');
+              if (selectWrapper) selectWrapper.style.display = 'none';
+              else originalSelect.style.display = 'none';
+            }
+            const divCourseList = panelBody.querySelector('#divCourseList');
+            if (divCourseList) {
+              const courseWrapper = divCourseList.closest('div[class^="col-"]');
+              if (courseWrapper) courseWrapper.style.display = 'none';
+              else divCourseList.style.display = 'none';
+            }
+          }
           const newCourses = parseCourses(regPanel);
           const newSemOpts = getSemesterOptions(regPanel);
           if (updateView) updateView(newCourses, newSemOpts);
