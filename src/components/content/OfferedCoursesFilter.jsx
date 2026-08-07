@@ -141,19 +141,26 @@ function SlotPills({ timeSlots }) {
 
 function ActionBtn({ course, selected, clashMap, onSelect, onRemove }) {
   const isSelected    = selected.some(s => s.classId === course.classId);
-  const sameCourse    = selected.some(s => s.title === course.title && s.classId !== course.classId);
+  const sameCourseSel = selected.find(s => s.title === course.title && s.classId !== course.classId);
   const clash         = clashMap[course.classId];
   const base          = 'text-[11px] font-bold px-1 py-1.5 rounded-lg text-white transition-all text-center';
   const width         = '70px';
 
   if (isSelected)
     return <button onClick={() => onRemove(course.classId)} className={`${base} hover:shadow-md hover:-translate-y-px`} style={{ width, background: 'linear-gradient(135deg,#dc2626,#ef4444)', border: 'none', boxShadow: '0 2px 6px rgba(220,38,38,0.2)' }}>Remove</button>;
-  if (sameCourse && clash?.hasClash)
-    return <button disabled title="This section has a similar schedule to the one you already added" className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#f59e0b,#d97706)', cursor: 'not-allowed', opacity: 0.9, border: 'none' }}>Similar</button>;
+
+  if (sameCourseSel) {
+    // Check if this section clashes specifically with the selected section of the same course
+    const clashesWithSame = course.timeSlots.some(ns =>
+      sameCourseSel.timeSlots.some(ss => slotsOverlap(ns, ss))
+    );
+    if (clashesWithSame)
+      return <button disabled title="This section has a similar schedule to the one you already added" className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#f59e0b,#d97706)', cursor: 'not-allowed', opacity: 0.9, border: 'none' }}>Similar</button>;
+    return <button disabled className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}>Added</button>;
+  }
+
   if (clash?.hasClash)
     return <button disabled title={`${clash.clashWith} — ${clash.details}`} className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#dc2626,#ef4444)', cursor: 'not-allowed', opacity: 0.85, border: 'none' }}>Clash</button>;
-  if (sameCourse)
-    return <button disabled className={`${base}`} style={{ width, background: 'linear-gradient(135deg,#4b5563,#6b7280)', cursor: 'default', border: 'none' }}>Added</button>;
 
   const high = course.count >= 35;
   return (
@@ -383,7 +390,7 @@ function RoutineModal({ selected, allCourses, onClose }) {
     });
   });
 
-  const ROW_H = 64;
+  const MIN_ROW_H = 56;
 
   return (
     <div
@@ -452,7 +459,7 @@ function RoutineModal({ selected, allCourses, onClose }) {
               {timeSlots.map((t, ti) => (
                 <tr key={t} style={{ borderBottom: '1px dashed #e2e8f0' }}>
                   {/* Time label */}
-                  <td style={{ padding: '8px', background: '#ffffff', borderRight: '1px solid #f1f5f9', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', height: `${ROW_H}px` }}>
+                  <td style={{ padding: '8px', background: '#ffffff', borderRight: '1px solid #f1f5f9', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', minHeight: `${MIN_ROW_H}px`, height: `${MIN_ROW_H}px` }}>
                     <div style={{ fontWeight: 700, fontSize: '12px', color: '#64748b' }}>{fmtTime(t)}</div>
                   </td>
 
@@ -461,15 +468,14 @@ function RoutineModal({ selected, allCourses, onClose }) {
                     const cell = plan[day][t];
                     if (cell === 'skip') return null;
                     if (!cell) return (
-                      <td key={day} style={{ height: `${ROW_H}px`, borderRight: '1px dashed #f1f5f9' }} />
+                      <td key={day} style={{ minHeight: `${MIN_ROW_H}px`, height: `${MIN_ROW_H}px`, borderRight: '1px dashed #f1f5f9' }} />
                     );
                     const col = courseColor(cell.course.title);
-                    const innerH = cell.span * ROW_H - 12; // accommodate padding/margin
                     const linkedSecs = getLinkedSections(cell.course, allCourses);
                     
                     return (
                       <td key={day} rowSpan={cell.span}
-                        style={{ padding: '6px', borderRight: '1px dashed #f1f5f9', verticalAlign: 'top' }}>
+                        style={{ padding: '6px', borderRight: '1px dashed #f1f5f9', verticalAlign: 'top', height: `${cell.span * MIN_ROW_H}px` }}>
                         <div style={{ 
                           background: col.bg, 
                           border: '1px solid', 
@@ -477,7 +483,6 @@ function RoutineModal({ selected, allCourses, onClose }) {
                           borderTop: `4px solid ${col.border}`, 
                           borderRadius: '8px', 
                           padding: '10px 8px', 
-                          minHeight: `${innerH}px`, 
                           display: 'flex', 
                           flexDirection: 'column', 
                           justifyContent: 'center',
@@ -486,7 +491,8 @@ function RoutineModal({ selected, allCourses, onClose }) {
                           transition: 'all 0.2s', 
                           overflow: 'hidden', 
                           boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                          height: '100%'
+                          height: '100%',
+                          boxSizing: 'border-box'
                         }}>
                           <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.3, marginBottom: '4px' }}>
                             {cell.course.title}
