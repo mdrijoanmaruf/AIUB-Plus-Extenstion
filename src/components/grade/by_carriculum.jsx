@@ -430,9 +430,16 @@ function SemTable({ sec }) {
   );
 }
 
-function NotAttemptedSection({ semSections, electiveRows }) {
-  const [enabled, setEnabled] = useState(() => localStorage.getItem('aiub_show_na') !== 'false');
-  const [open, setOpen] = useState(false);
+function NotAttemptedSection({ semSections, electiveRows, departmentName }) {
+  const isCSE = departmentName === 'BScCSE';
+  const [enabled, setEnabled] = useState(() => {
+    if (!isCSE) return false;
+    return localStorage.getItem('aiub_show_na') !== 'false';
+  });
+  const [open, setOpen] = useState(() => {
+    if (!isCSE) return false;
+    return localStorage.getItem('aiub_show_na') !== 'false';
+  });
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAllUnlocked, setShowAllUnlocked] = useState(false);
@@ -479,6 +486,7 @@ function NotAttemptedSection({ semSections, electiveRows }) {
 
   const toggleEnable = (e) => {
     e.stopPropagation();
+    if (!isCSE) return;
     const val = !enabled;
     setEnabled(val);
     localStorage.setItem('aiub_show_na', val);
@@ -501,11 +509,15 @@ function NotAttemptedSection({ semSections, electiveRows }) {
         <div className="flex items-center gap-3">
           <span className={`text-[13px] font-semibold transition-colors ${enabled ? 'text-amber-700' : 'text-slate-400'}`}>{total} course{total !== 1 ? 's' : ''}</span>
           
-          <div onClick={toggleEnable} className="cursor-pointer flex items-center ml-2 transition-transform hover:scale-110" title={enabled ? "Disable section" : "Enable section"}>
-            {enabled ? <FiToggleRight size={24} style={{ color: '#10b981' }} /> : <FiToggleLeft size={24} style={{ color: '#ef4444' }} />}
-          </div>
+          {isCSE && (
+            <div onClick={toggleEnable} className="cursor-pointer flex items-center ml-2 transition-transform hover:scale-110" title={enabled ? "Disable section" : "Enable section"}>
+              {enabled ? <FiToggleRight size={24} style={{ color: '#10b981' }} /> : <FiToggleLeft size={24} style={{ color: '#ef4444' }} />}
+            </div>
+          )}
 
-          <span className={`text-[11px] transition-transform ${enabled ? 'text-amber-700' : 'text-slate-400'} ${open ? 'rotate-180' : ''}`}>▼</span>
+          {enabled && (
+            <span className={`text-[11px] transition-transform ${enabled ? 'text-amber-700' : 'text-slate-400'} ${open ? 'rotate-180' : ''}`}>▼</span>
+          )}
         </div>
       </div>
 
@@ -856,7 +868,7 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       <InfoGrid items={infoItems} />
 
       {/* Not attempted section */}
-      <NotAttemptedSection semSections={semSections} electiveRows={electiveRows} />
+      <NotAttemptedSection semSections={semSections} electiveRows={electiveRows} departmentName={departmentName} />
 
       {/* Core curriculum */}
       <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-sky-900 rounded-lg px-4 py-2.5 mb-3 mt-6 shadow-sm border border-sky-100" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
