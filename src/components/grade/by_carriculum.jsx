@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { FiRotateCcw } from 'react-icons/fi';
+import { FiRotateCcw, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import '../../content.css';
 
 // Inject Tailwind CSS into the page 
@@ -431,6 +431,8 @@ function SemTable({ sec }) {
 }
 
 function NotAttemptedSection({ semSections, electiveRows }) {
+  const [enabled, setEnabled] = useState(() => localStorage.getItem('aiub_show_na') !== 'false');
+  const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAllUnlocked, setShowAllUnlocked] = useState(false);
@@ -475,15 +477,42 @@ function NotAttemptedSection({ semSections, electiveRows }) {
     return { label: 'Unlocked', color: '#10b981', bgColor: '#f0fdf4' };
   };
 
+  const toggleEnable = (e) => {
+    e.stopPropagation();
+    const val = !enabled;
+    setEnabled(val);
+    localStorage.setItem('aiub_show_na', val);
+    if (!val) setOpen(false);
+  };
+
   return (
-    <div className="rounded-xl p-5 mb-6 border-2" style={{ background: '#fffbeb', borderColor: '#fbbf24' }}>
-      <div className="flex items-center gap-2 text-[12px] font-extrabold uppercase tracking-wider text-amber-900 rounded-lg px-4 py-2.5 mb-4" style={{ background: '#fef3c7' }}>
-        ⏳ Not Attempted Yet
-        <span className="ml-auto bg-amber-600 text-white rounded-full text-[11px] font-extrabold px-3 py-1">{total}</span>
+    <div className={`rounded-xl overflow-hidden mb-6 shadow-sm transition-all border-2 ${enabled ? 'hover:shadow-md' : 'opacity-70'}`} style={{ background: enabled ? '#fffbeb' : '#f8fafc', borderColor: enabled ? '#fbbf24' : '#e2e8f0' }}>
+      <div
+        className="flex justify-between items-center px-4 py-3 select-none transition-colors"
+        style={{ 
+          background: enabled ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : '#f1f5f9',
+          cursor: enabled ? 'pointer' : 'default'
+        }}
+        onClick={() => enabled && setOpen((v) => !v)}
+      >
+        <div className="flex items-center gap-2">
+          <span className={`text-[16px] font-bold transition-colors ${enabled ? 'text-amber-900' : 'text-slate-500'}`}>⏳ Not Attempted Yet</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-[13px] font-semibold transition-colors ${enabled ? 'text-amber-700' : 'text-slate-400'}`}>{total} course{total !== 1 ? 's' : ''}</span>
+          
+          <div onClick={toggleEnable} className="cursor-pointer flex items-center ml-2 transition-transform hover:scale-110" title={enabled ? "Disable section" : "Enable section"}>
+            {enabled ? <FiToggleRight size={24} style={{ color: '#10b981' }} /> : <FiToggleLeft size={24} style={{ color: '#ef4444' }} />}
+          </div>
+
+          <span className={`text-[11px] transition-transform ${enabled ? 'text-amber-700' : 'text-slate-400'} ${open ? 'rotate-180' : ''}`}>▼</span>
+        </div>
       </div>
 
-      {/* Search Input & Filter */}
-      <div className="mb-4 flex gap-3">
+      {enabled && open && (
+        <div className="p-4 pt-5 border-t" style={{ borderColor: '#fcd34d' }}>
+          {/* Search Input & Filter */}
+          <div className="mb-4 flex gap-3">
         <div style={{ position: 'relative', flex: 1 }}>
           <input
             type="text"
@@ -712,6 +741,8 @@ function NotAttemptedSection({ semSections, electiveRows }) {
           )}
         </>
       )}
+        </div>
+      )}
     </div>
   );
 }
@@ -803,7 +834,7 @@ function ElectiveSection({ electiveRows }) {
   );
 }
 
-function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref }) {
+function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref, departmentName }) {
   return (
     <div className="text-[15px] text-slate-800 py-4 px-1 aiub-custom-grade-table" style={{ boxSizing: 'border-box' }}>
       <style>{`.aiub-custom-grade-table table td, .aiub-custom-grade-table table th { border: none !important; }`}</style>
@@ -829,7 +860,7 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
 
       {/* Core curriculum */}
       <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-sky-900 rounded-lg px-4 py-2.5 mb-3 mt-6 shadow-sm border border-sky-100" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
-        📚 Core Curriculum
+        📚 Core Curriculum {departmentName ? `(${departmentName})` : ''}
       </div>
       {semSections.map((sec, i) => <SemTable key={i} sec={sec} />)}
 
@@ -909,6 +940,16 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
       }
 
       addLockInfo(semSections, electiveRows);
+      
+      let departmentName = '';
+      if (infoItems) {
+        const coreItem = infoItems.find(item => item.k && item.k.trim().toUpperCase() === 'CORE');
+        if (coreItem && coreItem.v) {
+          departmentName = coreItem.v.split(',')[0].trim();
+        }
+      }
+      console.log('Department:', departmentName);
+
       gr.innerHTML = '';
       const container = document.createElement('div');
       gr.appendChild(container);
@@ -918,6 +959,7 @@ function CurriculumGradeReport({ infoItems, semSections, electiveRows, printHref
           semSections={semSections}
           electiveRows={electiveRows}
           printHref={safePrint}
+          departmentName={departmentName}
         />
       );
     }
