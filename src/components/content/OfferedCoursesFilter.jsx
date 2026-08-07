@@ -348,11 +348,12 @@ function RoutineModal({ selected, allCourses, onClose }) {
   });
   if (!isFinite(minTime)) minTime = 8 * 60;
   if (!isFinite(maxTime)) maxTime = 18 * 60;
-  minTime = Math.floor(minTime / 60) * 60;
-  maxTime = Math.ceil(maxTime / 60) * 60;
+  minTime = Math.floor(minTime / 20) * 20;
+  maxTime = Math.ceil(maxTime / 20) * 20;
 
+  const SLOT_INTERVAL = 20;
   const timeSlots = [];
-  for (let t = minTime; t < maxTime; t += 60) timeSlots.push(t);
+  for (let t = minTime; t <= maxTime; t += SLOT_INTERVAL) timeSlots.push(t);
 
   function fmtTime(mins) {
     const h = Math.floor(mins / 60);
@@ -376,21 +377,21 @@ function RoutineModal({ selected, allCourses, onClose }) {
           const start = timeToMinutes(ts.startTime);
           const end   = timeToMinutes(ts.endTime);
           if (start === null || end === null) continue;
-          if (start >= t && start < t + 60) { found = { course: c, slot: ts, start, end }; break; }
+          if (start >= t && start < t + SLOT_INTERVAL) { found = { course: c, slot: ts, start, end }; break; }
         }
         if (found) break;
       }
       if (found) {
-        const span = Math.ceil((found.end - t) / 60);
+        const span = Math.ceil((found.end - t) / SLOT_INTERVAL);
         plan[day][t] = { course: found.course, slot: found.slot, span };
-        for (let i = 1; i < span; i++) skipSet.add(t + i * 60);
+        for (let i = 1; i < span; i++) skipSet.add(t + i * SLOT_INTERVAL);
       } else {
         plan[day][t] = null;
       }
     });
   });
 
-  const MIN_ROW_H = 56;
+  const MIN_ROW_H = 28;
 
   return (
     <div
@@ -475,8 +476,10 @@ function RoutineModal({ selected, allCourses, onClose }) {
                     
                     return (
                       <td key={day} rowSpan={cell.span}
-                        style={{ padding: '6px', borderRight: '1px dashed #f1f5f9', verticalAlign: 'top', height: `${cell.span * MIN_ROW_H}px` }}>
+                        style={{ padding: 0, borderRight: '1px dashed #f1f5f9', verticalAlign: 'top', position: 'relative' }}>
                         <div style={{ 
+                          position: 'absolute',
+                          inset: '6px',
                           background: col.bg, 
                           border: '1px solid', 
                           borderColor: hexToRgba(col.border, 0.15),
@@ -491,7 +494,6 @@ function RoutineModal({ selected, allCourses, onClose }) {
                           transition: 'all 0.2s', 
                           overflow: 'hidden', 
                           boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                          height: '100%',
                           boxSizing: 'border-box'
                         }}>
                           <div style={{ fontSize: '11px', fontWeight: 800, color: '#1e293b', lineHeight: 1.3, marginBottom: '4px' }}>
