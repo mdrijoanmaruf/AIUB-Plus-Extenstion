@@ -12,7 +12,7 @@
     <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite" alt="Vite" /></a>
     <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" /></a>
     <a href="https://developer.chrome.com/docs/extensions/mv3/"><img src="https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome" alt="Manifest" /></a>
-    <a href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"><img src="https://img.shields.io/badge/Version-3.5.2-orange?style=flat-square" alt="Version" /></a>
+    <a href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"><img src="https://img.shields.io/badge/Version-3.5.9-orange?style=flat-square" alt="Version" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" /></a>
   </p>
 
@@ -32,7 +32,7 @@
 
 - [What This Extension Does](#-what-this-extension-does)
 - [How It Works (Architecture)](#-how-it-works-architecture)
-- [What's New in v3.5.2](#-whats-new-in-v352)
+- [What's New in v3.5.9](#-whats-new-in-v359)
 - [What's New in v3.1.0](#-whats-new-in-v310)
 - [Tech Stack](#-tech-stack)
 - [Features by Portal Page](#-features-by-portal-page)
@@ -163,7 +163,7 @@ Once authorized, the modules parse the clunky HTML tables and layouts of the ori
 
 ---
 
-## 🆕 What's New in v3.5.2
+## 🆕 What's New in v3.5.9
 
 ### 🤖 Auto CAPTCHA Solver (97%+ Accuracy)
 
@@ -422,7 +422,7 @@ Then load the generated `dist/` directory into Chrome via `chrome://extensions` 
 - Manifest Version 3
 - Host permissions: `https://portal.aiub.edu/*`
 - Permissions: `activeTab`, `storage`
-- Content scripts mapped per portal route (17 total entries in v3.5.2)
+- Content scripts mapped per portal route (17 total entries in v3.5.9)
 - `web_accessible_resources` includes icons and `Academic/CSE.json`
 
 ### `tailwind.config.js`
