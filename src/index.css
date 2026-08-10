@@ -15,7 +15,7 @@ body {
   font-family: 'Trebuchet MS', Verdana, sans-serif;
 }
 
-#root {
+.popup-body #root {
   padding: 8px;
 }
 
