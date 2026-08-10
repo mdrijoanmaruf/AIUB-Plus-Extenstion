@@ -87,11 +87,7 @@
       "js": ["src/components/academic/AcademicRegistration.jsx"],
       "run_at": "document_idle"
     },
-    {
-      "matches": ["https://portal.aiub.edu/Student/Registration/Print*"],
-      "js": ["src/components/academic/RegistrationPrint.jsx"],
-      "run_at": "document_idle"
-    },
+
     {
       "matches": ["https://portal.aiub.edu/Student/Curriculum*"],
       "js": ["src/components/academic/MkCurriculumn.jsx"],
