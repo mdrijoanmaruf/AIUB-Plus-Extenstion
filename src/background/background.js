@@ -11,6 +11,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
+  // Open Options Page
+  if (request.action === 'openOptions') {
+    chrome.runtime.openOptionsPage();
+    sendResponse({ success: true });
+    return true;
+  }
+
   // CAPTCHA Solve 
   if (request.type === 'SOLVE_CAPTCHA') {
     const base64 = request.imageBase64;

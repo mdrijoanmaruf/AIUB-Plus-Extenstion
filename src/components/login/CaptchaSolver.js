@@ -1,15 +1,13 @@
 import { createWorker } from 'tesseract.js';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
-import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { FiCheckCircle, FiXCircle, FiSettings } from 'react-icons/fi';
 import { BiLoaderAlt } from 'react-icons/bi';
 
-// Math Parser (AIUB-constrained)
 function parseMath(text) {
   console.log('[AIUB+] OCR raw:', JSON.stringify(text));
   
-  // Clean up common OCR mistakes and strip anything after the equals sign
-  let prep = text.split('=')[0]; // Strip = and everything after it
+  let prep = text.split('=')[0]; 
   
   prep = prep
     .replace(/[oO@DdQCcU]/g, '0')
@@ -22,11 +20,10 @@ function parseMath(text) {
     .replace(/[Tt]/g,     '7')
     .replace(/[BbR]/g,    '8')
     .replace(/[gPpq]/g,   '9')
-    .replace(/\s+/g, ''); // Remove spaces
+    .replace(/\s+/g, ''); 
     
-  console.log('[AIUB+] Prepared:', JSON.stringify(prep));
+  // console.log('[AIUB+] Prepared:', JSON.stringify(prep));
   
-  // Strict matching for math expression
   const re = /^(\d{1,2})([+-])(\d{1,2})$/;
   const match = prep.match(re);
   
@@ -435,6 +432,32 @@ function injectToggleUI() {
     }
   });
 
+  const settingsBtn = document.createElement('button');
+  const settingsIcon = renderToString(createElement(FiSettings, { style: { width: '14px', height: '14px', marginBottom: '-1px' } }));
+  settingsBtn.innerHTML = `${settingsIcon} Settings`;
+  settingsBtn.style.cssText = `
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  `;
+  settingsBtn.onmouseenter = () => settingsBtn.style.background = '#e5e7eb';
+  settingsBtn.onmouseleave = () => settingsBtn.style.background = '#f3f4f6';
+  settingsBtn.onclick = () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: 'openOptions' });
+    }
+  };
+
+  container.appendChild(settingsBtn);
   container.appendChild(label);
   container.appendChild(toggleWrapper);
   document.body.appendChild(container);
