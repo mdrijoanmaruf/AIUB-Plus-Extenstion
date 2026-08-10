@@ -18,3 +18,23 @@ body {
 #root {
   padding: 8px;
 }
+
+/* Custom Scrollbar for Popup */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #93c5fd; /* Light blue */
+  border-radius: 10px;
+  border: 2px solid #f8fafc; /* Padding trick */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa; 
+}
