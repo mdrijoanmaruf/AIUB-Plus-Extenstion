@@ -47,26 +47,47 @@ function timeToMinutes(str) {
 }
 
 function parseTimeSlot(schedule) {
-  const t = (schedule.time || '').trim();
-  // Extract day from the beginning (e.g. "Wed 12:40 PM - Wed 2:40 PM")
-  const dayMatch = t.match(/^([A-Za-z]{3})\s+/);
-  if (!dayMatch) return null;
-  const day = DAY_ABBR_MAP[dayMatch[1].toLowerCase()];
-  if (!day) return null;
+  let t = (schedule.time || '').trim();
+  if (!t) return [];
+
+  // Match all day abbreviations at the beginning (e.g. "Sun", "Sun, Tue", "Sunday")
+  const days = [];
+  const dayRegex = /^([A-Za-z]{3,9})(?:,\s*|\s+)/;
+  
+  while (true) {
+    const match = t.match(dayRegex);
+    if (!match) break;
+    const dayStr = match[1].toLowerCase().slice(0, 3);
+    if (DAY_ABBR_MAP[dayStr]) {
+      days.push(DAY_ABBR_MAP[dayStr]);
+    }
+    // Remove the matched part from the string
+    t = t.replace(dayRegex, '');
+  }
+
+  if (days.length === 0) return []; // No valid day found
 
   // Split by " - " to get start and end parts
   const parts = t.split(/\s*-\s*/);
-  if (parts.length < 2) return null;
+  if (parts.length < 2) return [];
 
-  // Remove day abbreviation from each part
-  let startStr = parts[0].replace(/^[A-Za-z]{3}\s+/, '').trim();
-  let endStr = parts[1].replace(/^[A-Za-z]{3}\s+/, '').trim();
+  // Remove the day word from the beginning of each part if present
+  let startStr = parts[0].replace(/^[A-Za-z]{3,9}\s+/, '').trim();
+  let endStr = parts[1].replace(/^[A-Za-z]{3,9}\s+/, '').trim();
 
-  // Normalize single-digit minutes (e.g. "3:0 PM" -> "3:00 PM")
+  // Normalize missing minutes (e.g. "8 AM" -> "8:00 AM")
+  startStr = startStr.replace(/^(\d{1,2})\s+([AP]M)$/i, '$1:00 $2');
+  endStr = endStr.replace(/^(\d{1,2})\s+([AP]M)$/i, '$1:00 $2');
+
+  // Normalize missing minutes with no AM/PM (e.g. "8" -> "8:00")
+  startStr = startStr.replace(/^(\d{1,2})$/, '$1:00');
+  endStr = endStr.replace(/^(\d{1,2})$/, '$1:00');
+
+  // Normalize single-digit minutes (e.g. "3:0 PM" -> "3:00 PM", "11:0" -> "11:00")
   startStr = startStr.replace(/:(\d)(\s|$)/, ':0$1$2');
   endStr = endStr.replace(/:(\d)(\s|$)/, ':0$1$2');
 
-  // If start time has no AM/PM, infer from end time
+  // If start time has no AM/PM, try to infer from end time first
   if (!/[AP]M$/i.test(startStr) && /([AP]M)$/i.test(endStr)) {
     const endPeriod = endStr.match(/([AP]M)$/i)[1];
     // Try same period as end; if that makes start > end, use opposite
@@ -80,18 +101,43 @@ function parseTimeSlot(schedule) {
     }
   }
 
-  // Validate both times
-  if (!/\d{1,2}:\d{2}\s*[AP]M$/i.test(startStr)) return null;
-  if (!/\d{1,2}:\d{2}\s*[AP]M$/i.test(endStr)) return null;
+  // Now, if either STILL lacks AM/PM, infer based on university hours
+  const inferAMPM = (timeStr) => {
+    if (/[AP]M$/i.test(timeStr)) return timeStr;
+    const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return timeStr;
+    let h = parseInt(match[1], 10);
+    let period = 'AM';
+    // AIUB daytime classes: 8-11 -> AM, 12-7 -> PM
+    if (h === 12 || (h >= 1 && h <= 7)) {
+      period = 'PM';
+    } else if (h >= 8 && h <= 11) {
+      period = 'AM';
+    }
+    return `${timeStr} ${period}`;
+  };
 
-  return { day, startTime: startStr, endTime: endStr, classType: schedule.type || '', room: schedule.room || '' };
+  startStr = inferAMPM(startStr);
+  endStr = inferAMPM(endStr);
+
+  // Validate both times
+  if (!/\d{1,2}:\d{2}\s*[AP]M$/i.test(startStr)) return [];
+  if (!/\d{1,2}:\d{2}\s*[AP]M$/i.test(endStr)) return [];
+
+  return days.map(day => ({
+    day,
+    startTime: startStr,
+    endTime: endStr,
+    classType: schedule.type || '',
+    room: schedule.room || ''
+  }));
 }
 
 function buildRoutineCourses(courses) {
   return courses
     .filter(c => !c.droppedText)
     .map(c => {
-      const timeSlots = c.schedules.map(s => parseTimeSlot(s)).filter(Boolean);
+      const timeSlots = c.schedules.flatMap(s => parseTimeSlot(s)).filter(Boolean);
       return {
         title: c.code ? `${c.code} - ${c.name}` : c.name,
         shortTitle: c.name || c.code,
@@ -145,10 +191,10 @@ function RegistrationRoutineModal({ courses, onClose }) {
   });
   if (!isFinite(minTime)) minTime = 8 * 60;
   if (!isFinite(maxTime)) maxTime = 18 * 60;
-  minTime = Math.floor(minTime / 20) * 20;
-  maxTime = Math.ceil(maxTime / 20) * 20;
+  minTime = Math.floor(minTime / 15) * 15;
+  maxTime = Math.ceil(maxTime / 15) * 15;
 
-  const SLOT_INTERVAL = 20;
+  const SLOT_INTERVAL = 15;
   const tSlots = [];
   for (let t = minTime; t <= maxTime; t += SLOT_INTERVAL) tSlots.push(t);
 
@@ -187,7 +233,7 @@ function RegistrationRoutineModal({ courses, onClose }) {
     });
   });
 
-  const MIN_ROW_H = 28;
+  const MIN_ROW_H = 24;
 
   return (
     <div
