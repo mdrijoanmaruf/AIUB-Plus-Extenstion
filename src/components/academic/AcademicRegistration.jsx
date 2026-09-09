@@ -233,7 +233,7 @@ function RegistrationRoutineModal({ courses, onClose }) {
     });
   });
 
-  const MIN_ROW_H = 24;
+  const MIN_ROW_H = 18;
 
   return (
     <div
@@ -286,8 +286,8 @@ function RegistrationRoutineModal({ courses, onClose }) {
             <tbody>
               {tSlots.map(t => (
                 <tr key={t} style={{ borderBottom: '1px dashed #e2e8f0' }}>
-                  <td style={{ padding: '8px', background: '#ffffff', borderRight: '1px solid #f1f5f9', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', minHeight: `${MIN_ROW_H}px`, height: `${MIN_ROW_H}px` }}>
-                    <div style={{ fontWeight: 700, fontSize: '12px', color: '#64748b' }}>{fmtTime(t)}</div>
+                  <td style={{ padding: '2px 6px', background: '#ffffff', borderRight: '1px solid #f1f5f9', whiteSpace: 'nowrap', verticalAlign: 'middle', textAlign: 'center', minHeight: `${MIN_ROW_H}px`, height: `${MIN_ROW_H}px` }}>
+                    {t % 30 === 0 ? <div style={{ fontWeight: 700, fontSize: '11px', color: '#64748b' }}>{fmtTime(t)}</div> : null}
                   </td>
                   {activeDays.map(day => {
                     const cell = plan[day][t];
@@ -297,25 +297,25 @@ function RegistrationRoutineModal({ courses, onClose }) {
                     return (
                       <td key={day} rowSpan={cell.span} style={{ padding: 0, borderRight: '1px dashed #f1f5f9', verticalAlign: 'top', position: 'relative' }}>
                         <div style={{
-                          position: 'absolute', inset: '6px',
+                          position: 'absolute', inset: '4px',
                           background: col.bg, border: '1px solid', borderColor: hexToRgba(col.border, 0.15),
-                          borderTop: `4px solid ${col.border}`, borderRadius: '8px', padding: '10px 8px',
+                          borderTop: `3px solid ${col.border}`, borderRadius: '6px', padding: '6px 4px',
                           display: 'flex', flexDirection: 'column', justifyContent: 'center',
                           alignItems: 'center', textAlign: 'center', transition: 'all 0.2s',
                           overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', boxSizing: 'border-box'
                         }}>
-                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#1e293b', lineHeight: 1.3, marginBottom: '4px' }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: '#1e293b', lineHeight: 1.2, marginBottom: '3px' }}>
                             {cell.course.shortTitle}
                           </div>
-                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4px' }}>
-                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '2px 6px', letterSpacing: '0.02em', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                          <div style={{ display: 'flex', gap: '3px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '3px' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: '#ffffff', background: col.border, borderRadius: '4px', padding: '1px 5px', letterSpacing: '0.02em', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                               {cell.course.section}
                             </span>
-                            <span style={{ fontSize: '9px', fontWeight: 800, color: col.border, background: '#ffffff', borderRadius: '4px', padding: '2px 6px', textTransform: 'uppercase', letterSpacing: '0.04em', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                            <span style={{ fontSize: '9px', fontWeight: 800, color: col.border, background: '#ffffff', borderRadius: '4px', padding: '1px 5px', textTransform: 'uppercase', letterSpacing: '0.04em', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                               {cell.slot.classType}
                             </span>
                           </div>
-                          <div style={{ fontSize: '10px', color: '#475569', fontWeight: 700, marginBottom: '4px' }}>
+                          <div style={{ fontSize: '11px', color: '#475569', fontWeight: 700, marginBottom: '2px' }}>
                             {cell.slot.startTime}–{cell.slot.endTime}
                           </div>
                           {cell.slot.room && (
