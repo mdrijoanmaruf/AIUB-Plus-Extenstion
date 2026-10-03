@@ -16,7 +16,10 @@ const FEATURES = [
       border: "border-blue-500",
       iconBg: "bg-blue-100/50",
       iconText: "text-blue-600",
-      bgCard: "bg-gradient-to-br from-blue-50/30 to-white",
+      bgCard: "bg-blue-50",
+      ringStrong: "ring-blue-200",
+      headBg: "bg-blue-100/70",
+      divide: "divide-blue-100",
     },
     items: [
       { id: "captchaSolver", name: "Captcha Auto-Solver", description: "Automatically solves the login CAPTCHA", icon: FiMaximize },
@@ -32,7 +35,10 @@ const FEATURES = [
       border: "border-purple-500",
       iconBg: "bg-purple-100/50",
       iconText: "text-purple-600",
-      bgCard: "bg-gradient-to-br from-purple-50/30 to-white",
+      bgCard: "bg-purple-50",
+      ringStrong: "ring-purple-200",
+      headBg: "bg-purple-100/70",
+      divide: "divide-purple-100",
     },
     items: [
       { id: "offeredFilters", name: "Offered Courses Filter", description: "Advanced filtering and clash detection", icon: FiFilter },
@@ -49,7 +55,10 @@ const FEATURES = [
       border: "border-emerald-500",
       iconBg: "bg-emerald-100/50",
       iconText: "text-emerald-600",
-      bgCard: "bg-gradient-to-br from-emerald-50/30 to-white",
+      bgCard: "bg-emerald-50",
+      ringStrong: "ring-emerald-200",
+      headBg: "bg-emerald-100/70",
+      divide: "divide-emerald-100",
     },
     items: [
       { id: "courseAndResults", name: "Course & Results", description: "Upgraded view for current courses and grades", icon: FiBookOpen },
@@ -67,7 +76,10 @@ const FEATURES = [
       border: "border-orange-500",
       iconBg: "bg-orange-100/50",
       iconText: "text-orange-500",
-      bgCard: "bg-gradient-to-br from-orange-50/30 to-white",
+      bgCard: "bg-orange-50",
+      ringStrong: "ring-orange-200",
+      headBg: "bg-orange-100/70",
+      divide: "divide-orange-100",
     },
     items: [
       { id: "financials", name: "Financial Dashboard", description: "Clearer balance summary and accounts view", icon: FiPieChart },
@@ -77,6 +89,8 @@ const FEATURES = [
   }
 ];
 
+const ALL_IDS = FEATURES.flatMap((c) => c.items.map((i) => i.id));
+
 export default function Options() {
   const [settings, setSettings] = useState({});
   const [masterEnabled, setMasterEnabled] = useState(true);
@@ -85,177 +99,209 @@ export default function Options() {
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.sync.get(['featureToggles', 'extensionEnabled'], (result) => {
-        setSettings(result.featureToggles || {});
-        setMasterEnabled(result.extensionEnabled ?? true);
+        const allOff = result.extensionEnabled === false;
+        const toggles = allOff
+          ? Object.fromEntries(ALL_IDS.map((id) => [id, false]))
+          : (result.featureToggles || {});
+        setSettings(toggles);
+        setMasterEnabled(ALL_IDS.some((id) => toggles[id] ?? true));
         setLoaded(true);
       });
     } else {
       // Fallback for dev mode
       const saved = localStorage.getItem('aiub_plus_features');
-      if (saved) setSettings(JSON.parse(saved));
+      if (saved) {
+        const toggles = JSON.parse(saved);
+        setSettings(toggles);
+        setMasterEnabled(ALL_IDS.some((id) => toggles[id] ?? true));
+      }
       setLoaded(true);
     }
   }, []);
 
-  const handleToggle = (id) => {
-    const current = settings[id] ?? true;
-    const newSettings = { ...settings, [id]: !current };
-    
+  // Persist toggles; master is ON whenever at least one feature is ON
+  const persist = (newSettings) => {
+    const anyOn = ALL_IDS.some((id) => newSettings[id] ?? true);
     setSettings(newSettings);
-    
+    setMasterEnabled(anyOn);
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.set({ featureToggles: newSettings });
+      chrome.storage.sync.set({ featureToggles: newSettings, extensionEnabled: anyOn });
     } else {
       localStorage.setItem('aiub_plus_features', JSON.stringify(newSettings));
     }
   };
 
+  const handleToggle = (id) => {
+    const current = settings[id] ?? true;
+    persist({ ...settings, [id]: !current });
+  };
+
   const handleMasterToggle = () => {
     const newVal = !masterEnabled;
-    setMasterEnabled(newVal);
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.sync.set({ extensionEnabled: newVal });
-    }
+    persist(Object.fromEntries(ALL_IDS.map((id) => [id, newVal])));
   };
 
   if (!loaded) {
-    return <div className="flex h-screen items-center justify-center bg-[#f8fafc] text-slate-500">Loading settings...</div>;
+    return <div className="flex h-screen items-center justify-center bg-slate-100 text-slate-500">Loading settings...</div>;
   }
 
-  return (
-    <div className="min-h-screen bg-[#f8fafc] py-8 px-4 font-sans text-slate-800">
-      <div className="mx-auto max-w-6xl space-y-6">
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 rounded-3xl bg-white p-5 pl-7 pr-7 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-50 p-1 border border-slate-100">
-              <img src="/logo/icon128.png" alt="AIUB+ Logo" className="h-full w-full object-contain" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-800">AIUB+ Features Dashboard</h1>
-              <p className="text-[13px] text-slate-500 mt-0.5">Customize which portal enhancements and UI upgrades are active.</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-6 md:ml-auto md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6">
-            <a 
-              href="https://portal.aiub.edu" 
-              className="flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-blue-600"
-            >
-              <FiArrowLeft className="h-4 w-4" />
-              Back to Portal
-            </a>
-            
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-slate-600">Master Switch</span>
-              <button
-                onClick={handleMasterToggle}
-                className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${masterEnabled ? 'bg-blue-500' : 'bg-slate-200'}`}
-                role="switch"
-                aria-checked={masterEnabled}
-              >
-                <span className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${masterEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-              </button>
-            </div>
-          </div>
-        </header>
+  const Toggle = ({ checked, onChange, size = 'md' }) => {
+    const sm = size === 'sm';
+    return (
+      <button
+        onClick={onChange}
+        role="switch"
+        aria-checked={checked}
+        className={`relative inline-flex flex-shrink-0 cursor-pointer items-center rounded-full transition-all duration-300 ease-in-out hover:brightness-95 active:scale-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 ${sm ? 'h-5 w-9' : 'h-6 w-11'} ${checked ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'bg-slate-300'}`}
+      >
+        <span className={`inline-block transform rounded-full bg-white shadow transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${sm ? 'h-4 w-4' : 'h-5 w-5'} ${checked ? (sm ? 'translate-x-[18px]' : 'translate-x-[22px]') : 'translate-x-0.5'}`} />
+      </button>
+    );
+  };
 
-        {/* Open Source Banner */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[2rem] bg-gradient-to-r from-emerald-50/80 to-teal-50/80 p-6 px-8 shadow-sm border border-emerald-100/50">
-          <div className="flex items-center gap-5">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 shadow-sm border border-emerald-200/50">
-              <FiGithub className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="text-[16px] font-bold text-slate-800 tracking-tight">
-                Fully Open Source & Local
-              </h3>
-              <p className="text-[13px] text-slate-600 mt-1">
-                This project runs entirely locally in your browser. No external servers, no data tracking.
-              </p>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200/60 font-sans text-slate-800">
+      {/* Navbar */}
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4">
+          <div className="flex items-center gap-3">
+            <img src="/logo/icon128.png" alt="AIUB+ Logo" className="h-9 w-9 rounded-lg object-contain" />
+            <div className="leading-tight">
+              <h1 className="text-[15px] font-bold tracking-tight text-slate-900">
+                AIUB<span className="text-emerald-500">+</span> Settings
+              </h1>
+              <p className="hidden text-[11.5px] text-slate-500 sm:block">Choose which portal enhancements are active</p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+
+          <div className="flex items-center gap-2 sm:gap-3">
             <a
               href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold tracking-wide text-slate-700 transition hover:bg-slate-50 shadow-sm border border-slate-200"
+              aria-label="GitHub"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
             >
-              <FiGithub className="h-4 w-4" />
-              Source Code
+              <FiGithub className="h-[18px] w-[18px]" />
             </a>
             <a
-              href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion/issues"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-[13px] font-semibold tracking-wide text-white transition hover:bg-emerald-700 shadow-sm"
+              href="https://portal.aiub.edu"
+              className="flex items-center gap-2 rounded-full px-3 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-emerald-600"
             >
-              <FiHeart className="h-4 w-4" />
-              Report Issue
+              <FiArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Portal</span>
             </a>
+            <div className="h-6 w-px bg-slate-200" />
+            <div className="flex items-center gap-2.5">
+              <span className={`text-[12.5px] font-semibold ${masterEnabled ? 'text-emerald-600' : 'text-slate-400'}`}>
+                {masterEnabled ? 'Turn off all' : 'Turn on all'}
+              </span>
+              <Toggle checked={masterEnabled} onChange={handleMasterToggle} />
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Dashboard Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {FEATURES.map((category) => (
-            <div key={category.category} className={`rounded-[2rem] p-6 shadow-sm ring-1 transition-shadow hover:shadow-md ${category.theme.bgCard} ${category.theme.ring}`}>
-              <div className="flex items-center gap-4 mb-6">
-                <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ${category.theme.bgHeader} shadow-sm`}>
-                  <category.theme.headerIcon className="h-6 w-6 text-white" />
-                </div>
-                <div className={`border-b-2 pb-1 pr-6 ${category.theme.border} border-opacity-30`}>
-                  <h2 className="text-[17px] font-bold text-slate-800 tracking-tight">{category.category}</h2>
-                </div>
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+
+        {/* Open Source Hero */}
+        <section className="relative overflow-hidden rounded-3xl bg-slate-900 p-7 md:p-9 shadow-xl ring-1 ring-slate-800">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-emerald-500/30 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl" />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-400/30">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                100% Open Source
+              </span>
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-white md:text-3xl">
+                Open code. Runs locally.
+                <span className="block text-emerald-400">Zero external servers.</span>
+              </h2>
+              <p className="mt-3 text-[13.5px] leading-relaxed text-slate-300">
+                AIUB+ runs entirely inside your browser. Your data never leaves your device, and every line of code is public for you to read, audit, and improve.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {['No tracking', 'No backend', 'Local only', 'Free forever'].map((t) => (
+                  <span key={t} className="rounded-md bg-white/5 px-2.5 py-1 text-[11.5px] font-medium text-slate-300 ring-1 ring-white/10">{t}</span>
+                ))}
               </div>
-              
-              <div className="space-y-3">
+            </div>
+
+            <div className="flex flex-shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
+              <a
+                href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-[13.5px] font-semibold text-slate-900 shadow-lg transition hover:-translate-y-0.5 hover:bg-emerald-50"
+              >
+                <FiGithub className="h-4 w-4" />
+                View on GitHub
+              </a>
+              <a
+                href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion/issues"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-[13.5px] font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:-translate-y-0.5 hover:bg-emerald-400"
+              >
+                <FiHeart className="h-4 w-4" />
+                Report an Issue
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Grid */}
+        <div className="grid gap-5 md:grid-cols-2">
+          {FEATURES.map((category) => (
+            <section key={category.category} className={`overflow-hidden rounded-2xl shadow-sm ring-1 transition-shadow hover:shadow-md ${category.theme.bgCard} ${category.theme.ringStrong}`}>
+              <div className={`flex items-center gap-3 px-5 py-4 ${category.theme.headBg}`}>
+                <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${category.theme.bgHeader} shadow-sm`}>
+                  <category.theme.headerIcon className="h-[18px] w-[18px] text-white" />
+                </div>
+                <h2 className="text-[15px] font-bold tracking-tight text-slate-800">{category.category}</h2>
+              </div>
+
+              <div className={`divide-y ${category.theme.divide}`}>
                 {category.items.map((item) => {
                   const isEnabled = settings[item.id] ?? true;
                   return (
-                    <div key={item.id} className="flex items-center justify-between gap-4 rounded-2xl bg-white/70 backdrop-blur-sm border border-white p-3 shadow-sm transition-colors hover:bg-white">
-                      <div className="flex items-center gap-4">
-                        <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] ${category.theme.iconBg}`}>
-                          <item.icon className={`h-[18px] w-[18px] ${category.theme.iconText}`} />
+                    <div key={item.id} className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-white/60">
+                      <div className="flex items-center gap-3.5">
+                        <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${category.theme.iconBg}`}>
+                          <item.icon className={`h-4 w-4 ${category.theme.iconText}`} />
                         </div>
                         <div>
-                          <h3 className="text-[14px] font-semibold text-slate-700">{item.name}</h3>
-                          <p className="text-[12px] text-slate-500 leading-tight mt-0.5">{item.description}</p>
+                          <h3 className="text-[13.5px] font-semibold text-slate-800">{item.name}</h3>
+                          <p className="mt-0.5 text-[12px] leading-snug text-slate-500">{item.description}</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleToggle(item.id)}
-                        className={`relative inline-flex h-[22px] w-[40px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isEnabled ? 'bg-blue-500' : 'bg-slate-200'}`}
-                        role="switch"
-                        aria-checked={isEnabled}
-                      >
-                        <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isEnabled ? 'translate-x-[18px]' : 'translate-x-0'}`} />
-                      </button>
+                      <Toggle size="sm" checked={isEnabled} onChange={() => handleToggle(item.id)} />
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
           ))}
         </div>
 
-        <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4 rounded-[2rem] bg-gradient-to-r from-blue-50/50 to-white p-6 px-8 shadow-sm border border-blue-100/50">
+        {/* Support */}
+        <div className="flex flex-col items-center justify-between gap-4 rounded-2xl bg-white px-6 py-5 shadow-sm ring-1 ring-slate-200 md:flex-row">
           <div>
-            <h3 className="text-[15px] font-bold text-slate-800 tracking-tight">Experiencing issues or bugs?</h3>
-            <p className="text-[13px] text-slate-500 mt-1">We're always looking to improve AIUB+. Let us know how we can help.</p>
+            <h3 className="text-[14px] font-bold text-slate-800">Experiencing issues or bugs?</h3>
+            <p className="mt-0.5 text-[12.5px] text-slate-500">We're always looking to improve AIUB+. Let us know how we can help.</p>
           </div>
-          <a 
-            href="https://www.rijoan.com/contact" 
-            target="_blank" 
+          <a
+            href="https://www.rijoan.com/contact"
+            target="_blank"
             rel="noreferrer"
-            className="flex-shrink-0 rounded-full bg-blue-600 px-6 py-2.5 text-[13px] font-semibold tracking-wide text-white transition hover:bg-blue-700 shadow-sm hover:shadow-md"
+            className="flex-shrink-0 rounded-full bg-slate-900 px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-slate-700"
           >
             Contact Developer
           </a>
         </div>
 
-        <footer className="pt-6 pb-8 text-center text-[13px] text-slate-400 font-medium">
+        <footer className="pb-6 text-center text-[12.5px] font-medium text-slate-400">
           Settings are synced securely across your devices.
         </footer>
       </div>
