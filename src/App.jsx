@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { 
   FiSettings, FiStar, FiLock, 
   FiFilter, FiBell, FiUser, FiBarChart2, 
-  FiCheckCircle, FiGlobe, FiGithub, FiLinkedin,
+  FiCheckCircle, FiGlobe,
   FiCalendar, FiUnlock, FiRefreshCw, FiDollarSign, FiClock, FiKey, FiLayout
 } from 'react-icons/fi';
-import { FaPuzzlePiece } from 'react-icons/fa';
+import { FaPuzzlePiece, FaGithub, FaLinkedinIn } from 'react-icons/fa';
 
 const features = [
   { text: 'Auto Captcha Calculation during login', icon: FiLock },
@@ -113,7 +113,7 @@ function App() {
   };
 
   return (
-    <div className="w-[360px] h-[550px] flex flex-col bg-slate-50 font-sans text-slate-800 shadow-xl overflow-hidden rounded-md border border-slate-200">
+    <div className="w-[360px] h-[550px] flex flex-col bg-slate-50 font-sans text-slate-800 overflow-hidden">
       
       {/* Top Fixed Section */}
       <div className="flex-shrink-0 bg-white z-10 shadow-sm relative">
@@ -204,14 +204,14 @@ function App() {
           </div>
           
           <div className="flex items-center gap-2">
-            <a href="https://rijoan.com" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 transition-colors shadow-sm">
+            <a href="https://rijoan.com" target="_blank" rel="noreferrer" title="Website" aria-label="Website" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm">
               <FiGlobe className="h-4 w-4" />
             </a>
-            <a href="https://github.com/mdrijoanmaruf" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors shadow-sm">
-              <FiGithub className="h-4 w-4" />
+            <a href="https://github.com/mdrijoanmaruf" target="_blank" rel="noreferrer" title="GitHub" aria-label="GitHub" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm">
+              <FaGithub className="h-4 w-4" />
             </a>
-            <a href="https://www.linkedin.com/in/mdrijoanmaruf/" target="_blank" rel="noreferrer" className="flex h-7 w-7 items-center justify-center rounded-lg bg-white border border-slate-200 text-blue-700 hover:bg-blue-50 transition-colors shadow-sm">
-              <FiLinkedin className="h-4 w-4" />
+            <a href="https://www.linkedin.com/in/mdrijoanmaruf/" target="_blank" rel="noreferrer" title="LinkedIn" aria-label="LinkedIn" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] transition-all shadow-sm">
+              <FaLinkedinIn className="h-4 w-4" />
             </a>
           </div>
         </section>

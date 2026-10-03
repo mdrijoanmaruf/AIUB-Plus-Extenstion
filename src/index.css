@@ -15,8 +15,23 @@ body {
   font-family: 'Trebuchet MS', Verdana, sans-serif;
 }
 
+html:has(body.popup-body) {
+  width: 360px;
+  height: 550px;
+  overflow: hidden;
+}
+
+.popup-body {
+  width: 360px;
+  height: 550px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
 .popup-body #root {
-  padding: 8px;
+  padding: 0;
 }
 
 /* Custom Scrollbar for Popup */
