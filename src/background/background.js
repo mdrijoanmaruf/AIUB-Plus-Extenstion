@@ -5,7 +5,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Notices
   if (request.type === 'FETCH_NOTICES') {
     fetch('https://aiub.edu/category/notices')
-      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.text(); })
+      .then(r => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        const contentType = r.headers.get('content-type') || '';
+        if (!contentType.toLowerCase().includes('text/html')) {
+          throw new Error('Unexpected content-type from notices server');
+        }
+        return r.text();
+      })
       .then(html => sendResponse({ success: true, html }))
       .catch(err => sendResponse({ success: false, error: err.message }));
     return true;
