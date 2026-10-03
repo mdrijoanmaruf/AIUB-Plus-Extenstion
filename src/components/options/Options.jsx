@@ -3,7 +3,7 @@ import {
   FiShield, FiLayout, FiMaximize, 
   FiAward, FiFilter, FiFileText, FiDownload, 
   FiBook, FiBookOpen, FiCalendar, FiList, 
-  FiBriefcase, FiPieChart, FiSettings, FiArrowLeft 
+  FiBriefcase, FiPieChart, FiSettings, FiArrowLeft, FiGithub, FiHeart
 } from 'react-icons/fi';
 
 const FEATURES = [
@@ -159,6 +159,43 @@ export default function Options() {
             </div>
           </div>
         </header>
+
+        {/* Open Source Banner */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 rounded-[2rem] bg-gradient-to-r from-emerald-50/80 to-teal-50/80 p-6 px-8 shadow-sm border border-emerald-100/50">
+          <div className="flex items-center gap-5">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 shadow-sm border border-emerald-200/50">
+              <FiGithub className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-[16px] font-bold text-slate-800 tracking-tight">
+                Fully Open Source & Local
+              </h3>
+              <p className="text-[13px] text-slate-600 mt-1">
+                This project runs entirely locally in your browser. No external servers, no data tracking.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+            <a
+              href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold tracking-wide text-slate-700 transition hover:bg-slate-50 shadow-sm border border-slate-200"
+            >
+              <FiGithub className="h-4 w-4" />
+              Source Code
+            </a>
+            <a
+              href="https://github.com/mdrijoanmaruf/AIUB-Plus-Extenstion/issues"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-[13px] font-semibold tracking-wide text-white transition hover:bg-emerald-700 shadow-sm"
+            >
+              <FiHeart className="h-4 w-4" />
+              Report Issue
+            </a>
+          </div>
+        </div>
 
         {/* Dashboard Grid */}
         <div className="grid gap-6 md:grid-cols-2">
